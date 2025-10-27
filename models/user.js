@@ -1,22 +1,32 @@
-var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
-var bcrypt = require('bcrypt-nodejs');
+const mongoose = require('mongoose');
+const bcrypt = require('bcrypt');
 
-var userSchema = new Schema({
-  email: {type: String, required: true},
-  password: {type: String, required: true},
-  firstName: {type: String, required: true},
-  lastName: {type: String, required: true},
-  facebookId: { type: String, unique: true, sparse: true },
-  numero: {type: String, required: true} // for phone number
-});
+const userSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  email: { type: String, unique: true, required: true, lowercase: true },
+  phone: String,
+  address: String,
+  role: { type: String, enum: ['client', 'painter', 'admin'], default: 'client' },
+  passwordHash: { type: String, required: true },
+  // Public painter profile (visible in listing/profile)
+  profilePhoto: String,
+  painterProfile: {
+    approved: { type: Boolean, default: false },
+    availability: { type: Boolean, default: true },
+    ratePerM2: { type: Number, default: 400 },
+    skills: [String],
+    portfolio: [String], // public photos for profile slider
+    rating: { type: Number, default: 0 },
+    reviews: [{ clientName: String, comment: String, stars: Number }]
+  }
+}, { timestamps: true });
 
-userSchema.methods.encryptPassword = function(password) {
-  return bcrypt.hashSync(password, bcrypt.genSaltSync(5), null);
-}
-
-userSchema.methods.validPassword = function(password) {
-  return bcrypt.compareSync(password, this.password);
-}
+userSchema.methods.setPassword = async function(password) {
+  this.passwordHash = await bcrypt.hash(password, 10);
+};
+userSchema.methods.validatePassword = async function(password) {
+  return bcrypt.compare(password, this.passwordHash);
+};
 
 module.exports = mongoose.model('User', userSchema);
+
