@@ -1,0 +1,192 @@
+<%- include('../partials/header', { title: 'My Jobs - Paintello Pro' }) %>
+
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">
+                        <i class="fas fa-clipboard-list me-2"></i>Job Management
+                    </h4>
+                    <div class="btn-group">
+                        <a href="?status=all" class="btn btn-outline-primary <%= status === 'all' ? 'active' : '' %>">All</a>
+                        <a href="?status=pending" class="btn btn-outline-warning <%= status === 'pending' ? 'active' : '' %>">Pending</a>
+                        <a href="?status=accepted" class="btn btn-outline-info <%= status === 'accepted' ? 'active' : '' %>">Accepted</a>
+                        <a href="?status=in_progress" class="btn btn-outline-primary <%= status === 'in_progress' ? 'active' : '' %>">In Progress</a>
+                        <a href="?status=completed" class="btn btn-outline-success <%= status === 'completed' ? 'active' : '' %>">Completed</a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <% if (orders.length === 0) { %>
+                    <div class="text-center py-5">
+                        <i class="fas fa-clipboard-list fa-3x text-muted mb-3"></i>
+                        <h4 class="text-muted">No jobs found</h4>
+                        <p class="text-muted">
+                            <% if (status !== 'all') { %>
+                            No <%= status.replace('_', ' ') %> jobs at the moment
+                            <% } else { %>
+                            You don't have any job requests yet
+                            <% } %>
+                        </p>
+                    </div>
+                    <% } else { %>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Job ID</th>
+                                    <th>Client</th>
+                                    <th>Service Type</th>
+                                    <th>Location</th>
+                                    <th>Area</th>
+                                    <th>Budget</th>
+                                    <th>Commission</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% orders.forEach(order => { %>
+                                <tr>
+                                    <td>#<%= order._id.toString().slice(-6) %></td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar-placeholder bg-secondary rounded-circle me-2 d-flex align-items-center justify-content-center"
+                                                 style="width: 30px; height: 30px;">
+                                                <i class="fas fa-user text-white small"></i>
+                                            </div>
+                                            <div>
+                                                <div class="fw-bold"><%= order.client.name %></div>
+                                                <small class="text-muted"><%= order.client.phone %></small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-light text-dark border"><%= order.serviceType %></span>
+                                    </td>
+                                    <td>
+                                        <small>
+                                            <i class="fas fa-map-marker-alt text-danger me-1"></i>
+                                            <%= order.wilaya %>
+                                        </small>
+                                    </td>
+                                    <td><%= order.area %> m²</td>
+                                    <td>
+                                        <strong class="text-primary"><%= order.budget %> DZD</strong>
+                                    </td>
+                                    <td>
+                                        <small class="text-muted">-<%= order.commission %> DZD</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-<%= 
+                                            order.status === 'completed' ? 'success' :
+                                            order.status === 'in_progress' ? 'primary' :
+                                            order.status === 'accepted' ? 'info' :
+                                            order.status === 'pending' ? 'warning' : 'danger'
+                                        %>">
+                                            <%= order.status.replace('_', ' ').toUpperCase() %>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <small><%= new Date(order.createdAt).toLocaleDateString() %></small>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <a href="/painter/orders/<%= order._id %>" 
+                                               class="btn btn-outline-primary" title="View Details">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <% if (order.status === 'pending') { %>
+                                            <button class="btn btn-outline-success" 
+                                                    onclick="updateOrderStatus('<%= order._id %>', 'accepted')"
+                                                    title="Accept Job">
+                                                <i class="fas fa-check"></i>
+                                            </button>
+                                            <button class="btn btn-outline-danger"
+                                                    onclick="updateOrderStatus('<%= order._id %>', 'cancelled')"
+                                                    title="Decline Job">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                            <% } else if (order.status === 'accepted') { %>
+                                            <button class="btn btn-outline-primary"
+                                                    onclick="updateOrderStatus('<%= order._id %>', 'in_progress')"
+                                                    title="Start Work">
+                                                <i class="fas fa-play"></i>
+                                            </button>
+                                            <% } else if (order.status === 'in_progress') { %>
+                                            <button class="btn btn-outline-success"
+                                                    onclick="updateOrderStatus('<%= order._id %>', 'completed')"
+                                                    title="Mark Complete">
+                                                <i class="fas fa-flag-checkered"></i>
+                                            </button>
+                                            <% } %>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <% }); %>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    <% if (totalPages > 1) { %>
+                    <nav aria-label="Orders pagination" class="mt-4">
+                        <ul class="pagination justify-content-center">
+                            <li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
+                                <a class="page-link" href="?page=<%= currentPage - 1 %>&status=<%= status %>">Previous</a>
+                            </li>
+                            
+                            <% for (let i = 1; i <= totalPages; i++) { %>
+                            <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+                                <a class="page-link" href="?page=<%= i %>&status=<%= status %>"><%= i %></a>
+                            </li>
+                            <% } %>
+                            
+                            <li class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
+                                <a class="page-link" href="?page=<%= currentPage + 1 %>&status=<%= status %>">Next</a>
+                            </li>
+                        </ul>
+                    </nav>
+                    <% } %>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function updateOrderStatus(orderId, newStatus) {
+    const statusMessages = {
+        'accepted': 'accept this job',
+        'cancelled': 'decline this job', 
+        'in_progress': 'start work on this job',
+        'completed': 'mark this job as completed'
+    };
+
+    if (confirm(`Are you sure you want to ${statusMessages[newStatus]}?`)) {
+        fetch(`/painter/orders/${orderId}/status`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ status: newStatus })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Error updating order status');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error updating order status');
+        });
+    }
+}
+</script>
+
+<%- include('../partials/footer') %>
