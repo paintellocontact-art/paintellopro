@@ -1,0 +1,175 @@
+<%- include('../partials/header', { title: 'Profile - Paintello Pro' }) %>
+
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-user-edit me-2"></i>Painter Profile
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form action="/painter/profile" method="POST" enctype="multipart/form-data">
+                        <!-- Personal Information -->
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <h5 class="text-primary mb-3">
+                                    <i class="fas fa-user me-2"></i>Personal Information
+                                </h5>
+                                <div class="mb-3">
+                                    <label for="name" class="form-label">Full Name *</label>
+                                    <input type="text" class="form-control" id="name" name="name" 
+                                           value="<%= user.name %>" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="phone" class="form-label">Phone Number *</label>
+                                    <input type="tel" class="form-control" id="phone" name="phone" 
+                                           value="<%= user.phone %>" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="email" class="form-label">Email Address *</label>
+                                    <input type="email" class="form-control" id="email" name="email" 
+                                           value="<%= user.email %>" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="text-center">
+                                    <div class="avatar-upload mb-3">
+                                        <div class="avatar-preview mx-auto mb-3"
+                                             style="width: 120px; height: 120px; border-radius: 50%; background: #f8f9fa; border: 3px solid #dee2e6; display: flex; align-items: center; justify-content: center;">
+                                            <i class="fas fa-brush fa-3x text-muted"></i>
+                                        </div>
+                                        <input type="file" class="form-control" id="avatar" name="avatar" accept="image/*">
+                                        <div class="form-text">Upload a professional profile photo</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Professional Information -->
+                        <h5 class="text-primary mb-3">
+                            <i class="fas fa-briefcase me-2"></i>Professional Information
+                        </h5>
+                        <div class="row mb-4">
+                            <div class="col-md-6 mb-3">
+                                <label for="experience" class="form-label">Years of Experience *</label>
+                                <input type="number" class="form-control" id="experience" name="experience" 
+                                       value="<%= painter.experience %>" min="0" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="pricePerSqm" class="form-label">Price per m² (DZD) *</label>
+                                <input type="number" class="form-control" id="pricePerSqm" name="pricePerSqm" 
+                                       value="<%= painter.pricePerSqm %>" min="0" required>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label">Specialization *</label>
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="specialization" value="interior" 
+                                               id="interior" <%= painter.specialization.includes('interior') ? 'checked' : '' %>>
+                                        <label class="form-check-label" for="interior">Interior</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="specialization" value="exterior" 
+                                               id="exterior" <%= painter.specialization.includes('exterior') ? 'checked' : '' %>>
+                                        <label class="form-check-label" for="exterior">Exterior</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="specialization" value="commercial" 
+                                               id="commercial" <%= painter.specialization.includes('commercial') ? 'checked' : '' %>>
+                                        <label class="form-check-label" for="commercial">Commercial</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="specialization" value="residential" 
+                                               id="residential" <%= painter.specialization.includes('residential') ? 'checked' : '' %>>
+                                        <label class="form-check-label" for="residential">Residential</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Location Information -->
+                        <h5 class="text-primary mb-3">
+                            <i class="fas fa-map-marker-alt me-2"></i>Location Information
+                        </h5>
+                        <div class="row mb-4">
+                            <div class="col-md-6 mb-3">
+                                <label for="wilaya" class="form-label">Wilaya *</label>
+                                <select class="form-select" id="wilaya" name="wilaya" required>
+                                    <option value="">Select Wilaya</option>
+                                    <% wilayas.forEach(w => { %>
+                                    <option value="<%= w.name %>" 
+                                            <%= painter.wilaya === w.name ? 'selected' : '' %>>
+                                        <%= w.name %> (<%= w.number %>)
+                                    </option>
+                                    <% }); %>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="wilayaNumber" class="form-label">Wilaya Number *</label>
+                                <input type="number" class="form-control" id="wilayaNumber" name="wilayaNumber" 
+                                       value="<%= painter.wilayaNumber %>" readonly required>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="address" class="form-label">Full Address *</label>
+                            <textarea class="form-control" id="address" name="address" rows="2" required><%= painter.address %></textarea>
+                        </div>
+
+                        <!-- Bio Description -->
+                        <div class="mb-4">
+                            <label for="bio" class="form-label">Professional Bio</label>
+                            <textarea class="form-control" id="bio" name="bio" rows="4" 
+                                      placeholder="Describe your experience, specialties, and approach to painting..."><%= painter.bio || '' %></textarea>
+                            <div class="form-text">This will be shown to potential clients</div>
+                        </div>
+
+                        <!-- Availability -->
+                        <div class="mb-4">
+                            <label class="form-label">Availability</label>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="availability" name="availability" 
+                                       <%= painter.availability ? 'checked' : '' %>>
+                                <label class="form-check-label" for="availability">
+                                    Available for new projects
+                                </label>
+                            </div>
+                            <div class="form-text">When turned off, clients won't see you in search results</div>
+                        </div>
+
+                        <!-- Submit Buttons -->
+                        <div class="d-flex justify-content-between">
+                            <a href="/painter/dashboard" class="btn btn-outline-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>Update Profile
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('wilaya').addEventListener('change', function() {
+    const selectedOption = this.options[this.selectedIndex];
+    if (selectedOption.value) {
+        const wilayaNumber = selectedOption.text.match(/\((\d+)\)/)[1];
+        document.getElementById('wilayaNumber').value = wilayaNumber;
+    }
+});
+</script>
+
+<%- include('../partials/footer') %>
