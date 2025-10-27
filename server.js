@@ -1,7 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const session = require('express-session');
-const MongoStore = require('connect-mongo');
 const dotenv = require('dotenv');
 const path = require('path');
 
@@ -15,7 +14,7 @@ const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://paintellocontact_d
 
 console.log('🔗 Connecting to MongoDB...');
 
-// MongoDB connection with timeout
+// MongoDB connection
 const connectDB = async () => {
   try {
     await mongoose.connect(MONGODB_URI, {
@@ -36,8 +35,8 @@ connectDB().then(connected => {
   dbConnected = connected;
 });
 
-// Session configuration
-const sessionConfig = {
+// Session configuration (memory store for now)
+app.use(session({
   secret: process.env.SESSION_SECRET || 'paintello-pro-super-secret-key-2024',
   resave: false,
   saveUninitialized: false,
@@ -45,11 +44,7 @@ const sessionConfig = {
     secure: process.env.NODE_ENV === 'production',
     maxAge: 14 * 24 * 60 * 60 * 1000
   }
-};
-
-// Use memory store for now to avoid MongoDB session issues
-console.log('⚠️  Using memory session store');
-app.use(session(sessionConfig));
+}));
 
 // Body parser middleware
 app.use(express.json({ limit: '10mb' }));
@@ -71,61 +66,41 @@ app.use((req, res, next) => {
   next();
 });
 
-// Simple route loader
-const loadRoutes = () => {
-  // Auth routes
-  try {
-    const authRoutes = require('./routes/auth');
-    app.use('/auth', authRoutes);
-    console.log('✅ Auth routes loaded');
-  } catch (error) {
-    console.log('❌ Auth routes failed:', error.message);
-    app.use('/auth', (req, res) => res.redirect('/'));
-  }
+// Load routes
+try {
+  app.use('/auth', require('./routes/auth'));
+  console.log('✅ Auth routes loaded');
+} catch (error) {
+  console.log('❌ Auth routes failed:', error.message);
+}
 
-  // Client routes
-  try {
-    const clientRoutes = require('./routes/client');
-    app.use('/client', clientRoutes);
-    console.log('✅ Client routes loaded');
-  } catch (error) {
-    console.log('❌ Client routes failed:', error.message);
-    app.use('/client', (req, res) => res.redirect('/auth/login'));
-  }
+try {
+  app.use('/client', require('./routes/client'));
+  console.log('✅ Client routes loaded');
+} catch (error) {
+  console.log('❌ Client routes failed:', error.message);
+}
 
-  // Painter routes
-  try {
-    const painterRoutes = require('./routes/painter');
-    app.use('/painter', painterRoutes);
-    console.log('✅ Painter routes loaded');
-  } catch (error) {
-    console.log('❌ Painter routes failed:', error.message);
-    app.use('/painter', (req, res) => res.redirect('/auth/login'));
-  }
+try {
+  app.use('/painter', require('./routes/painter'));
+  console.log('✅ Painter routes loaded');
+} catch (error) {
+  console.log('❌ Painter routes failed:', error.message);
+}
 
-  // Admin routes
-  try {
-    const adminRoutes = require('./routes/admin');
-    app.use('/admin', adminRoutes);
-    console.log('✅ Admin routes loaded');
-  } catch (error) {
-    console.log('❌ Admin routes failed:', error.message);
-    app.use('/admin', (req, res) => res.redirect('/auth/login'));
-  }
+try {
+  app.use('/admin', require('./routes/admin'));
+  console.log('✅ Admin routes loaded');
+} catch (error) {
+  console.log('❌ Admin routes failed:', error.message);
+}
 
-  // API routes
-  try {
-    const apiRoutes = require('./routes/api');
-    app.use('/api', apiRoutes);
-    console.log('✅ API routes loaded');
-  } catch (error) {
-    console.log('❌ API routes failed:', error.message);
-    app.use('/api', (req, res) => res.json({ error: 'API not available' }));
-  }
-};
-
-// Load all routes
-loadRoutes();
+try {
+  app.use('/api', require('./routes/api'));
+  console.log('✅ API routes loaded');
+} catch (error) {
+  console.log('❌ API routes failed:', error.message);
+}
 
 // Public routes
 app.get('/', (req, res) => {
@@ -192,13 +167,16 @@ app.use((req, res) => {
   });
 });
 
-const PORT = process.env.PORT || 3000;
+// Only start server if this file is run directly (not when required by bin/www)
+if (require.main === module) {
+  const PORT = process.env.PORT || 3000;
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`🎨 Paintello Pro Server started successfully!`);
+    console.log(`📍 Running on: http://0.0.0.0:${PORT}`);
+    console.log(`🏢 Environment: ${process.env.NODE_ENV || 'development'}`);
+    console.log(`🗄️ Database: ${dbConnected ? '✅ Connected' : '❌ Disconnected'}`);
+  });
+}
 
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`🎨 Paintello Pro Server started successfully!`);
-  console.log(`📍 Running on: http://0.0.0.0:${PORT}`);
-  console.log(`🏢 Environment: ${process.env.NODE_ENV || 'development'}`);
-  console.log(`🗄️ Database: ${dbConnected ? '✅ Connected' : '❌ Disconnected'}`);
-  console.log(`🔗 Health check: http://0.0.0.0:${PORT}/health`);
-  console.log(`🧪 Test endpoint: http://0.0.0.0:${PORT}/test`);
-});
+// Export app for bin/www
+module.exports = app;
