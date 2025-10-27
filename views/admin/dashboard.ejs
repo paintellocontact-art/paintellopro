@@ -1,0 +1,191 @@
+<%- include('../partials/header', { title: 'Admin Dashboard - Paintello Pro' }) %>
+
+<div class="container-fluid py-4">
+    <!-- Stats Overview -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card card-hover border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-users fa-2x text-primary"></i>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h4 class="mb-0"><%= stats.totalUsers || 0 %></h4>
+                            <span class="text-muted">Total Users</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card card-hover border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-brush fa-2x text-success"></i>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h4 class="mb-0"><%= stats.totalPainters || 0 %></h4>
+                            <span class="text-muted">Painters</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card card-hover border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-clipboard-list fa-2x text-warning"></i>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h4 class="mb-0"><%= stats.totalOrders || 0 %></h4>
+                            <span class="text-muted">Total Orders</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card card-hover border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-wallet fa-2x text-info"></i>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h4 class="mb-0"><%= stats.totalRevenue || 0 %> DZD</h4>
+                            <span class="text-muted">Total Revenue</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Recent Activity -->
+        <div class="col-lg-8 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Recent Activity</h5>
+                    <div class="btn-group">
+                        <button class="btn btn-sm btn-outline-primary active">All</button>
+                        <button class="btn btn-sm btn-outline-primary">Orders</button>
+                        <button class="btn btn-sm btn-outline-primary">Users</button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Type</th>
+                                    <th>Description</th>
+                                    <th>User</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% recentActivities.forEach(activity => { %>
+                                <tr>
+                                    <td>
+                                        <span class="badge bg-<%= 
+                                            activity.type === 'order' ? 'primary' :
+                                            activity.type === 'user' ? 'success' :
+                                            activity.type === 'payment' ? 'warning' : 'info'
+                                        %>">
+                                            <%= activity.type %>
+                                        </span>
+                                    </td>
+                                    <td><%= activity.description %></td>
+                                    <td><%= activity.user %></td>
+                                    <td><%= new Date(activity.date).toLocaleDateString() %></td>
+                                    <td>
+                                        <span class="badge bg-<%= activity.status === 'success' ? 'success' : 'warning' %>">
+                                            <%= activity.status %>
+                                        </span>
+                                    </td>
+                                </tr>
+                                <% }); %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="col-lg-4 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-3">
+                        <a href="/admin/painters" class="btn btn-outline-primary text-start">
+                            <i class="fas fa-brush me-2"></i>Manage Painters
+                        </a>
+                        <a href="/admin/orders" class="btn btn-outline-primary text-start">
+                            <i class="fas fa-clipboard-list me-2"></i>View All Orders
+                        </a>
+                        <a href="/admin/store-management" class="btn btn-outline-warning text-start">
+                            <i class="fas fa-store me-2"></i>Store Management
+                        </a>
+                        <a href="/admin/verifications" class="btn btn-outline-info text-start">
+                            <i class="fas fa-user-check me-2"></i>Pending Verifications
+                        </a>
+                        <a href="/admin/reports" class="btn btn-outline-success text-start">
+                            <i class="fas fa-chart-bar me-2"></i>View Reports
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- System Status -->
+            <div class="card shadow-sm mt-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">System Status</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="text-muted">Server Load</span>
+                            <span class="text-muted">45%</span>
+                        </div>
+                        <div class="progress" style="height: 6px;">
+                            <div class="progress-bar bg-success" style="width: 45%"></div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="text-muted">Database</span>
+                            <span class="text-success">
+                                <i class="fas fa-check-circle"></i> Online
+                            </span>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="text-muted">Payments</span>
+                            <span class="text-success">
+                                <i class="fas fa-check-circle"></i> Active
+                            </span>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="text-muted">Last Backup</span>
+                            <span class="text-muted">2 hours ago</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('../partials/footer') %>
