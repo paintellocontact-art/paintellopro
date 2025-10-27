@@ -28,29 +28,7 @@ passport.use(new LocalStrategy({ usernameField: 'email' }, async (email, passwor
   }
 }));
 
-// Facebook strategy
-passport.use(new FacebookStrategy({
-  clientID: process.env.FB_ID,
-  clientSecret: process.env.FB_SECRET,
-  callbackURL: process.env.FB_CALLBACK,
-  profileFields: ['id','emails','name']
-}, async (_, __, profile, done) => {
-  try {
-    const email = profile.emails?.[0]?.value;
-    let user = await User.findOne({ email });
-    if (!user) {
-      user = await User.create({
-        role: 'client',
-        name: `${profile.name.givenName} ${profile.name.familyName}`.trim(),
-        email,
-        passwordHash: ''
-      });
-    }
-    done(null, user);
-  } catch (e) {
-    done(e);
-  }
-}));
+
 
 // Optional Google strategy scaffold
 // passport.use(new GoogleStrategy({ ... }, async (accessToken, refreshToken, profile, done) => { ... }));
