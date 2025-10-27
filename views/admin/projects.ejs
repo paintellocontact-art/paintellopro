@@ -1,0 +1,33 @@
+<% layout('layouts/main') %>
+<h2>Projects</h2>
+
+<h3>Assign painter</h3>
+<ul>
+  <% projects.forEach(p => { %>
+    <li>
+      <strong><%= p.details.description %></strong>
+      — Status: <%= p.status %>
+      — Painter: <%= p.painter ? p.painter.name : 'None' %>
+      <form method="POST" action="/admin/projects/<%= p._id %>/status" style="display:inline;">
+        <select name="status">
+          <option value="pending">pending</option>
+          <option value="matched">matched</option>
+          <option value="in-progress">in-progress</option>
+          <option value="completed">completed</option>
+          <option value="cancelled">cancelled</option>
+        </select>
+        <button type="submit">Update</button>
+      </form>
+      <form method="POST" action="/admin/projects/<%= p._id %>/assign/<%= (painters[0] && painters[0]._id) %>" style="display:inline;">
+        <button type="submit">Assign first available painter</button>
+      </form>
+    </li>
+  <% }) %>
+</ul>
+
+<h3>Available painters</h3>
+<ul>
+  <% painters.forEach(pr => { %>
+    <li><%= pr.name %> — skills: <%= (pr.painterProfile.skills || []).join(', ') %></li>
+  <% }) %>
+</ul>
