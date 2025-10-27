@@ -1,0 +1,49 @@
+<% layout('layout') %>
+<h2>Create project</h2>
+
+<% if (chosenPainter) { %>
+  <div class="card highlight">
+    <strong>Chosen painter:</strong> <%= chosenPainter.name %> — <%= chosenPainter.painterProfile.ratePerM2 %> DA/m²
+  </div>
+<% } %>
+
+<form method="POST" action="/client/project" enctype="multipart/form-data" class="form">
+  <div class="row">
+    <div class="col">
+      <label>Description</label>
+      <input type="text" name="description" required>
+    </div>
+    <div class="col">
+      <label>Area (m²)</label>
+      <input type="number" name="area" required min="1" step="1">
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col">
+      <label>Style</label>
+      <input type="text" name="style">
+    </div>
+    <div class="col">
+      <label>Address</label>
+      <input type="text" name="address">
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col">
+      <label>Rate per m² (DA)</label>
+      <input type="number" name="pricePerM2" required min="1">
+    </div>
+    <div class="col">
+      <label>Upload photos of your space</label>
+      <input type="file" name="beforePhotos" multiple accept="image/*">
+    </div>
+  </div>
+
+  <% if (!chosenPainter) { %>
+    <p class="muted">No painter chosen yet. We’ll match one after you submit.</p>
+  <% } %>
+
+  <button type="submit" class="btn btn-primary">Submit project</button>
+</form>
