@@ -1,0 +1,265 @@
+<%- include('../../partials/header', { title: 'Loyalty Points - Team Store' }) %>
+
+<div class="container py-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/painter/store">Team Store</a></li>
+            <li class="breadcrumb-item active">Loyalty Points</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <!-- Points Overview -->
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-warning">
+                <div class="card-header bg-warning text-dark">
+                    <h4 class="mb-0">
+                        <i class="fas fa-award me-2"></i>My Loyalty Points
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-md-4 mb-4">
+                            <div class="border rounded p-4">
+                                <h2 class="text-warning mb-2"><%= painter.loyaltyPoints || 0 %></h2>
+                                <p class="text-muted mb-0">Available Points</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-4">
+                            <div class="border rounded p-4">
+                                <h2 class="text-success mb-2"><%= totalPointsEarned || 0 %></h2>
+                                <p class="text-muted mb-0">Total Earned</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-4">
+                            <div class="border rounded p-4">
+                                <h2 class="text-primary mb-2"><%= pointsRedeemed || 0 %></h2>
+                                <p class="text-muted mb-0">Redeemed</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Progress to Next Reward -->
+                    <div class="mb-4">
+                        <h5 class="mb-3">Progress to Next Reward</h5>
+                        <div class="progress mb-2" style="height: 20px;">
+                            <div class="progress-bar bg-warning" 
+                                 style="width: <%= (painter.loyaltyPoints || 0) / 1000 * 100 %>%">
+                                <%= painter.loyaltyPoints || 0 %> / 1000
+                            </div>
+                        </div>
+                        <small class="text-muted">
+                            <%= 1000 - (painter.loyaltyPoints || 0) %> points needed for 10% discount coupon
+                        </small>
+                    </div>
+
+                    <!-- How to Earn Points -->
+                    <div class="mb-4">
+                        <h5 class="mb-3">How to Earn Points</h5>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-shopping-cart text-primary me-3 fa-lg"></i>
+                                    <div>
+                                        <h6 class="mb-1">Store Purchases</h6>
+                                        <p class="text-muted mb-0">1 point per 100 DZD spent</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-clipboard-check text-success me-3 fa-lg"></i>
+                                    <div>
+                                        <h6 class="mb-1">Completed Jobs</h6>
+                                        <p class="text-muted mb-0">50 points per completed job</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-star text-warning me-3 fa-lg"></i>
+                                    <div>
+                                        <h6 class="mb-1">Client Reviews</h6>
+                                        <p class="text-muted mb-0">25 points per 5-star review</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-bolt text-danger me-3 fa-lg"></i>
+                                    <div>
+                                        <h6 class="mb-1">Quick Response</h6>
+                                        <p class="text-muted mb-0">10 points for responding within 1 hour</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Points History -->
+            <div class="card shadow-sm mt-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Points History</h5>
+                </div>
+                <div class="card-body">
+                    <% if (pointsHistory.length === 0) { %>
+                    <div class="text-center py-4">
+                        <i class="fas fa-history fa-2x text-muted mb-3"></i>
+                        <p class="text-muted">No points history yet</p>
+                    </div>
+                    <% } else { %>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Description</th>
+                                    <th>Points</th>
+                                    <th>Type</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% pointsHistory.forEach(history => { %>
+                                <tr>
+                                    <td><%= new Date(history.date).toLocaleDateString() %></td>
+                                    <td><%= history.description %></td>
+                                    <td>
+                                        <span class="<%= history.type === 'earned' ? 'text-success' : 'text-danger' %>">
+                                            <%= history.type === 'earned' ? '+' : '-' %><%= history.points %>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-<%= history.type === 'earned' ? 'success' : 'danger' %>">
+                                            <%= history.type %>
+                                        </span>
+                                    </td>
+                                </tr>
+                                <% }); %>
+                            </tbody>
+                        </table>
+                    </div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+
+        <!-- Rewards Sidebar -->
+        <div class="col-lg-4">
+            <!-- Available Rewards -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Available Rewards</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-4">
+                        <div class="card border-success">
+                            <div class="card-body text-center">
+                                <h5 class="text-success">500 Points</h5>
+                                <p class="mb-2">5% Discount Coupon</p>
+                                <% if (painter.loyaltyPoints >= 500) { %>
+                                <button class="btn btn-success btn-sm" onclick="redeemReward(500, '5% Discount Coupon')">
+                                    Redeem
+                                </button>
+                                <% } else { %>
+                                <button class="btn btn-outline-secondary btn-sm" disabled>
+                                    Need <%= 500 - painter.loyaltyPoints %> more points
+                                </button>
+                                <% } %>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <div class="card border-warning">
+                            <div class="card-body text-center">
+                                <h5 class="text-warning">1000 Points</h5>
+                                <p class="mb-2">10% Discount Coupon</p>
+                                <% if (painter.loyaltyPoints >= 1000) { %>
+                                <button class="btn btn-warning btn-sm" onclick="redeemReward(1000, '10% Discount Coupon')">
+                                    Redeem
+                                </button>
+                                <% } else { %>
+                                <button class="btn btn-outline-secondary btn-sm" disabled>
+                                    Need <%= 1000 - painter.loyaltyPoints %> more points
+                                </button>
+                                <% } %>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <div class="card border-primary">
+                            <div class="card-body text-center">
+                                <h5 class="text-primary">2000 Points</h5>
+                                <p class="mb-2">Free Premium Brush Set</p>
+                                <% if (painter.loyaltyPoints >= 2000) { %>
+                                <button class="btn btn-primary btn-sm" onclick="redeemReward(2000, 'Premium Brush Set')">
+                                    Redeem
+                                </button>
+                                <% } else { %>
+                                <button class="btn btn-outline-secondary btn-sm" disabled>
+                                    Need <%= 2000 - painter.loyaltyPoints %> more points
+                                </button>
+                                <% } %>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="card shadow-sm mt-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="/painter/store" class="btn btn-outline-primary">
+                            <i class="fas fa-store me-2"></i>Shop Now
+                        </a>
+                        <a href="/painter/orders" class="btn btn-outline-success">
+                            <i class="fas fa-clipboard-list me-2"></i>View Jobs
+                        </a>
+                        <a href="/painter/dashboard" class="btn btn-outline-secondary">
+                            <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function redeemReward(pointsRequired, rewardName) {
+    if (confirm(`Redeem ${pointsRequired} points for ${rewardName}?`)) {
+        fetch('/painter/store/redeem-points', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ 
+                points: pointsRequired,
+                reward: rewardName 
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(`Success! You've redeemed ${rewardName}`);
+                location.reload();
+            } else {
+                alert('Error redeeming reward: ' + data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error redeeming reward');
+        });
+    }
+}
+</script>
+
+<%- include('../../partials/footer') %>
