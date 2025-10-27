@@ -1,3 +1,3 @@
 module.exports = {
-  'mongodb+srv://Islem:cmygNChSy2L9Q4xt@paintello.cu30n.mongodb.net/paintello?retryWrites=true&w=majority'
+  'mongodb+srv://paintellocontact_db_user:nOqgkEfw3ZeCQZXk@paintello-pro.kxlmuok.mongodb.net//paintello-pro?retryWrites=true&w=majority'
 }
