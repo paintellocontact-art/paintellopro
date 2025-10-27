@@ -1,0 +1,153 @@
+//views/admin/messagese.ejs 
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Paintello Admin Inbox</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #fefefe;
+      color: #333;
+      padding: 2rem;
+    }
+    .user-block {
+      background: #fff;
+      border: 1px solid #eee;
+      border-left: 5px solid #d3bfa6;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 30px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+    .msg {
+      margin: 5px 0;
+      padding: 8px;
+      background: #fafafa;
+      border-radius: 6px;
+    }
+    .admin-msg {
+      background: #e1f5ec;
+      border-left: 5px solid #61c19f;
+      text-align: right;
+    }
+    .meta {
+      color: #888;
+      font-size: 12px;
+      display: inline-block;
+      width: 180px;
+    }
+    form.reply-form {
+      margin-top: 10px;
+    }
+    .reply-form textarea {
+      width: 100%;
+      height: 50px;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      resize: none;
+      font-family: inherit;
+    }
+    .reply-form button {
+      margin-top: 5px;
+      background: #b08d57;
+      color: #fff;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .reply-form button:hover {
+      background: #9c7a4b;
+    }
+    .hidden-button-form {
+      display: inline-block;
+      margin-left: 10px;
+    }
+    .hidden-button {
+      display: none;
+      background: #28a745;
+      color: white;
+      border: none;
+      padding: 4px 8px;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+    .user-block:hover .hidden-button {
+      display: inline-block;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>📩 Paintello Admin — WhatsApp Messages</h1>
+
+  <div id="messages-container">
+    <% Object.keys(grouped).forEach(from => { %>
+      <div class="user-block">
+        <h2>
+          📞 <%= from %> (<%= grouped[from].name %>)
+          <% if (!grouped[from].handled) { %>
+            <form method="POST" action="/admin/mark-handled" class="hidden-button-form">
+              <input type="hidden" name="client" value="<%= from %>">
+              <button type="submit" class="hidden-button">✅ Marquer comme traité</button>
+            </form>
+          <% } else { %>
+            <form method="POST" action="/admin/unmark-handled" class="hidden-button-form">
+              <input type="hidden" name="client" value="<%= from %>">
+              <button type="submit" class="hidden-button">♻️ Restaurer</button>
+            </form>
+          <% } %>
+        </h2>
+
+        <% grouped[from].messages.forEach(msg => { %>
+          <div class="msg <%= msg.name === 'ADMIN' ? 'admin-msg' : '' %>">
+            <span class="meta">[<%= new Date(msg.createdAt).toLocaleString() %>]</span>
+
+            <% if (msg.name === 'ADMIN') { %>
+              ✅ <strong>Admin:</strong> <%= msg.text %>
+            <% } else { %>
+              <strong><%= msg.type %>:</strong>
+
+              <% if (msg.media) { %>
+                <% if (msg.type === 'image') { %>
+                  <div><img src="/media/<%= msg.media %>" width="200" /></div>
+                <% } else if (msg.type === 'audio') { %>
+                  <div style="margin-top: 6px;">
+                    🎵 <audio controls style="width: 100%; max-width: 300px;">
+                      <source src="/media/<%= msg.media %>" />
+                    </audio>
+                  </div>
+                <% } else if (msg.type === 'video') { %>
+                  <div style="margin-top: 6px;">
+                    🎥 <video controls style="width: 100%; max-width: 300px; border-radius: 6px;">
+                      <source src="/media/<%= msg.media %>" />
+                    </video>
+                  </div>
+                <% } else { %>
+                  <div style="margin-top: 6px;">
+                    📎 <a href="/media/<%= msg.media %>" target="_blank" style="color: #b08d57;">Voir le document</a>
+                  </div>
+                <% } %>
+              <% } else { %>
+                <%= msg.text || msg.payload || "..." %>
+              <% } %>
+            <% } %>
+          </div>
+        <% }) %>
+
+        <form class="reply-form" method="POST" action="/admin/reply">
+          <input type="hidden" name="to" value="<%= from %>">
+          <textarea name="text" placeholder="Votre réponse..."></textarea>
+          <button type="submit">Envoyer</button>
+        </form>
+      </div>
+    <% }) %>
+  </div>
+
+</body>
+</html>
+
+
+

@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta name="facebook-domain-verification" content="plfly5a8dktgdy17nvv2h8zsrpc9g5" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>Paintello | Register</title>
+<link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
+<link rel="manifest" href="/favicon/site.webmanifest">  
+  <meta name="theme-color" content="#ffffff">  <link href='https://cdn.jsdelivr.net/npm/boxicons@2.0.5/css/boxicons.min.css' rel='stylesheet'>
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css">
+  <!-- Bootstrap core CSS -->
+  <link href="../../css/bootstrap.min.css" rel="stylesheet">
+  <!-- Material Design Bootstrap -->
+  <link href="../../css/mdb.min.css" rel="stylesheet">
+  <style>
+    html,
+    body,
+    header,
+    .view {
+      height: 100vh;
+    }
+    @media (max-width: 740px) {
+      html,
+      body,
+      header,
+      .view {
+        height: 700px;
+      }
+    }
+    @media (min-width: 800px) and (max-width: 850px) {
+      html,
+      body,
+      header,
+      .view {
+        height: 650px;
+      }
+    }
+  </style>
+
+</head>
+
+
+
+
+
+<body class="login-page">
+
+  <!-- Main Navigation -->
+  <header>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top scrolling-navbar white">
+      <div class="container">
+        <a class="navbar-brand font-weight-bold title" href="/">Paintello</a>
+        <!--Navigation icons-->
+        <ul class="nav navbar-nav nav-flex-icons ml-auto">
+          <li class="nav-item dropdown">
+                       <a class="nav-link dropdown" id="menu1" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fas fa-user  black-text"></i>
+                      </a>
+                      <div class="dropdown-menu dropdown-menu-right bootstrap-menu  white scrollbar-default" aria-labelledby="menu1">
+                        <% if (login){ %>
+                          <a class="dropdown-item" href="/user/profile">profile</a>
+                           <a class="dropdown-item" href="/user/logout">Logout</a>
+                           <% } else{ %>
+                           <a class="dropdown-item" href="/user/signup">Register</a>
+                           <a class="dropdown-item" href="/user/signin">Sing up</a>
+                           <% } %>
+                 </div> 
+          </li>
+          <li class="nav-item ">
+                      <a class="nav-link " id="menu2" href="/shop" role="button"  aria-haspopup="true" aria-expanded="false">
+                        <i class="fas fa-shopping-cart black-text"></i>
+                        <% if(session.cart){ %>
+                      <span class="mycounter"><%= session.cart.totalQty %></span>
+                      <% } %>
+                      </a>
+          </li>
+    
+        </ul>
+        
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo02"
+          aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+          
+        </button>
+        
+        
+        <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
+          <ul class="list-unstyled navbar-nav mr-auto">
+            <li class="nav-item dropdown ml-4 mb-0">
+              <a class="nav-link dropdown-toggle title" id="navbarDropdownMenuLink" data-toggle="dropdown"
+                aria-haspopup="true" aria-expanded="false"> DIY </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                <a class="dropdown-item" href="/interior">Paint</a>
+                <a class="dropdown-item" href="/wallpaper">Wallpaper</a>
+                <a class="dropdown-item" href="/floor">Flooring & Tiling</a>
+                <a class="dropdown-item" href="/tool">Tools And Equipment</a>
+                <a class="dropdown-item" href="/deco">Decorating</a>
+              </div>
+            </li>
+            <li class="nav-item dropdown ml-4 mb-0">
+              <a class="nav-link dropdown-toggle title" id="navbarDropdownMenuLink" data-toggle="dropdown"
+                aria-haspopup="true" aria-expanded="false"> Sale </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                <a class="dropdown-item" href="/sale/electrical">Electrical Sale</a>
+                <a class="dropdown-item" href="/sale/furniteur">Furniture Sale</a>
+                <a class="dropdown-item" href="/sale/rug">Rugs Sale</a>
+                <a class="dropdown-item" href="/sale/cuisin">Kitchen Sale</a>
+                <a class="dropdown-item" href="/sale/decor">Home Decor Sale</a>
+                <a class="dropdown-item" href="/sale/soft">Soft Furnishings Sale</a>
+                <a class="dropdown-item" href="/sale/bedding">Bedding Sale</a>
+                <a class="dropdown-item" href="/sale/curtain">Curtains Sale</a>
+                <a class="dropdown-item" href="/sale/station">Stationery Sale</a>
+                <a class="dropdown-item" href="/sale/clean">Laundry & Cleaning Sale</a>
+              </div>
+            </li>
+            <li class="nav-item dropdown ml-4 mb-0">
+              <a class="nav-link dropdown-toggle title" id="navbarDropdownMenuLink" data-toggle="dropdown"
+                aria-haspopup="true" aria-expanded="false"> Sports-and-Leisure </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                <a class="dropdown-item" href="/sport/scooter">Scooters</a>
+                <a class="dropdown-item" href="/sport/travel">Travel Accessories</a>
+                <a class="dropdown-item" href="/sport/fitnes">Fitness</a>
+                
+              </div>
+            </li>
+            <li class="nav-item ml-4">
+              <a class="nav-link title" href="/wow" data-offset="90">Wow Deals</a>
+            </li>
+            <li class="nav-item ml-4">
+              <a class="nav-link title" href="/return" data-offset="90">Returns</a>
+            </li>
+            
+            
+          </ul>
+          
+          <!-- Social Icon  -->
+         
+      </div></div></div></div>
+    </nav>
+
+    <!-- Intro Section -->
+      <div class="mask rgba-indigo-light h-100 d-flex justify-content-center align-items-center">
+        <div class="container">
+          <div class="row">
+            <div class="col-xl-5 col-lg-6 col-md-10 col-sm-12 mx-auto mt-lg-5">
+
+              <!-- Form with header -->
+              <div class="card wow fadeIn" data-wow-delay="0.3s">
+                <div class="card-body">
+
+                  <!-- Header -->
+                  <div class="form-header pink-gradient">
+                    <h3>
+                      <i class="fas fa-user mt-2 mb-2"></i> REGISTER:</h3>
+                  </div>
+                  <% if (messages.length > 0) { %>
+
+                    <div class="alert alert-danger" role="alert">
+                      <%= messages %>
+                    </div>
+                    
+                    <% } %>
+                  <!-- Body -->
+                  <form action="/user/signup" method="POST">
+                   
+
+                  <div class="md-form mb-0">
+                   
+                    <i class="fas fa-user prefix black-text"></i>
+                    <input type="email" class="form-control black-text" name="email" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email"> 
+                    <label for="exampleInputEmail1">Email address</label>
+                    </div>
+
+                  <div class="md-form mb-0">
+                    <i class="fas fa-lock prefix black-text"></i>
+                  <input type="password" class="form-control" name="password" id="exampleInputPassword1" placeholder="Password"> 
+                    <label for="exampleInputPassword1">Your password</label>
+                  </div>
+             <input type="text" name="firstName" placeholder="First Name" required>
+             <input type="text" name="lastName" placeholder="Last Name" required>
+              <input type="tel" name="numero" placeholder="Phone Number" required>
+                  <div class="text-center">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                    <button type="submit" class="btn pink-gradient btn-lg">Sign up</button>
+                  </form>
+                    <hr>
+                    
+                    <div class="inline-ul text-center d-flex justify-content-center">
+                      <a class="p-2 m-2 fa-lg tw-ic">
+                        <i class="fab fa-twitter white-text"></i>
+                      </a>
+                      <a class="p-2 m-2 fa-lg li-ic">
+                        <i class="fab fa-linkedin-in white-text"> </i>
+                      </a>
+                      <a class="p-2 m-2 fa-lg ins-ic">
+                        <i class="fab fa-instagram white-text"> </i>
+                      </a>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+              <!-- Form with header -->
+
+            </div>
+          </div>
+        </div>
+      </div>
+
+  </header>
+  <!-- Main Navigation -->
+  <%- include ("../partials/footer") %>.

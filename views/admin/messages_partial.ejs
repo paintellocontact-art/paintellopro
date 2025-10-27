@@ -1,0 +1,38 @@
+//views/admin/messagese_partiel.ejs
+
+<% Object.keys(grouped).forEach(from => { %>
+  <div class="user-block">
+    <h2>📞 <%= from %> (<%= grouped[from].name %>)</h2>
+
+    <% grouped[from].messages.forEach(msg => { %>
+      <div class="msg">
+        <span class="meta">[<%= new Date(msg.createdAt).toLocaleString() %>]</span>
+        <strong><%= msg.type %>:</strong>
+
+        <div>
+          <% if (msg.type === 'image') { %>
+            <img src="<%= msg.media %>" 
+                 onerror="this.src='/images/placeholder.jpg';"
+                 alt="Image" style="max-width:200px;border-radius:6px;" />
+          <% } else if (msg.type === 'audio') { %>
+            <audio controls>
+              <source src="<%= msg.media %>" type="audio/ogg">
+              Audio non supporté
+            </audio>
+          <% } else if (msg.type === 'document' || msg.type === 'video') { %>
+            <a href="<%= msg.media %>" target="_blank">📎 Voir le fichier</a>
+          <% } else { %>
+            <%= msg.text || msg.payload || "..." %>
+          <% } %>
+        </div>
+      </div>
+    <% }) %>
+
+    <form class="reply-form" method="POST" action="/admin/reply">
+      <input type="hidden" name="to" value="<%= from %>">
+      <textarea name="text" placeholder="Votre réponse..."></textarea>
+      <button type="submit">Envoyer</button>
+    </form>
+  </div>
+<% }) %>
+

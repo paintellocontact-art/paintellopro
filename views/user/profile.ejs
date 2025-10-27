@@ -1,0 +1,55 @@
+<%- include ("../partials/header") %>.
+
+
+
+
+<h1 class="my-5 pt-4 text-center title font-weight-bold">Mes Commandes</h1>
+<div class="bm-page">
+<div class="container">
+<div class="row">
+  <% for (let i = 0; i < orders.length; i++) { %>
+<div class="order-lg-last">
+<div class="mb-4 mb-lg-5 bm-content">
+<div class="mb-4">
+</div>
+<div class="prod-listing">
+<div class="d-none fa-3x prod-loading">
+<i class="fas fa-circle-notch fa-spin"></i>
+</div>
+<div aria-hidden="true" class="row border-bottom mt-4 mx-md-auto"></div>
+<ul class="row list-unstyled mb-0">
+  <% for (let id in orders[i].cart.items) { %>
+
+<li class="col-sm-6 col-md-4 bm-col-md bm-product-item">
+<div class="align-items-center d-flex h-100 bm-product-link" href="/products/high-performance-rubber-underlay-3mm-365430">	
+<div class="flex-shrink-0 mw-100 position-relative bm-product-link-img">
+<img width="170" height="200" src="<%= orders[i].cart.items[id].item.image %>">	
+</div>
+<div class="flex-fill mw-100 bm-product-link-text">
+<h3 class="d-block font-weight-normal h6 mb-0 text-body"><%= orders[i].cart.items[id].item.title %></h3>
+<span class="d-block h5 mb-0 mt-1 text-body"><%= orders[i].cart.items[id].item.price %>DA</span>
+<span class="d-block h5 mb-0 mt-1 text-body">Quantite:<%= orders[i].cart.items[id].qty %></span>
+
+</div>	
+</div>	
+</li>
+<% } %>
+
+</ul>
+<div class="card-header">
+  <strong>Total Price: <%= orders[i].cart.totalPrice %> DA</strong>
+</div>
+<div aria-hidden="true" class="row border-bottom mb-4 mx-md-auto"></div>
+</div>
+<hr class="mb-4">
+
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<% } %>
+
+
+<%- include ("../partials/footer") %>.

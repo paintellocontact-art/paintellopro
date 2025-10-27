@@ -1,0 +1,38 @@
+<%- include ("../partials/header") %>.
+
+  <!-- Main Navigation -->
+
+  <!-- Main Layout -->
+  <main>
+   
+
+    <div class="bm-page">
+      <div class="container">
+      <div class="row">
+      <div class="order-lg-last">
+      <div class="mb-4 mb-lg-5 bm-content">
+  <h2 class="text-center text-uppercase">DIY</h2>
+      <ul class="row justify-content-center list-unstyled mb-4">
+        <% interiors.forEach(function(interior){ %>
+  
+      <li class="col-6 col-sm-4 col-md-3">
+      <a class="d-block mt-4 text-center text-dark" href="<%= interior.href %>">
+      <div class="mb-1 px-2">
+      <img alt="Wallpaper" class="border img-fluid rounded-circle bm-lazyload lazyloaded" data-src="//cdn.bmstores.co.uk/images/dmCategory/thumbnailImageResponsive/wallpaper5.jpg" width="160" height="160" src="<%= interior.image %>">
+      </div>
+      <h2 class="h6 mb-0"><%= interior.title %></h2>
+      </a>
+      </li>
+      <% }); %>
+      
+    </ul></div></div></div></div></div>
+
+  </main>
+  <!-- Main Layout -->
+
+  <!-- Footer -->
+ 
+
+    
+  <%- include ("../partials/footer") %>.
+    

@@ -1,0 +1,53 @@
+{
+  "name": "n",
+  "version": "1.0.0",
+  "description": "Material Design for Bootstrap",
+  "main": ".eslintrc.js",
+  "engines": {
+    "node": "v22.14.0",
+    "npm": "11.4.2"
+  },
+  "dependencies": {
+    "all": "*",
+    "aws-sdk": "^2.1692.0",
+    "axios": "^1.10.0",
+    "bcrypt": "*",
+    "bcrypt-nodejs": "*",
+    "bcryptjs": "*",
+    "body-parser": "*",
+    "connect-flash": "*",
+    "connect-mongo": "*",
+    "connect-mongodb-session": "^5.0.0",
+    "cookie-parser": "*",
+    "csurf": "*",
+    "debug": "*",
+    "dotenv": "^16.5.0",
+    "ejs": "*",
+    "express": "*",
+    "express-parser": "*",
+    "express-session": "*",
+    "express-validator": "^5.3.1",
+    "facebook-nodejs-business-sdk": "^22.0.3",
+    "gridfs-stream": "^1.1.1",
+    "http-errors": "*",
+    "mongodb": "^6.17.0",
+    "mongoose": "^8.16.0",
+    "morgan": "*",
+    "multer": "^1.4.4",
+    "multer-gridfs-storage": "^5.0.2",
+    "nodemailer": "github:nodemailer/nodemailer",
+    "passport": "*",
+    "passport-facebook": "^3.0.0",
+    "passport-local": "*",
+    "slick-carousel": "*",
+    "stripe": "*",
+    "twilio": "^5.6.1"
+  },
+  "scripts": {
+    "start": "node ./bin/www",
+    "dev": "nodemon ./bin/www",
+    "lint": "eslint --debug /"
+  },
+  "author": "",
+  "license": "ISC"
+}
