@@ -1,10 +1,19 @@
-<header class="header">
-  <div class="brand">paintello</div>
-  <nav class="nav">
-    <a href="/">Home</a>
-    <a href="/painters">Find painters</a>
-    <a href="/client/projects">Projects</a>
-    <a href="/login">Login</a>
+<header>
+  <nav>
+    <a href="/">Paintello Pro</a>
+    <div>
+      <% if (currentUser) { %>
+        <span>Hi, <%= currentUser.name %></span>
+        <form action="/logout" method="POST" style="display:inline;">
+          <button type="submit">Logout</button>
+        </form>
+      <% } else { %>
+        <a href="/login">Login</a>
+        <a href="/register">Register</a>
+      <% } %>
+    </div>
   </nav>
 </header>
+<hr>
+
 
