@@ -148,8 +148,9 @@ router.get('/register-painter', (req, res) => {
 // Painter Registration Process - FIXED VERSION
 router.post('/register-painter', async (req, res) => {
   try {
-    console.log('Received painter registration data:', req.body);
-    
+   console.log('Received painter registration data:', req.body);
+console.log('Files:', req.files);
+
     // Check if body exists
     if (!req.body) {
       req.session.messages = [{ type: 'danger', text: 'No form data received' }];
