@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const session = require('express-session');
+const MongoStore = require('connect-mongo'); // Add this for production sessions
 const flash = require('connect-flash');
 const path = require('path');
 const bodyParser = require('body-parser');
@@ -8,12 +9,10 @@ require('dotenv').config();
 
 const app = express();
 
-// MongoDB Connection
+// MongoDB Connection - Remove deprecated options
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/paintello';
-mongoose.connect(MONGODB_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
+
+mongoose.connect(MONGODB_URI)
 .then(() => console.log('✅ MongoDB connected successfully'))
 .catch(err => console.error('❌ MongoDB connection error:', err));
 
@@ -21,13 +20,23 @@ mongoose.connect(MONGODB_URI, {
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-// Session configuration
+// Production session store with MongoDB
+const sessionStore = MongoStore.create({
+  mongoUrl: MONGODB_URI,
+  collectionName: 'sessions',
+  ttl: 14 * 24 * 60 * 60, // 14 days
+  autoRemove: 'native'
+});
+
+// Session configuration for production
 app.use(session({
-  secret: process.env.SESSION_SECRET || 'paintello-secret-key-2024',
+  secret: process.env.SESSION_SECRET || 'paintello-secret-key-2024-production',
   resave: false,
   saveUninitialized: false,
+  store: sessionStore, // Use MongoDB for sessions in production
   cookie: {
-    secure: process.env.NODE_ENV === 'production',
+    secure: process.env.NODE_ENV === 'production', // HTTPS in production
+    httpOnly: true,
     maxAge: 24 * 60 * 60 * 1000 // 24 hours
   }
 }));
@@ -55,21 +64,6 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // Routes
 const indexRoutes = require('./routes/index');
 app.use('/', indexRoutes);
-
-// Admin routes protection middleware (basic example)
-const requireAdmin = (req, res, next) => {
-  // Add your admin authentication logic here
-  // For now, this is a basic example
-  if (req.session.isAdmin) {
-    next();
-  } else {
-    req.flash('error', 'Admin access required');
-    res.redirect('/admin/login');
-  }
-};
-
-// Apply admin protection to admin routes
-app.use('/admin', requireAdmin, indexRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
@@ -104,17 +98,38 @@ app.use((req, res) => {
 });
 
 // Cloudinary configuration check
-const { cloudinary } = require('./utils/cloudinary');
-cloudinary.api.ping()
-  .then(result => console.log('✅ Cloudinary connected successfully'))
-  .catch(err => console.error('❌ Cloudinary connection error:', err));
+try {
+  const { cloudinary } = require('./utils/cloudinary');
+  cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET
+  });
+  
+  cloudinary.api.ping()
+    .then(result => console.log('✅ Cloudinary connected successfully'))
+    .catch(err => console.error('❌ Cloudinary connection error:', err.message));
+} catch (error) {
+  console.error('❌ Cloudinary configuration error:', error.message);
+}
 
-// Server startup
+// Get port from environment (Heroku provides this)
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
+
+// Server startup - Fix port binding issue
+const server = app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 Server running on port ${PORT}`);
   console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
-  console.log(`📧 Cloudinary: ${process.env.CLOUDINARY_CLOUD_NAME || 'Not configured'}`);
+  console.log(`☁️ Cloudinary: ${process.env.CLOUDINARY_CLOUD_NAME ? 'Configured' : 'Not configured'}`);
+});
+
+// Handle graceful shutdown
+process.on('SIGTERM', () => {
+  console.log('SIGTERM received, shutting down gracefully');
+  server.close(() => {
+    mongoose.connection.close();
+    console.log('Process terminated');
+  });
 });
 
 module.exports = app;
