@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-
+const wilayas = require('../utils/wilayas');
 const Painter = require('../models/Painter');
 const bcrypt = require('bcrypt');
 const { uploadIdCard, deleteFromCloudinary } = require('../utils/cloudinary');
