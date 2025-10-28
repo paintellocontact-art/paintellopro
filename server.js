@@ -1,182 +1,120 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const session = require('express-session');
-const dotenv = require('dotenv');
+const flash = require('connect-flash');
 const path = require('path');
-
-// Load env vars
-dotenv.config();
+const bodyParser = require('body-parser');
+require('dotenv').config();
 
 const app = express();
 
 // MongoDB Connection
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://paintellocontact_db_user:nOqgkEfw3ZeCQZXk@paintello-pro.kxlmuok.mongodb.net/PAINTELLO-PRO?retryWrites=true&w=majority';
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/paintello';
+mongoose.connect(MONGODB_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+})
+.then(() => console.log('✅ MongoDB connected successfully'))
+.catch(err => console.error('❌ MongoDB connection error:', err));
 
-console.log('🔗 Connecting to MongoDB...');
+// Middleware
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 
-// MongoDB connection
-const connectDB = async () => {
-  try {
-    await mongoose.connect(MONGODB_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
-    console.log('✅ MongoDB Connected successfully to PAINTELLO-PRO database');
-    return true;
-  } catch (err) {
-    console.log('❌ MongoDB connection error:', err.message);
-    return false;
-  }
-};
-
-// Initialize DB connection
-let dbConnected = false;
-connectDB().then(connected => {
-  dbConnected = connected;
-});
-
-// Session configuration (memory store for now)
+// Session configuration
 app.use(session({
-  secret: process.env.SESSION_SECRET || 'paintello-pro-super-secret-key-2024',
+  secret: process.env.SESSION_SECRET || 'paintello-secret-key-2024',
   resave: false,
   saveUninitialized: false,
   cookie: {
     secure: process.env.NODE_ENV === 'production',
-    maxAge: 14 * 24 * 60 * 60 * 1000
+    maxAge: 24 * 60 * 60 * 1000 // 24 hours
   }
 }));
 
-// Body parser middleware
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+// Flash messages
+app.use(flash());
 
-// Set view engine
+// Global variables for templates
+app.use((req, res, next) => {
+  res.locals.success = req.flash('success');
+  res.locals.error = req.flash('error');
+  res.locals.currentUser = req.user;
+  res.locals.currentPainter = req.session.painter;
+  next();
+});
+
+// View engine setup
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
 // Static files
 app.use(express.static(path.join(__dirname, 'public')));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Make user data available to all views
-app.use((req, res, next) => {
-  res.locals.user = req.session.user || null;
-  res.locals.painter = req.session.painter || null;
-  res.locals.messages = req.session.messages || [];
-  req.session.messages = [];
-  next();
-});
+// Routes
+const indexRoutes = require('./routes/index');
+app.use('/', indexRoutes);
 
-// Load routes
-try {
-  app.use('/auth', require('./routes/auth'));
-  console.log('✅ Auth routes loaded');
-} catch (error) {
-  console.log('❌ Auth routes failed:', error.message);
-}
+// Admin routes protection middleware (basic example)
+const requireAdmin = (req, res, next) => {
+  // Add your admin authentication logic here
+  // For now, this is a basic example
+  if (req.session.isAdmin) {
+    next();
+  } else {
+    req.flash('error', 'Admin access required');
+    res.redirect('/admin/login');
+  }
+};
 
-try {
-  app.use('/client', require('./routes/client'));
-  console.log('✅ Client routes loaded');
-} catch (error) {
-  console.log('❌ Client routes failed:', error.message);
-}
+// Apply admin protection to admin routes
+app.use('/admin', requireAdmin, indexRoutes);
 
-try {
-  app.use('/painter', require('./routes/painter'));
-  console.log('✅ Painter routes loaded');
-} catch (error) {
-  console.log('❌ Painter routes failed:', error.message);
-}
-
-try {
-  app.use('/admin', require('./routes/admin'));
-  console.log('✅ Admin routes loaded');
-} catch (error) {
-  console.log('❌ Admin routes failed:', error.message);
-}
-
-try {
-  app.use('/api', require('./routes/api'));
-  console.log('✅ API routes loaded');
-} catch (error) {
-  console.log('❌ API routes failed:', error.message);
-}
-
-// Public routes
-app.get('/', (req, res) => {
-  res.render('shared/home', { 
-    title: 'Paintello Pro - Find Professional Painters in Algeria',
-    featuredPainters: [],
-    wilayas: require('./utils/wilayas')
-  });
-});
-
-app.get('/painters', (req, res) => {
-  res.render('client/search-painters', { 
-    title: 'Find Professional Painters',
-    painters: [],
-    wilayas: require('./utils/wilayas'),
-    query: req.query
-  });
-});
-
-app.get('/about', (req, res) => {
-  res.render('shared/about', { 
-    title: 'About Paintello Pro'
-  });
-});
-
-app.get('/contact', (req, res) => {
-  res.render('shared/contact', { 
-    title: 'Contact Us - Paintello Pro'
-  });
-});
-
-// Health check endpoint
-app.get('/health', (req, res) => {
-  res.json({ 
-    status: 'OK', 
-    database: dbConnected ? 'connected' : 'disconnected',
-    timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV || 'development'
-  });
-});
-
-// Test route
-app.get('/test', (req, res) => {
-  res.json({ 
-    message: 'Paintello Pro is running! 🎨',
-    version: '1.0.0',
-    database: dbConnected ? '✅ Connected' : '❌ Disconnected'
-  });
-});
-
-// Error handling
+// Error handling middleware
 app.use((err, req, res, next) => {
-  console.error('🚨 Error:', err.message);
-  res.status(500).render('shared/error', { 
+  console.error('🚨 Server Error:', err.stack);
+  
+  // Handle multer file size errors
+  if (err.code === 'LIMIT_FILE_SIZE') {
+    req.flash('error', 'File too large. Maximum size is 2MB.');
+    return res.redirect('back');
+  }
+  
+  // Handle file type errors
+  if (err.message.includes('image files')) {
+    req.flash('error', 'Only image files are allowed.');
+    return res.redirect('back');
+  }
+  
+  res.status(500).render('error', {
     title: 'Server Error',
-    error: 'Something went wrong! Please try again later.'
+    message: 'Something went wrong!',
+    error: process.env.NODE_ENV === 'development' ? err : {}
   });
 });
 
 // 404 handler
 app.use((req, res) => {
-  res.status(404).render('shared/404', { 
-    title: 'Page Not Found'
+  res.status(404).render('error', {
+    title: 'Page Not Found',
+    message: 'The page you are looking for does not exist.',
+    error: {}
   });
 });
 
-// Only start server if this file is run directly (not when required by bin/www)
-if (require.main === module) {
-  const PORT = process.env.PORT || 3000;
-  app.listen(PORT, '0.0.0.0', () => {
-    console.log(`🎨 Paintello Pro Server started successfully!`);
-    console.log(`📍 Running on: http://0.0.0.0:${PORT}`);
-    console.log(`🏢 Environment: ${process.env.NODE_ENV || 'development'}`);
-    console.log(`🗄️ Database: ${dbConnected ? '✅ Connected' : '❌ Disconnected'}`);
-  });
-}
+// Cloudinary configuration check
+const { cloudinary } = require('./utils/cloudinary');
+cloudinary.api.ping()
+  .then(result => console.log('✅ Cloudinary connected successfully'))
+  .catch(err => console.error('❌ Cloudinary connection error:', err));
 
-// Export app for bin/www
+// Server startup
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
+  console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`📧 Cloudinary: ${process.env.CLOUDINARY_CLOUD_NAME || 'Not configured'}`);
+});
+
 module.exports = app;
