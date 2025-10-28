@@ -4,6 +4,7 @@ const router = express.Router();
 const User = require('../models/User');
 const Painter = require('../models/Painter');
 const wilayas = require('../utils/wilayas');
+const { upload } = require('../config/cloudinary');
 
 // Login Page
 router.get('/login', (req, res) => {
@@ -146,92 +147,100 @@ router.get('/register-painter', (req, res) => {
 });
 
 // Painter Registration Process - FIXED VERSION
-router.post('/register-painter', async (req, res) => {
-  try {
-   console.log('Received painter registration data:', req.body);
-console.log('Files:', req.files);
+router.post(
+  '/register-painter',
+  upload.fields([
+    { name: 'idCard', maxCount: 1 },
+    { name: 'portfolio', maxCount: 10 }
+  ]),
+  async (req, res) => {
+    try {
+      console.log('Received painter registration data:', req.body);
+      console.log('Files:', req.files);
 
-    // Check if body exists
-    if (!req.body) {
-      req.session.messages = [{ type: 'danger', text: 'No form data received' }];
-      return res.redirect('/auth/register-painter');
-    }
-    
-    const {
-      name, email, phone, password, confirmPassword,
-      experience, specialization, wilaya, wilayaNumber, address,
-      pricePerSqm
-    } = req.body;
-
-    // Validate required fields
-    if (!name || !email || !phone || !password || !confirmPassword || 
-        !experience || !wilaya || !wilayaNumber || !address || !pricePerSqm) {
-      req.session.messages = [{ type: 'danger', text: 'All fields are required' }];
-      return res.redirect('/auth/register-painter');
-    }
-
-    // Basic validation
-    if (password !== confirmPassword) {
-      req.session.messages = [{ type: 'danger', text: 'Passwords do not match' }];
-      return res.redirect('/auth/register-painter');
-    }
-
-    if (password.length < 6) {
-      req.session.messages = [{ type: 'danger', text: 'Password must be at least 6 characters' }];
-      return res.redirect('/auth/register-painter');
-    }
-
-    // Check if user exists
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      req.session.messages = [{ type: 'danger', text: 'User already exists with this email' }];
-      return res.redirect('/auth/register-painter');
-    }
-
-    // Create user
-    const user = new User({
-      name,
-      email,
-      phone,
-      password,
-      role: 'painter'
-    });
-
-    await user.save();
-
-    // Handle specialization - it can be string or array
-    let specializationArray = [];
-    if (Array.isArray(specialization)) {
-      specializationArray = specialization;
-    } else if (specialization) {
-      specializationArray = [specialization];
-    }
-
-    // Create painter profile
-    const painter = new Painter({
-      user: user._id,
-      experience: parseInt(experience) || 0,
-      specialization: specializationArray,
-      wilaya,
-      wilayaNumber: parseInt(wilayaNumber) || 0,
-      address,
-      pricePerSqm: parseInt(pricePerSqm) || 0,
-      verification: {
-        isVerified: false
+      if (!req.body) {
+        req.session.messages = [{ type: 'danger', text: 'No form data received' }];
+        return res.redirect('/auth/register-painter');
       }
-    });
 
-    await painter.save();
+      const {
+        name, email, phone, password, confirmPassword,
+        experience, specialization, wilaya, wilayaNumber, address,
+        pricePerSqm
+      } = req.body;
 
-    req.session.messages = [{ type: 'success', text: 'Application submitted! We will review your profile and contact you soon.' }];
-    res.redirect('/auth/login');
+      // Validate fields
+      if (!name || !email || !phone || !password || !confirmPassword ||
+          !experience || !wilaya || !wilayaNumber || !address || !pricePerSqm) {
+        req.session.messages = [{ type: 'danger', text: 'All fields are required' }];
+        return res.redirect('/auth/register-painter');
+      }
 
-  } catch (error) {
-    console.error('Painter registration error:', error);
-    req.session.messages = [{ type: 'danger', text: 'Server error during registration: ' + error.message }];
-    res.redirect('/auth/register-painter');
+      if (password !== confirmPassword) {
+        req.session.messages = [{ type: 'danger', text: 'Passwords do not match' }];
+        return res.redirect('/auth/register-painter');
+      }
+
+      if (password.length < 6) {
+        req.session.messages = [{ type: 'danger', text: 'Password must be at least 6 characters' }];
+        return res.redirect('/auth/register-painter');
+      }
+
+      const existingUser = await User.findOne({ email });
+      if (existingUser) {
+        req.session.messages = [{ type: 'danger', text: 'User already exists with this email' }];
+        return res.redirect('/auth/register-painter');
+      }
+
+      // Create User
+      const user = new User({
+        name,
+        email,
+        phone,
+        password,
+        role: 'painter'
+      });
+      await user.save();
+
+      // Handle specialization array
+      const specializationArray = Array.isArray(specialization)
+        ? specialization
+        : [specialization];
+
+      // Upload images (Cloudinary)
+      const idCardUrl = req.files?.idCard?.[0]?.path || null;
+      const portfolio = (req.files?.portfolio || []).map(file => ({
+        image: file.path
+      }));
+
+      // Create Painter Profile
+      const painter = new Painter({
+        user: user._id,
+        experience: parseInt(experience) || 0,
+        specialization: specializationArray,
+        wilaya,
+        wilayaNumber: parseInt(wilayaNumber) || 0,
+        address,
+        pricePerSqm: parseInt(pricePerSqm) || 0,
+        verification: { idCard: idCardUrl, isVerified: false },
+        portfolio
+      });
+
+      await painter.save();
+
+      req.session.messages = [{
+        type: 'success',
+        text: 'Application submitted! We will review your profile and contact you soon.'
+      }];
+
+      res.redirect('/auth/login');
+    } catch (error) {
+      console.error('Painter registration error:', error);
+      req.session.messages = [{ type: 'danger', text: 'Server error: ' + error.message }];
+      res.redirect('/auth/register-painter');
+    }
   }
-});
+);
 
 // Logout
 router.get('/logout', (req, res) => {
