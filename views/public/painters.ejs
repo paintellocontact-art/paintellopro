@@ -1,0 +1,287 @@
+<%- include('../partials/header', { title: 'Find Painters - Paintello Pro' }) %>
+
+<div class="container-fluid py-4">
+    <div class="row">
+        <!-- Filters Sidebar -->
+        <div class="col-lg-3 col-md-4">
+            <div class="card shadow-sm sticky-top" style="top: 100px;">
+                <div class="card-header bg-primary text-white">
+                    <h6 class="mb-0"><i class="fas fa-filter me-2"></i>Filters</h6>
+                </div>
+                <div class="card-body">
+                    <form id="searchForm" action="/painters" method="GET">
+                        <!-- Wilaya Filter -->
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Wilaya</label>
+                            <select class="form-select" name="wilaya" id="wilayaFilter">
+                                <option value="">All Wilayas</option>
+                                <% wilayas.forEach(wilaya => { %>
+                                <option value="<%= wilaya.name %>" 
+                                        <%= query.wilaya === wilaya.name ? 'selected' : '' %>>
+                                    <%= wilaya.name %>
+                                </option>
+                                <% }); %>
+                            </select>
+                        </div>
+
+                        <!-- Availability -->
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Availability</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="availability" value="true" 
+                                       id="available" <%= query.availability === 'true' ? 'checked' : '' %>>
+                                <label class="form-check-label" for="available">
+                                    Available Now
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Experience -->
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Minimum Experience</label>
+                            <select class="form-select" name="minExperience">
+                                <option value="">Any experience</option>
+                                <option value="1" <%= query.minExperience === '1' ? 'selected' : '' %>>1+ years</option>
+                                <option value="3" <%= query.minExperience === '3' ? 'selected' : '' %>>3+ years</option>
+                                <option value="5" <%= query.minExperience === '5' ? 'selected' : '' %>>5+ years</option>
+                                <option value="10" <%= query.minExperience === '10' ? 'selected' : '' %>>10+ years</option>
+                            </select>
+                        </div>
+
+                        <!-- Rating -->
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Minimum Rating</label>
+                            <select class="form-select" name="minRating">
+                                <option value="">Any rating</option>
+                                <option value="4" <%= query.minRating === '4' ? 'selected' : '' %>>4★ & above</option>
+                                <option value="3" <%= query.minRating === '3' ? 'selected' : '' %>>3★ & above</option>
+                                <option value="2" <%= query.minRating === '2' ? 'selected' : '' %>>2★ & above</option>
+                            </select>
+                        </div>
+
+                        <!-- Specialization -->
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Specialization</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="specialization" value="interior" 
+                                       id="interior" <%= (query.specialization && query.specialization.includes('interior')) ? 'checked' : '' %>>
+                                <label class="form-check-label" for="interior">Interior</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="specialization" value="exterior" 
+                                       id="exterior" <%= (query.specialization && query.specialization.includes('exterior')) ? 'checked' : '' %>>
+                                <label class="form-check-label" for="exterior">Exterior</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="specialization" value="commercial" 
+                                       id="commercial" <%= (query.specialization && query.specialization.includes('commercial')) ? 'checked' : '' %>>
+                                <label class="form-check-label" for="commercial">Commercial</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="specialization" value="residential" 
+                                       id="residential" <%= (query.specialization && query.specialization.includes('residential')) ? 'checked' : '' %>>
+                                <label class="form-check-label" for="residential">Residential</label>
+                            </div>
+                        </div>
+
+                        <!-- Price Range -->
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Price per m²</label>
+                            <div class="row">
+                                <div class="col-6">
+                                    <input type="number" class="form-control" placeholder="Min" name="minPrice" 
+                                           value="<%= query.minPrice || '' %>" min="0">
+                                </div>
+                                <div class="col-6">
+                                    <input type="number" class="form-control" placeholder="Max" name="maxPrice" 
+                                           value="<%= query.maxPrice || '' %>" min="0">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-search me-2"></i>Apply Filters
+                            </button>
+                            <a href="/painters" class="btn btn-outline-secondary">Reset</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-lg-9 col-md-8">
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2 class="mb-1">Find Professional Painters</h2>
+                    <p class="text-muted mb-0">
+                        <%= painters.length %> painters found
+                        <% if (Object.keys(query).length > 0) { %>
+                        <span class="badge bg-primary ms-2">Filtered</span>
+                        <% } %>
+                    </p>
+                </div>
+                <div>
+                    <select class="form-select" id="sortSelect">
+                        <option value="rating" <%= query.sort === 'rating' ? 'selected' : '' %>>Highest Rated</option>
+                        <option value="experience" <%= query.sort === 'experience' ? 'selected' : '' %>>Most Experienced</option>
+                        <option value="price_low" <%= query.sort === 'price_low' ? 'selected' : '' %>>Price: Low to High</option>
+                        <option value="price_high" <%= query.sort === 'price_high' ? 'selected' : '' %>>Price: High to Low</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Painters Grid -->
+            <% if (painters.length === 0) { %>
+            <div class="text-center py-5">
+                <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                <h4 class="text-muted">No painters found</h4>
+                <p class="text-muted">Try adjusting your filters or search in a different wilaya</p>
+                <a href="/painters" class="btn btn-primary">Clear Filters</a>
+            </div>
+            <% } else { %>
+            <div class="row">
+                <% painters.forEach(painter => { %>
+                <div class="col-xl-4 col-lg-6 mb-4">
+                    <div class="card h-100 card-hover shadow-sm">
+                        <!-- Painter Header -->
+                        <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-placeholder bg-primary rounded-circle me-3 d-flex align-items-center justify-content-center"
+                                     style="width: 40px; height: 40px; overflow: hidden;">
+                                    <% if (painter.profilePicture && painter.profilePicture.url) { %>
+                                        <img src="<%= painter.profilePicture.url %>" alt="<%= painter.name %>" 
+                                             style="width: 100%; height: 100%; object-fit: cover;">
+                                    <% } else { %>
+                                        <i class="fas fa-brush text-white"></i>
+                                    <% } %>
+                                </div>
+                                <div>
+                                    <h6 class="mb-0"><%= painter.name %></h6>
+                                    <small class="text-muted">
+                                        <i class="fas fa-map-marker-alt me-1"></i>
+                                        <%= painter.location.wilaya %>
+                                    </small>
+                                </div>
+                            </div>
+                            <% if (painter.verification.status === 'verified') { %>
+                            <span class="badge bg-success">
+                                <i class="fas fa-check-circle me-1"></i>Verified
+                            </span>
+                            <% } %>
+                        </div>
+
+                        <div class="card-body">
+                            <!-- Rating and Experience -->
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div>
+                                    <div class="star-rating">
+                                        <% for (let i = 1; i <= 5; i++) { %>
+                                        <i class="fas fa-star <%= i <= painter.rating ? 'text-warning' : 'text-muted' %>"></i>
+                                        <% } %>
+                                        <small class="text-muted ms-1">(<%= painter.rating.toFixed(1) %>)</small>
+                                    </div>
+                                </div>
+                                <div class="text-end">
+                                    <div class="fw-bold text-primary"><%= painter.experience %> years</div>
+                                    <small class="text-muted">Experience</small>
+                                </div>
+                            </div>
+
+                            <!-- Specialization -->
+                            <div class="mb-3">
+                                <small class="text-muted d-block mb-1">Specialization:</small>
+                                <div class="d-flex flex-wrap gap-1">
+                                    <% painter.specialization.forEach(spec => { %>
+                                    <span class="badge bg-light text-dark border"><%= spec %></span>
+                                    <% }); %>
+                                </div>
+                            </div>
+
+                            <!-- Portfolio Preview -->
+                            <% if (painter.portfolio && painter.portfolio.length > 0) { %>
+                            <div class="mb-3">
+                                <small class="text-muted d-block mb-1">Portfolio Preview:</small>
+                                <div class="row g-1">
+                                    <% painter.portfolio.slice(0, 3).forEach((work, index) => { %>
+                                    <div class="col-4">
+                                        <img src="<%= work.flickrUrl %>" 
+                                             class="img-fluid rounded" 
+                                             alt="Portfolio work"
+                                             style="height: 60px; object-fit: cover; width: 100%;"
+                                             onerror="this.src='https://via.placeholder.com/80x60/f8f9fa/6c757d?text=Work'">
+                                    </div>
+                                    <% }); %>
+                                    <% if (painter.portfolio.length > 3) { %>
+                                    <div class="col-4">
+                                        <div class="bg-light rounded d-flex align-items-center justify-content-center"
+                                             style="height: 60px;">
+                                            <small class="text-muted">+<%= painter.portfolio.length - 3 %></small>
+                                        </div>
+                                    </div>
+                                    <% } %>
+                                </div>
+                            </div>
+                            <% } %>
+
+                            <!-- Price and Availability -->
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h5 class="text-primary mb-0"><%= painter.pricePerSqm %> DZD</h5>
+                                    <small class="text-muted">per m²</small>
+                                </div>
+                                <div class="text-end">
+                                    <% if (painter.availability === 'available') { %>
+                                    <span class="badge bg-success">Available</span>
+                                    <% } else if (painter.availability === 'busy') { %>
+                                    <span class="badge bg-warning">Busy</span>
+                                    <% } else { %>
+                                    <span class="badge bg-secondary">Unavailable</span>
+                                    <% } %>
+                                    <div class="text-muted small">
+                                        <%= painter.completedJobs %> jobs
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card-footer bg-transparent">
+                            <div class="d-grid gap-2">
+                                <a href="/painters/<%= painter._id %>" class="btn btn-outline-primary btn-sm">
+                                    <i class="fas fa-eye me-1"></i>View Profile
+                                </a>
+                                <a href="/painters/<%= painter._id %>/order" class="btn btn-primary btn-sm">
+                                    <i class="fas fa-paint-roller me-1"></i>Hire Now
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <% }); %>
+            </div>
+            <% } %>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('sortSelect').addEventListener('change', function() {
+    const url = new URL(window.location);
+    url.searchParams.set('sort', this.value);
+    window.location.href = url.toString();
+});
+
+// Auto-submit form when filters change
+document.querySelectorAll('#searchForm input, #searchForm select').forEach(element => {
+    element.addEventListener('change', function() {
+        // Don't auto-submit for checkboxes to allow multiple selection
+        if (this.type !== 'checkbox') {
+            document.getElementById('searchForm').submit();
+        }
+    });
+});
+</script>
+
+<%- include('../partials/footer') %>
