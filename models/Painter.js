@@ -7,6 +7,12 @@ const painterSchema = new mongoose.Schema({
     required: true,
     trim: true
   },
+  // In your Painter model, add this field:
+profilePicture: {
+  publicId: String, // Cloudinary public_id
+  url: String,      // Cloudinary URL
+  uploadedAt: Date
+},
   phone: {
     type: String,
     required: true,
