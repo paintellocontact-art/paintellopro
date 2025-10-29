@@ -7,28 +7,6 @@ const painterSchema = new mongoose.Schema({
     required: true,
     trim: true
   },
-  // In your Painter model, ensure you have:
-
-// In your Painter model
-portfolio: [{
-    flickrUrl: String,  // The Flickr URL you provide
-    description: String,
-    uploadedByAdmin: {
-        type: Boolean,
-        default: true   // Since only you add photos
-    },
-    uploadedAt: {
-        type: Date,
-        default: Date.now
-    },
-    category: {
-        type: String,
-        enum: ['interior', 'exterior', 'commercial', 'residential'],
-        default: 'interior'
-    },
-    projectSize: String, // e.g., "Large", "Medium", "Small"
-    clientType: String   // e.g., "Residential", "Commercial"
-}],
   phone: {
     type: String,
     required: true,
@@ -77,15 +55,32 @@ portfolio: [{
     verifiedAt: Date,
     adminNotes: String
   },
+  // PORTFOLIO FIELD - SINGLE DEFINITION (REMOVED DUPLICATE)
   portfolio: [{
-    flickrUrl: String,  // Manual Flickr URL
+    flickrUrl: String,
     description: String,
     uploadedByAdmin: {
       type: Boolean,
-      default: false
+      default: true   // Changed to true since only you add photos
     },
-    uploadedAt: Date
+    uploadedAt: {
+      type: Date,
+      default: Date.now
+    },
+    category: {
+      type: String,
+      enum: ['interior', 'exterior', 'commercial', 'residential'],
+      default: 'interior'
+    },
+    projectSize: String,
+    clientType: String
   }],
+  // PROFILE PICTURE FIELD - ADD THIS (MISSING FROM YOUR MODEL)
+  profilePicture: {
+    publicId: String,
+    url: String,
+    uploadedAt: Date
+  },
   rating: {
     type: Number,
     default: 0,
@@ -96,114 +91,90 @@ portfolio: [{
     type: Number,
     default: 0
   },
-  
-  // NEW FIELDS ADDED FOR DASHBOARD FUNCTIONALITY
   loyaltyPoints: {
     type: Number,
     default: 0,
     min: 0
   },
-  
-  // Performance metrics
   responseRate: {
     type: Number,
     default: 0,
     min: 0,
     max: 100
   },
-  
   completionRate: {
     type: Number,
     default: 0,
     min: 0,
     max: 100
   },
-  
-  // Job statistics
   activeJobs: {
     type: Number,
     default: 0
   },
-  
   inProgressJobs: {
     type: Number,
     default: 0
   },
-  
   pendingJobs: {
     type: Number,
     default: 0
   },
-  
-  // Earnings tracking
   totalEarnings: {
     type: Number,
     default: 0
   },
-  
   monthlyEarnings: {
     type: Number,
     default: 0
   },
-  
-  // Additional profile fields
   bio: {
     type: String,
     maxlength: 500
   },
-  
   availability: {
     type: String,
     enum: ['available', 'busy', 'unavailable'],
     default: 'available'
   },
-  // Add to your Painter model
-availabilitySchedule: {
-  scheduleType: {
-    type: String,
-    enum: ['flexible', 'fixed'],
-    default: 'flexible'
+  availabilitySchedule: {
+    scheduleType: {
+      type: String,
+      enum: ['flexible', 'fixed'],
+      default: 'flexible'
+    },
+    workingDays: [String],
+    workingHours: String,
+    maxJobsPerWeek: {
+      type: Number,
+      default: 3
+    },
+    updatedAt: Date
   },
-  workingDays: [String],
-  workingHours: String,
-  maxJobsPerWeek: {
-    type: Number,
-    default: 3
-  },
-  updatedAt: Date
-},
-
-busyPeriods: [{
-  startDate: Date,
-  endDate: Date,
-  reason: String,
-  createdAt: {
-    type: Date,
-    default: Date.now
-  }
-}],
-
-availabilityNotes: String,
-availableFrom: Date,
-  // Social media and contact
+  busyPeriods: [{
+    startDate: Date,
+    endDate: Date,
+    reason: String,
+    createdAt: {
+      type: Date,
+      default: Date.now
+    }
+  }],
+  availabilityNotes: String,
+  availableFrom: Date,
   website: String,
   facebook: String,
   instagram: String,
-  
-  // Business information
   businessName: String,
   teamSize: {
     type: Number,
     default: 1,
     min: 1
   },
-  
-  // Service areas
   serviceAreas: [{
     wilaya: String,
     wilayaNumber: Number
   }],
-
   userType: {
     type: String,
     default: 'painter'
@@ -212,27 +183,25 @@ availableFrom: Date,
     type: Boolean,
     default: true
   },
-  notes: String // For admin internal notes
+  notes: String
 }, {
   timestamps: true
 });
 
+// Keep all your existing methods and virtuals...
 painterSchema.methods.comparePassword = async function(candidatePassword) {
   return await bcrypt.compare(candidatePassword, this.password);
 };
 
-// Virtual for formatted verification status
 painterSchema.virtual('verificationStatus').get(function() {
   return this.verification.status.charAt(0).toUpperCase() + 
          this.verification.status.slice(1);
 });
 
-// Virtual for isVerified (to match EJS template)
 painterSchema.virtual('isVerified').get(function() {
   return this.verification.status === 'verified';
 });
 
-// Virtual for full address
 painterSchema.virtual('fullAddress').get(function() {
   if (this.location.address && this.location.wilaya) {
     return `${this.location.address}, ${this.location.wilaya}`;
@@ -240,7 +209,6 @@ painterSchema.virtual('fullAddress').get(function() {
   return this.location.wilaya || 'Address not specified';
 });
 
-// Virtual for experience level
 painterSchema.virtual('experienceLevel').get(function() {
   if (this.experience >= 10) return 'Expert';
   if (this.experience >= 5) return 'Experienced';
@@ -248,12 +216,10 @@ painterSchema.virtual('experienceLevel').get(function() {
   return 'Beginner';
 });
 
-// Virtual for average rating with stars
 painterSchema.virtual('ratingStars').get(function() {
   return '★'.repeat(Math.floor(this.rating)) + '☆'.repeat(5 - Math.floor(this.rating));
 });
 
-// Method to update performance metrics
 painterSchema.methods.updatePerformanceMetrics = async function() {
   const Order = mongoose.model('Order');
   
@@ -267,11 +233,9 @@ painterSchema.methods.updatePerformanceMetrics = async function() {
     'painter.respondedAt': { $exists: true }
   });
   
-  // Update rates
   this.completionRate = totalJobs > 0 ? Math.round((completedJobs / totalJobs) * 100) : 0;
   this.responseRate = totalJobs > 0 ? Math.round((respondedJobs / totalJobs) * 100) : 0;
   
-  // Update job counts
   this.activeJobs = await Order.countDocuments({
     'painter.id': this._id,
     status: { $in: ['pending', 'accepted', 'in_progress'] }
@@ -292,7 +256,6 @@ painterSchema.methods.updatePerformanceMetrics = async function() {
   await this.save();
 };
 
-// Method to calculate monthly earnings
 painterSchema.methods.calculateMonthlyEarnings = async function() {
   const Order = mongoose.model('Order');
   const thirtyDaysAgo = new Date();
@@ -311,14 +274,12 @@ painterSchema.methods.calculateMonthlyEarnings = async function() {
   await this.save();
 };
 
-// Method to add loyalty points
 painterSchema.methods.addLoyaltyPoints = async function(points, reason) {
   this.loyaltyPoints += points;
   await this.save();
   console.log(`Added ${points} loyalty points to ${this.name} for: ${reason}`);
 };
 
-// Static method to find available painters in a wilaya
 painterSchema.statics.findByWilaya = function(wilayaNumber) {
   return this.find({
     'location.wilayaNumber': wilayaNumber,
@@ -328,11 +289,9 @@ painterSchema.statics.findByWilaya = function(wilayaNumber) {
   }).sort({ rating: -1, completedJobs: -1 });
 };
 
-// Ensure virtual fields are serialized
 painterSchema.set('toJSON', { virtuals: true });
 painterSchema.set('toObject', { virtuals: true });
 
-// Index for better performance
 painterSchema.index({ 'location.wilayaNumber': 1, 'verification.status': 1 });
 painterSchema.index({ rating: -1 });
 painterSchema.index({ 'specialization': 1 });
