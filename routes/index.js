@@ -101,9 +101,19 @@ router.post('/auth/login-painter', async (req, res) => {
       role: 'painter'
     };
 
-    console.log(`✅ Painter logged in: ${painter.name} (${painter.email})`);
-    req.flash('success', 'Welcome back to Paintello Pro!');
-    res.redirect('/painter/dashboard');
+  // Force session save before redirect
+    req.session.save((err) => {
+      if (err) {
+        console.error('Session save error:', err);
+        req.flash('error', 'Login failed due to session error');
+        return res.redirect('/auth/login-painter');
+      }
+      
+      console.log(`✅ Painter logged in: ${painter.name} (${painter.email})`);
+      console.log('🔍 Session after login:', req.session.painter);
+      req.flash('success', 'Welcome back to Paintello Pro!');
+      res.redirect('/painter/dashboard');
+    });
 
   } catch (error) {
     console.error('Painter login error:', error);
@@ -112,7 +122,6 @@ router.post('/auth/login-painter', async (req, res) => {
     res.redirect('/auth/login-painter');
   }
 });
-
 // Client Login Page - FIXED PATH
 router.get('/auth/login', (req, res) => {
   res.render('auth/login', { 
