@@ -5,6 +5,17 @@ const Painter = require('../models/Painter');
 const bcrypt = require('bcrypt');
 const { uploadIdCard, deleteFromCloudinary } = require('../utils/cloudinary');
 
+
+router.get('/login', (req, res) => {
+  res.render('auth/login', { 
+    title: 'Login - Paintello Pro',
+    oldInput: req.flash('oldInput')[0] || {},
+    error: req.flash('error')[0],
+    success: req.flash('success')[0],
+    user: req.user || null,
+    painter: req.session.painter || null
+  });
+});
 // Painter Registration Routes
 router.get('/auth/register-painter', (req, res) => {
   res.render('auth/register-painter', {
@@ -253,6 +264,12 @@ const painterRoutes = require('./painter');
 
 // Mount painter routes
 router.use('/painter', painterRoutes);
+
+// Add this to your routes/index.js
+const clientRoutes = require('./client');
+
+// Mount client routes
+router.use('/client', clientRoutes);
 
 module.exports = router;
     
