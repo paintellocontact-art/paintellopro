@@ -210,7 +210,7 @@ router.get('/painters/:id/order', async (req, res) => {
 });
 
 
-// Handle guest order submission
+// Handle guest order submission - FIXED VERSION
 router.post('/painters/:id/order', async (req, res) => {
   try {
     const { 
@@ -227,7 +227,7 @@ router.post('/painters/:id/order', async (req, res) => {
     } = req.body;
 
     // Basic validation
-    if (!clientName || !clientEmail || !clientPhone || !serviceType || !roomSize) {
+    if (!clientName || !clientEmail || !clientPhone || !serviceType || !roomSize || !wilaya || !address) {
       req.flash('error', 'Please fill all required fields');
       return res.redirect(`/painters/${req.params.id}/order`);
     }
@@ -245,26 +245,35 @@ router.post('/painters/:id/order', async (req, res) => {
       return res.redirect('/painters');
     }
 
-    // Create guest order
+    // Calculate amounts based on room size and painter's rate
+    const area = parseInt(roomSize);
+    const totalAmount = parseInt(budget) || painter.pricePerSqm * area;
+    const commission = Math.round(totalAmount * 0.10); // 10% commission
+
+    // Create guest order with proper field structure
     const newOrder = new Order({
-      painter: {
-        id: painter._id,
-        name: painter.name,
-        email: painter.email,
-        phone: painter.phone
-      },
+      // For guest orders, use guestClient instead of client
       guestClient: {
         name: clientName,
         email: clientEmail,
-        phone: clientPhone,
-        wilaya: wilaya,
-        address: address
+        phone: clientPhone
       },
-      serviceType,
-      roomSize: parseInt(roomSize),
-      budget: parseInt(budget) || painter.pricePerSqm * parseInt(roomSize),
-      description,
+      // Store painter as just the ID, not an object
+      painter: painter._id,
+      // Required location fields
+      wilaya: wilaya,
+      address: address,
+      area: area,
+      // Service details
+      serviceType: serviceType,
+      description: description,
+      // Financial fields
+      totalAmount: totalAmount,
+      commission: commission,
+      budget: totalAmount, // Use the same as totalAmount for guest orders
+      // Dates
       preferredDate: preferredDate ? new Date(preferredDate) : null,
+      // Status and source
       status: 'pending',
       source: 'guest' // Mark as guest order
     });
@@ -277,7 +286,7 @@ router.post('/painters/:id/order', async (req, res) => {
     res.redirect('/painters');
     
   } catch (error) {
-    console.error('Guest order creation error:', error);
+    console.error('❌ Guest order creation error:', error);
     req.flash('error', 'Error creating order: ' + error.message);
     res.redirect(`/painters/${req.params.id}/order`);
   }
