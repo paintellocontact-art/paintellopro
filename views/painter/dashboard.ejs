@@ -10,15 +10,19 @@
                          style="width: 80px; height: 80px;">
                         <i class="fas fa-brush fa-2x text-white"></i>
                     </div>
-                    <h5 class="card-title"><%= user.name %></h5>
+                    <h5 class="card-title"><%= painter.name %></h5>
                     <p class="text-muted small">Professional Painter</p>
-                    <% if (painter.verification.isVerified) { %>
+                    <% if (painter.verification.status === 'verified') { %>
                     <span class="badge bg-success mb-3">
                         <i class="fas fa-check-circle me-1"></i>Verified Pro
                     </span>
-                    <% } else { %>
+                    <% } else if (painter.verification.status === 'pending') { %>
                     <span class="badge bg-warning mb-3">
                         <i class="fas fa-clock me-1"></i>Pending Verification
+                    </span>
+                    <% } else { %>
+                    <span class="badge bg-danger mb-3">
+                        <i class="fas fa-times-circle me-1"></i>Verification Rejected
                     </span>
                     <% } %>
                     <div class="d-grid gap-2">
@@ -78,7 +82,7 @@
                     <i class="fas fa-info-circle fa-2x me-3"></i>
                     <div>
                         <h5 class="alert-heading mb-1">
-                            Welcome to Paintello Pro, <%= user.name %>!
+                            Welcome to Paintello Pro, <%= painter.name %>!
                         </h5>
                         <p class="mb-0">Manage your painting business, accept new jobs, and grow your reputation.</p>
                     </div>
@@ -125,7 +129,7 @@
                                     <i class="fas fa-star fa-2x text-success"></i>
                                 </div>
                                 <div class="flex-grow-1 ms-3">
-                                    <h4 class="mb-0"><%= painter.rating.toFixed(1) %></h4>
+                                    <h4 class="mb-0"><%= (painter.rating || 0).toFixed(1) %></h4>
                                     <span class="text-muted">Your Rating</span>
                                 </div>
                             </div>
@@ -200,7 +204,7 @@
                                                     job.status === 'completed' ? 'success' :
                                                     job.status === 'in_progress' ? 'primary' :
                                                     job.status === 'accepted' ? 'info' :
-                                                    job.status === 'pending' ? 'warning' : 'danger'
+                                                    job.status === 'pending' ? 'warning' : 'secondary'
                                                 %>">
                                                     <%= job.status.replace('_', ' ').toUpperCase() %>
                                                 </span>
@@ -265,9 +269,9 @@
                             <div>
                                 <small class="text-muted d-block mb-1">Client Satisfaction</small>
                                 <div class="progress" style="height: 8px;">
-                                    <div class="progress-bar bg-warning" style="width: <%= (painter.rating / 5 * 100) %>%"></div>
+                                    <div class="progress-bar bg-warning" style="width: <%= ((painter.rating || 0) / 5 * 100) %>%"></div>
                                 </div>
-                                <small class="text-muted"><%= painter.rating.toFixed(1) %>/5.0</small>
+                                <small class="text-muted"><%= (painter.rating || 0).toFixed(1) %>/5.0</small>
                             </div>
                         </div>
                     </div>
