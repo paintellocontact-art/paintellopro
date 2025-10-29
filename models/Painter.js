@@ -170,7 +170,7 @@ busyPeriods: [{
 }],
 
 availabilityNotes: String,
-availableFrom: Date
+availableFrom: Date,
   // Social media and contact
   website: String,
   facebook: String,
