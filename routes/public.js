@@ -210,7 +210,7 @@ router.get('/painters/:id/order', async (req, res) => {
 });
 
 
-// Handle guest order submission - FIXED VERSION
+// Handle guest order submission - UPDATED FOR FIXED SCHEMA
 router.post('/painters/:id/order', async (req, res) => {
   try {
     const { 
@@ -226,8 +226,8 @@ router.post('/painters/:id/order', async (req, res) => {
       preferredDate 
     } = req.body;
 
-    // Basic validation
-    if (!clientName || !clientEmail || !clientPhone || !serviceType || !roomSize || !wilaya || !address) {
+    // Enhanced validation
+    if (!clientName || !clientEmail || !clientPhone || !serviceType || !roomSize || !wilaya || !address || !description) {
       req.flash('error', 'Please fill all required fields');
       return res.redirect(`/painters/${req.params.id}/order`);
     }
@@ -239,43 +239,49 @@ router.post('/painters/:id/order', async (req, res) => {
       return res.redirect(`/painters/${req.params.id}/order`);
     }
 
+    // Validate room size is a number
+    const area = parseInt(roomSize);
+    if (isNaN(area) || area < 1) {
+      req.flash('error', 'Please enter a valid room size');
+      return res.redirect(`/painters/${req.params.id}/order`);
+    }
+
     const painter = await Painter.findById(req.params.id);
     if (!painter || painter.verification.status !== 'verified') {
       req.flash('error', 'Painter not available');
       return res.redirect('/painters');
     }
 
-    // Calculate amounts based on room size and painter's rate
-    const area = parseInt(roomSize);
+    // Calculate financials
     const totalAmount = parseInt(budget) || painter.pricePerSqm * area;
     const commission = Math.round(totalAmount * 0.10); // 10% commission
 
-    // Create guest order with proper field structure
+    // Create guest order with proper structure
     const newOrder = new Order({
-      // For guest orders, use guestClient instead of client
+      // Guest client information
       guestClient: {
         name: clientName,
         email: clientEmail,
         phone: clientPhone
       },
-      // Store painter as just the ID, not an object
+      // Painter reference (just the ID)
       painter: painter._id,
-      // Required location fields
+      // Service details
+      serviceType: serviceType,
+      // Location details
       wilaya: wilaya,
       address: address,
       area: area,
-      // Service details
-      serviceType: serviceType,
+      // Order description
       description: description,
-      // Financial fields
+      // Financials
+      budget: totalAmount,
       totalAmount: totalAmount,
       commission: commission,
-      budget: totalAmount, // Use the same as totalAmount for guest orders
       // Dates
-      preferredDate: preferredDate ? new Date(preferredDate) : null,
-      // Status and source
-      status: 'pending',
-      source: 'guest' // Mark as guest order
+      preferredDate: preferredDate ? new Date(preferredDate) : undefined,
+      // Mark as guest order
+      source: 'guest'
     });
 
     await newOrder.save();
