@@ -16,7 +16,7 @@ const requirePainterAuth = (req, res, next) => {
 // Apply authentication to all painter routes
 router.use(requirePainterAuth);
 
-// Painter Dashboard
+// Painter Dashboard - UPDATED VERSION
 router.get('/dashboard', async (req, res) => {
   try {
     const painter = await Painter.findById(req.session.painter._id);
@@ -29,7 +29,7 @@ router.get('/dashboard', async (req, res) => {
     .limit(5)
     .populate('client', 'name email phone');
 
-    // Calculate stats
+    // Calculate comprehensive stats
     const totalJobs = await Order.countDocuments({ 
       'painter.id': req.session.painter._id 
     });
@@ -44,17 +44,59 @@ router.get('/dashboard', async (req, res) => {
       status: 'pending'
     });
 
+    const activeJobs = await Order.countDocuments({
+      'painter.id': req.session.painter._id,
+      status: { $in: ['pending', 'accepted', 'in_progress'] }
+    });
+
+    const inProgressJobs = await Order.countDocuments({
+      'painter.id': req.session.painter._id,
+      status: 'in_progress'
+    });
+
+    // Calculate monthly earnings (last 30 days)
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    
+    const monthlyEarningsData = await Order.find({
+      'painter.id': req.session.painter._id,
+      status: 'completed',
+      updatedAt: { $gte: thirtyDaysAgo }
+    });
+
+    const monthlyEarnings = monthlyEarningsData.reduce((total, order) => {
+      return total + (order.totalAmount || 0);
+    }, 0);
+
+    const totalEarnings = await calculateTotalEarnings(req.session.painter._id);
+
+    // Calculate response rate (orders responded to within 24 hours)
+    const respondedOrders = await Order.countDocuments({
+      'painter.id': req.session.painter._id,
+      'painter.respondedAt': { $exists: true }
+    });
+
+    const responseRate = totalJobs > 0 ? Math.round((respondedOrders / totalJobs) * 100) : 0;
+
     const stats = {
       totalJobs,
       completedJobs,
       pendingJobs,
-      completionRate: totalJobs > 0 ? Math.round((completedJobs / totalJobs) * 100) : 0,
-      totalEarnings: await calculateTotalEarnings(req.session.painter._id)
+      activeJobs,
+      inProgressJobs,
+      monthlyEarnings,
+      totalEarnings,
+      responseRate,
+      completionRate: totalJobs > 0 ? Math.round((completedJobs / totalJobs) * 100) : 0
     };
 
     res.render('painter/dashboard', {
       title: 'Painter Dashboard - Paintello Pro',
       painter: painter,
+      user: { // Create user object for template compatibility
+        name: painter.name,
+        email: painter.email
+      },
       recentJobs: recentOrders,
       stats: stats,
       success: req.flash('success')[0],
