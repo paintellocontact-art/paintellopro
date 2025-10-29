@@ -1,0 +1,172 @@
+<%- include('../partials/header', { title: title }) %>
+
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-paint-roller me-2"></i>Hire <%= painter.name %>
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <!-- Painter Summary -->
+                    <div class="alert alert-info">
+                        <div class="d-flex align-items-center">
+                            <div class="flex-shrink-0">
+                                <% if (painter.profilePicture && painter.profilePicture.url) { %>
+                                    <img src="<%= painter.profilePicture.url %>" alt="<%= painter.name %>" 
+                                         style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover;">
+                                <% } else { %>
+                                    <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center"
+                                         style="width: 60px; height: 60px;">
+                                        <i class="fas fa-brush fa-2x text-white"></i>
+                                    </div>
+                                <% } %>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <h6 class="mb-1"><%= painter.name %></h6>
+                                <p class="mb-1 text-muted">
+                                    <i class="fas fa-map-marker-alt me-1"></i><%= painter.location.wilaya %>
+                                    • <%= painter.experience %> years experience
+                                    • <%= painter.rating.toFixed(1) %> ★
+                                </p>
+                                <p class="mb-0">
+                                    <strong>Price: <%= painter.pricePerSqm %> DZD/m²</strong>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <form action="/painters/<%= painter._id %>/order" method="POST">
+                        <!-- Client Information -->
+                        <h5 class="mb-3 text-primary">
+                            <i class="fas fa-user me-2"></i>Your Information
+                        </h5>
+                        <div class="row mb-4">
+                            <div class="col-md-6 mb-3">
+                                <label for="clientName" class="form-label">Full Name *</label>
+                                <input type="text" class="form-control" id="clientName" name="clientName" 
+                                       required placeholder="Enter your full name">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="clientEmail" class="form-label">Email Address *</label>
+                                <input type="email" class="form-control" id="clientEmail" name="clientEmail" 
+                                       required placeholder="your@email.com">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="clientPhone" class="form-label">Phone Number *</label>
+                                <input type="tel" class="form-control" id="clientPhone" name="clientPhone" 
+                                       required placeholder="05 XX XX XX XX">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="wilaya" class="form-label">Wilaya *</label>
+                                <select class="form-select" id="wilaya" name="wilaya" required>
+                                    <option value="">Select Wilaya</option>
+                                    <% wilayas.forEach(w => { %>
+                                    <option value="<%= w.name %>"><%= w.name %></option>
+                                    <% }); %>
+                                </select>
+                            </div>
+                            <div class="col-12 mb-3">
+                                <label for="address" class="form-label">Full Address *</label>
+                                <textarea class="form-control" id="address" name="address" 
+                                          rows="2" required placeholder="Street address, commune..."></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Project Details -->
+                        <h5 class="mb-3 text-primary">
+                            <i class="fas fa-clipboard-list me-2"></i>Project Details
+                        </h5>
+                        <div class="row mb-4">
+                            <div class="col-md-6 mb-3">
+                                <label for="serviceType" class="form-label">Service Type *</label>
+                                <select class="form-select" id="serviceType" name="serviceType" required>
+                                    <option value="">Select service</option>
+                                    <option value="interior">Interior Painting</option>
+                                    <option value="exterior">Exterior Painting</option>
+                                    <option value="commercial">Commercial Painting</option>
+                                    <option value="residential">Residential Painting</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="roomSize" class="form-label">Room Size (m²) *</label>
+                                <input type="number" class="form-control" id="roomSize" name="roomSize" 
+                                       required min="1" placeholder="e.g., 50">
+                                <div class="form-text">Estimated area to be painted</div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="budget" class="form-label">Budget (DZD)</label>
+                                <input type="number" class="form-control" id="budget" name="budget" 
+                                       min="0" placeholder="Optional - will be calculated">
+                                <div class="form-text">Leave empty for automatic calculation</div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="preferredDate" class="form-label">Preferred Start Date</label>
+                                <input type="date" class="form-control" id="preferredDate" name="preferredDate"
+                                       min="<%= new Date().toISOString().split('T')[0] %>">
+                            </div>
+                            <div class="col-12 mb-3">
+                                <label for="description" class="form-label">Project Description</label>
+                                <textarea class="form-control" id="description" name="description" 
+                                          rows="4" placeholder="Describe your painting project in detail..."></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Estimated Cost -->
+                        <div class="alert alert-warning">
+                            <h6 class="alert-heading">
+                                <i class="fas fa-calculator me-2"></i>Estimated Cost
+                            </h6>
+                            <p class="mb-1">Based on <span id="estimatedSize">0</span> m² at <%= painter.pricePerSqm %> DZD/m²</p>
+                            <h5 class="mb-0 text-primary" id="estimatedCost">0 DZD</h5>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-paper-plane me-2"></i>Submit Order
+                            </button>
+                        </div>
+                        
+                        <div class="text-center mt-3">
+                            <small class="text-muted">
+                                By submitting, you agree to our terms of service. 
+                                <%= painter.name %> will contact you within 24 hours.
+                            </small>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Calculate estimated cost
+document.getElementById('roomSize').addEventListener('input', function() {
+    const size = parseInt(this.value) || 0;
+    const pricePerSqm = <%= painter.pricePerSqm %>;
+    const estimatedCost = size * pricePerSqm;
+    
+    document.getElementById('estimatedSize').textContent = size;
+    document.getElementById('estimatedCost').textContent = estimatedCost.toLocaleString() + ' DZD';
+    
+    // Auto-fill budget if empty
+    const budgetField = document.getElementById('budget');
+    if (!budgetField.value && size > 0) {
+        budgetField.value = estimatedCost;
+    }
+});
+
+// Auto-fill budget based on room size
+document.getElementById('budget').addEventListener('focus', function() {
+    const size = parseInt(document.getElementById('roomSize').value) || 0;
+    const pricePerSqm = <%= painter.pricePerSqm %>;
+    if (size > 0 && !this.value) {
+        this.value = size * pricePerSqm;
+    }
+});
+</script>
+
+<%- include('../partials/footer') %>
