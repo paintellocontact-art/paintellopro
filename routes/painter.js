@@ -127,17 +127,16 @@ router.get('/profile', async (req, res) => {
 const { uploadProfilePicture, deleteFromCloudinary, getCloudinaryStatus } = require('../utils/cloudinary');
 
 // Update Painter Profile with Profile Picture
+// In your painter.js route - UPDATED VERSION
 router.post('/profile', uploadProfilePicture.single('profilePicture'), async (req, res) => {
   try {
     console.log('🔍 Profile update request received');
     
-    // Check Cloudinary status
     const cloudinaryStatus = getCloudinaryStatus();
     const isCloudinaryConfigured = cloudinaryStatus.configured;
     
     console.log('   File uploaded:', !!req.file);
     console.log('   Cloudinary configured:', isCloudinaryConfigured);
-    console.log('   Request body fields:', Object.keys(req.body));
 
     const { name, phone, experience, pricePerSqm, specialization, wilaya, address, bio, availability, businessName, teamSize } = req.body;
     
@@ -158,8 +157,7 @@ router.post('/profile', uploadProfilePicture.single('profilePicture'), async (re
     // Handle profile picture upload
     if (req.file && isCloudinaryConfigured) {
       console.log('🔄 Processing profile picture upload...');
-      console.log('   Uploaded file:', {
-        originalname: req.file.originalname,
+      console.log('   Uploaded file details:', {
         filename: req.file.filename,
         path: req.file.path,
         size: req.file.size
@@ -170,25 +168,20 @@ router.post('/profile', uploadProfilePicture.single('profilePicture'), async (re
       if (currentPainter.profilePicture && currentPainter.profilePicture.publicId) {
         try {
           await deleteFromCloudinary(currentPainter.profilePicture.publicId);
-          console.log('✅ Old profile picture deleted');
+          console.log('✅ Old profile picture deleted from Cloudinary');
         } catch (deleteError) {
           console.error('❌ Error deleting old profile picture:', deleteError);
         }
       }
 
-      // Add new profile picture data
+      // Add new profile picture data - FIXED: Use proper Cloudinary response
       updateData.profilePicture = {
-        publicId: req.file.filename,
-        url: req.file.path,
+        publicId: req.file.filename, // This should be the Cloudinary public_id
+        url: req.file.path, // This should be the Cloudinary URL
         uploadedAt: new Date()
       };
       
-      console.log('✅ New profile picture data saved');
-    } else if (req.file && !isCloudinaryConfigured) {
-      console.log('⚠️ File uploaded but Cloudinary not configured');
-      req.flash('error', 'File upload service not available. Please try again later.');
-    } else {
-      console.log('ℹ️ No file uploaded or Cloudinary not configured');
+      console.log('✅ New profile picture data:', updateData.profilePicture);
     }
 
     const updatedPainter = await Painter.findByIdAndUpdate(
@@ -197,10 +190,19 @@ router.post('/profile', uploadProfilePicture.single('profilePicture'), async (re
       { new: true, runValidators: true }
     );
 
-    // Update session with new data
-    req.session.painter.name = updatedPainter.name;
-    
+    // CRITICAL: Update session with ALL painter data, not just name
+    req.session.painter = {
+      _id: updatedPainter._id,
+      name: updatedPainter.name,
+      email: updatedPainter.email,
+      phone: updatedPainter.phone,
+      role: 'painter',
+      profilePicture: updatedPainter.profilePicture // Add profile picture to session
+    };
+
     console.log('✅ Profile updated successfully');
+    console.log('   Profile picture in DB:', updatedPainter.profilePicture);
+    
     req.flash('success', 'Profile updated successfully');
     res.redirect('/painter/profile');
     
@@ -208,13 +210,10 @@ router.post('/profile', uploadProfilePicture.single('profilePicture'), async (re
     console.error('❌ Profile update error:', error);
     
     // Delete uploaded file if there was an error
-    if (req.file && req.file.filename) {
+    if (req.file && req.file.filename && isCloudinaryConfigured) {
       try {
-        const cloudinaryStatus = getCloudinaryStatus();
-        if (cloudinaryStatus.configured) {
-          await deleteFromCloudinary(req.file.filename);
-          console.log('✅ Uploaded file deleted due to error');
-        }
+        await deleteFromCloudinary(req.file.filename);
+        console.log('✅ Uploaded file deleted due to error');
       } catch (deleteError) {
         console.error('❌ Error deleting uploaded file:', deleteError);
       }
