@@ -9,12 +9,26 @@ const painterSchema = new mongoose.Schema({
   },
   // In your Painter model, ensure you have:
 
-  // In your Painter model, add this field:
-profilePicture: {
-  publicId: String, // Cloudinary public_id
-  url: String,      // Cloudinary URL
-  uploadedAt: Date
-},
+// In your Painter model
+portfolio: [{
+    flickrUrl: String,  // The Flickr URL you provide
+    description: String,
+    uploadedByAdmin: {
+        type: Boolean,
+        default: true   // Since only you add photos
+    },
+    uploadedAt: {
+        type: Date,
+        default: Date.now
+    },
+    category: {
+        type: String,
+        enum: ['interior', 'exterior', 'commercial', 'residential'],
+        default: 'interior'
+    },
+    projectSize: String, // e.g., "Large", "Medium", "Small"
+    clientType: String   // e.g., "Residential", "Commercial"
+}],
   phone: {
     type: String,
     required: true,
