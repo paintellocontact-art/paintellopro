@@ -81,7 +81,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Routes
 const indexRoutes = require('./routes/index');
 app.use('/', indexRoutes);
-
+// Mount public routes
+const publicRoutes = require('./routes/public');
+app.use('/', publicRoutes);
 // Health check endpoint
 app.get('/health', async (req, res) => {
   const dbStatus = mongoose.connection.readyState === 1 ? 'Connected' : 'Disconnected';
