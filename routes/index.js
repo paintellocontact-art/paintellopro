@@ -48,6 +48,14 @@ router.post('/auth/register-painter', uploadIdCard.single('idCard'), async (req,
       return res.redirect('/auth/register-painter');
     }
 
+    // Validate wilaya number
+    const wilayaNum = parseInt(wilayaNumber);
+    if (!wilayaNum || isNaN(wilayaNum) || wilayaNum < 1 || wilayaNum > 48) {
+      req.flash('error', 'Please select a valid wilaya');
+      req.flash('oldInput', formData);
+      return res.redirect('/auth/register-painter');
+    }
+
     // Check if ID card was uploaded
     if (!req.file) {
       req.flash('error', 'ID card photo is required');
@@ -83,7 +91,7 @@ router.post('/auth/register-painter', uploadIdCard.single('idCard'), async (req,
       specialization: Array.isArray(specialization) ? specialization : [specialization],
       location: {
         wilaya,
-        wilayaNumber: parseInt(wilayaNumber),
+        wilayaNumber: wilayaNum, // Use the validated number
         address
       },
       verification: {
@@ -100,6 +108,7 @@ router.post('/auth/register-painter', uploadIdCard.single('idCard'), async (req,
 
     await newPainter.save();
 
+    console.log(`✅ New painter registered: ${name} (${email}) from ${wilaya}`);
     req.flash('success', 'Your application has been submitted successfully! We will review your ID card and contact you soon.');
     res.redirect('/auth/register-painter');
 
@@ -115,7 +124,14 @@ router.post('/auth/register-painter', uploadIdCard.single('idCard'), async (req,
       }
     }
 
-    req.flash('error', 'An error occurred during registration. Please try again.');
+    // Handle specific validation errors
+    if (error.name === 'ValidationError') {
+      const messages = Object.values(error.errors).map(err => err.message);
+      req.flash('error', messages.join(', '));
+    } else {
+      req.flash('error', 'An error occurred during registration. Please try again.');
+    }
+    
     req.flash('oldInput', req.body);
     res.redirect('/auth/register-painter');
   }
