@@ -209,70 +209,134 @@
             <!-- Recent Jobs & Quick Actions -->
             <div class="row">
                 <!-- Recent Jobs -->
-                <div class="col-lg-8 mb-4">
-                    <div class="card shadow-sm">
-                        <div class="card-header bg-light d-flex justify-content-between align-items-center">
-                            <h5 class="mb-0">Recent Job Requests</h5>
-                            <a href="/painter/orders" class="btn btn-sm btn-outline-primary">View All</a>
-                        </div>
-                        <div class="card-body">
-                            <% if (recentJobs.length === 0) { %>
-                            <div class="text-center py-4">
-                                <i class="fas fa-clipboard-list fa-3x text-muted mb-3"></i>
-                                <h5 class="text-muted">No job requests yet</h5>
-                                <p class="text-muted">Your profile will be shown to clients in your area</p>
-                            </div>
-                            <% } else { %>
-                            <div class="table-responsive">
-                                <table class="table">
-                                    <thead>
-                                        <tr>
-                                            <th>Client</th>
-                                            <th>Service</th>
-                                            <th>Location</th>
-                                            <th>Budget</th>
-                                            <th>Status</th>
-                                            <th>Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <% recentJobs.forEach(job => { %>
-                                        <tr>
-                                            <td>
-                                                <div class="d-flex align-items-center">
-                                                    <div class="avatar-placeholder bg-secondary rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                                         style="width: 30px; height: 30px;">
-                                                        <i class="fas fa-user text-white small"></i>
-                                                    </div>
-                                                    <%= job.client.name %>
-                                                </div>
-                                            </td>
-                                            <td><%= job.serviceType %></td>
-                                            <td>
-                                                <small><%= job.wilaya %></small>
-                                            </td>
-                                            <td><%= job.budget %> DZD</td>
-                                            <td>
-                                                <span class="badge bg-<%= 
-                                                    job.status === 'completed' ? 'success' :
-                                                    job.status === 'in_progress' ? 'primary' :
-                                                    job.status === 'accepted' ? 'info' :
-                                                    job.status === 'pending' ? 'warning' : 'secondary'
-                                                %>">
-                                                    <%= job.status.replace('_', ' ').toUpperCase() %>
-                                                </span>
-                                            </td>
-                                            <td>
-                                                <a href="/painter/orders/<%= job._id %>" class="btn btn-sm btn-outline-primary">View</a>
-                                            </td>
-                                        </tr>
-                                        <% }); %>
-                                    </tbody>
-                                </table>
-                            </div>
-                            <% } %>
-                        </div>
-                    </div>
+              <!-- Recent Jobs -->
+<div class="col-lg-8 mb-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-light d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Recent Job Requests</h5>
+            <a href="/painter/orders" class="btn btn-sm btn-outline-primary">View All</a>
+        </div>
+        <div class="card-body">
+            <% if (recentJobs.length === 0) { %>
+            <div class="text-center py-4">
+                <i class="fas fa-clipboard-list fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted">No job requests yet</h5>
+                <p class="text-muted">Your profile will be shown to clients in your area</p>
+            </div>
+            <% } else { %>
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Client</th>
+                            <th>Type</th>
+                            <th>Service</th>
+                            <th>Location</th>
+                            <th>Budget</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% recentJobs.forEach(job => { %>
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar-placeholder bg-secondary rounded-circle me-2 d-flex align-items-center justify-content-center"
+                                         style="width: 30px; height: 30px;">
+                                        <i class="fas fa-user text-white small"></i>
+                                    </div>
+                                    <div>
+                                        <!-- Show client name without contact info -->
+                                        <div class="fw-semibold">
+                                            <% if (job.source === 'guest') { %>
+                                                <%= job.guestClient.name %>
+                                                <span class="badge bg-info ms-1" title="Guest Client">G</span>
+                                            <% } else { %>
+                                                <%= job.client.name %>
+                                            <% } %>
+                                        </div>
+                                        <small class="text-muted">
+                                            <% if (job.source === 'guest') { %>
+                                                Guest Order
+                                            <% } else { %>
+                                                Registered Client
+                                            <% } %>
+                                        </small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge bg-<%= job.source === 'guest' ? 'info' : 'primary' %>">
+                                    <%= job.source === 'guest' ? 'Guest' : 'User' %>
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge bg-light text-dark border">
+                                    <%= job.serviceType %>
+                                </span>
+                            </td>
+                            <td>
+                                <small>
+                                    <i class="fas fa-map-marker-alt text-danger me-1"></i>
+                                    <%= job.wilaya %>
+                                </small>
+                                <% if (job.area) { %>
+                                <br>
+                                <small class="text-muted">
+                                    <i class="fas fa-ruler-combined me-1"></i>
+                                    <%= job.area %> m²
+                                </small>
+                                <% } %>
+                            </td>
+                            <td>
+                                <span class="fw-bold text-success"><%= job.budget %> DZD</span>
+                                <% if (job.totalAmount) { %>
+                                <br>
+                                <small class="text-muted">Total: <%= job.totalAmount %> DZD</small>
+                                <% } %>
+                            </td>
+                            <td>
+                                <span class="badge bg-<%= 
+                                    job.status === 'completed' ? 'success' :
+                                    job.status === 'in_progress' ? 'primary' :
+                                    job.status === 'accepted' ? 'info' :
+                                    job.status === 'pending' ? 'warning' : 'secondary'
+                                %> text-uppercase">
+                                    <%= job.status.replace('_', ' ') %>
+                                </span>
+                                <% if (job.preferredDate) { %>
+                                <br>
+                                <small class="text-muted">
+                                    <i class="fas fa-calendar me-1"></i>
+                                    <%= new Date(job.preferredDate).toLocaleDateString() %>
+                                </small>
+                                <% } %>
+                            </td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    <a href="/painter/orders/<%= job._id %>" class="btn btn-outline-primary" title="View Details">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <% if (job.status === 'pending') { %>
+                                    <a href="/painter/orders/<%= job._id %>/accept" class="btn btn-outline-success" title="Accept Order">
+                                        <i class="fas fa-check"></i>
+                                    </a>
+                                    <a href="/painter/orders/<%= job._id %>/decline" class="btn btn-outline-danger" title="Decline Order">
+                                        <i class="fas fa-times"></i>
+                                    </a>
+                                    <% } %>
+                                </div>
+                            </td>
+                        </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            </div>
+            <% } %>
+        </div>
+    </div>
+</div>
       
 <!-- Portfolio Showcase -->
 <div class="row mt-4">
