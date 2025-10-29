@@ -225,31 +225,26 @@ router.post('/profile', uploadProfilePicture.single('profilePicture'), async (re
   }
 });
 
-// Remove Profile Picture
-router.post('/profile/remove-picture', async (req, res) => {
-  try {
-    const painter = await Painter.findById(req.session.painter._id);
-    
-    if (painter.profilePicture && painter.profilePicture.publicId) {
-      // Delete from Cloudinary
-      await deleteFromCloudinary(painter.profilePicture.publicId);
-      
-      // Remove from database
-      painter.profilePicture = undefined;
-      await painter.save();
-      
-      req.flash('success', 'Profile picture removed successfully');
-    } else {
-      req.flash('error', 'No profile picture to remove');
+// Painter Portfolio Management - READ ONLY
+router.get('/portfolio', async (req, res) => {
+    try {
+        const painter = await Painter.findById(req.session.painter._id);
+        
+        res.render('painter/portfolio', {
+            title: 'Portfolio - Paintello Pro',
+            painter: painter,
+            success: req.flash('success')[0],
+            error: req.flash('error')[0]
+        });
+    } catch (error) {
+        console.error('Portfolio error:', error);
+        req.flash('error', 'Error loading portfolio');
+        res.redirect('/painter/dashboard');
     }
-    
-    res.redirect('/painter/profile');
-  } catch (error) {
-    console.error('Remove profile picture error:', error);
-    req.flash('error', 'Error removing profile picture');
-    res.redirect('/painter/profile');
-  }
 });
+
+// Remove the POST route for portfolio addition since painters can't add directly
+// You'll manage portfolio additions through admin routes or direct MongoDB updates
 // Painter Orders/Jobs
 router.get('/orders', async (req, res) => {
   try {
