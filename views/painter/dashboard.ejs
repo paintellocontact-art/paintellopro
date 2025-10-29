@@ -19,6 +19,41 @@
         <i class="fas fa-brush fa-2x text-white"></i>
     <% } %>
 </div>
+<!-- Availability Status -->
+<div class="card shadow-sm mt-4 border-info">
+    <div class="card-header bg-info text-white">
+        <h6 class="mb-0"><i class="fas fa-calendar-check me-2"></i>Availability Status</h6>
+    </div>
+    <div class="card-body text-center">
+        <% if (painter.availability === 'available') { %>
+            <span class="badge bg-success fs-6 p-2 mb-2">
+                <i class="fas fa-check-circle me-1"></i>Available
+            </span>
+            <p class="small mb-2 text-muted">Ready for new projects</p>
+        <% } else if (painter.availability === 'busy') { %>
+            <span class="badge bg-warning fs-6 p-2 mb-2">
+                <i class="fas fa-clock me-1"></i>Busy
+            </span>
+            <p class="small mb-2 text-muted">Limited availability</p>
+        <% } else { %>
+            <span class="badge bg-danger fs-6 p-2 mb-2">
+                <i class="fas fa-times-circle me-1"></i>Unavailable
+            </span>
+            <p class="small mb-2 text-muted">Not taking new work</p>
+        <% } %>
+        
+        <% if (painter.availableFrom && painter.availability === 'unavailable') { %>
+            <p class="small text-muted mb-1">
+                <i class="fas fa-calendar me-1"></i>
+                Available from: <%= new Date(painter.availableFrom).toLocaleDateString() %>
+            </p>
+        <% } %>
+        
+        <a href="/painter/availability" class="btn btn-outline-info btn-sm">
+            <i class="fas fa-edit me-1"></i>Manage
+        </a>
+    </div>
+</div>
                     <h5 class="card-title"><%= painter.name %></h5>
                     <p class="text-muted small">Professional Painter</p>
                     <% if (painter.verification.status === 'verified') { %>
