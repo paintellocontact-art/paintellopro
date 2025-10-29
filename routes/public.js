@@ -84,19 +84,46 @@ router.get('/painters', async (req, res) => {
 });
 
 // Public painter profile page
+// Public painter profile page - UPDATED VERSION
 router.get('/painters/:id', async (req, res) => {
   try {
-    const painter = await Painter.findById(req.params.id)
-      .select('name experience pricePerSqm specialization rating completedJobs profilePicture location portfolio bio verification availability teamSize businessName');
-
-    if (!painter || painter.verification.status !== 'verified' || !painter.isActive) {
+    console.log('🔍 Loading painter profile for ID:', req.params.id);
+    
+    // First, check if the ID is valid
+    if (!req.params.id || req.params.id.length !== 24) {
+      console.log('❌ Invalid painter ID format');
       return res.status(404).render('error', {
         title: 'Painter Not Found',
-        message: 'The painter you are looking for is not available.'
+        message: 'Invalid painter ID format.'
       });
     }
 
-    // Get painter's recent completed jobs (public info only)
+    // Find the painter without verification check first
+    const painter = await Painter.findById(req.params.id)
+      .select('name experience pricePerSqm specialization rating completedJobs profilePicture location portfolio bio verification availability teamSize businessName');
+
+    console.log('✅ Database query result:', painter ? `Found: ${painter.name}` : 'Not found');
+
+    if (!painter) {
+      console.log('❌ Painter not found in database');
+      return res.status(404).render('error', {
+        title: 'Painter Not Found',
+        message: 'The painter you are looking for does not exist.'
+      });
+    }
+
+    // Check verification status but don't block access
+    if (painter.verification.status !== 'verified') {
+      console.log('⚠️ Painter not verified:', painter.verification.status);
+      // Still show the profile but with a warning
+    }
+
+    if (!painter.isActive) {
+      console.log('⚠️ Painter not active');
+      // Still show the profile but with a warning
+    }
+
+    // Get painter's recent completed jobs
     const recentJobs = await Order.find({
       'painter.id': painter._id,
       status: 'completed'
@@ -106,21 +133,34 @@ router.get('/painters/:id', async (req, res) => {
     .select('serviceType budget completedAt')
     .populate('client', 'name');
 
+    console.log('🎨 Rendering painter profile for:', painter.name);
+
     res.render('public/painter-profile', {
       title: `${painter.name} - Professional Painter - Paintello Pro`,
       painter: painter,
       recentJobs: recentJobs,
-      user: req.session.user || null
+      user: req.session.user || null,
+      isVerified: painter.verification.status === 'verified',
+      isActive: painter.isActive
     });
+
   } catch (error) {
-    console.error('Public painter profile error:', error);
+    console.error('❌ Public painter profile error:', error);
+    
+    // Check if it's a CastError (invalid ID format)
+    if (error.name === 'CastError') {
+      return res.status(404).render('error', {
+        title: 'Invalid Painter ID',
+        message: 'The painter ID format is invalid.'
+      });
+    }
+    
     res.status(500).render('error', {
       title: 'Error',
-      message: 'Error loading painter profile.'
+      message: 'An error occurred while loading the painter profile.'
     });
   }
 });
-
 // Guest order creation page
 router.get('/painters/:id/order', async (req, res) => {
   try {
