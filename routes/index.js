@@ -4,7 +4,91 @@ const wilayas = require('../utils/wilayas');
 const Painter = require('../models/Painter');
 const bcrypt = require('bcrypt');
 const { uploadIdCard, deleteFromCloudinary } = require('../utils/cloudinary');
+// Painter Login Page
+router.get('/login-painter', (req, res) => {
+  // If painter is already logged in, redirect to painter dashboard
+  if (req.session.painter) {
+    return res.redirect('/painter/dashboard');
+  }
+  if (req.session.user) {
+    return res.redirect('/client/dashboard');
+  }
 
+  res.render('auth/login-painter', { 
+    title: 'Painter Login - Paintello Pro',
+    oldInput: req.flash('oldInput')[0] || {},
+    error: req.flash('error')[0],
+    success: req.flash('success')[0],
+    user: null,
+    painter: null
+  });
+});
+
+// Painter Login Handler
+router.post('/login-painter', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    // Store form data in case of error
+    const formData = { email };
+
+    // Basic validation
+    if (!email || !password) {
+      req.flash('error', 'Email and password are required');
+      req.flash('oldInput', formData);
+      return res.redirect('/auth/login-painter');
+    }
+
+    // Find painter by email
+    const painter = await Painter.findOne({ email });
+    if (!painter) {
+      req.flash('error', 'Invalid email or password');
+      req.flash('oldInput', formData);
+      return res.redirect('/auth/login-painter');
+    }
+
+    // Check password
+    const isMatch = await painter.comparePassword(password);
+    if (!isMatch) {
+      req.flash('error', 'Invalid email or password');
+      req.flash('oldInput', formData);
+      return res.redirect('/auth/login-painter');
+    }
+
+    // Check if painter is verified
+    if (painter.verification.status !== 'verified') {
+      req.flash('error', 'Your account is pending verification. We will contact you once verified.');
+      req.flash('oldInput', formData);
+      return res.redirect('/auth/login-painter');
+    }
+
+    // Check if painter is active
+    if (!painter.isActive) {
+      req.flash('error', 'Your account has been deactivated. Please contact support.');
+      req.flash('oldInput', formData);
+      return res.redirect('/auth/login-painter');
+    }
+
+    // Set painter session
+    req.session.painter = {
+      _id: painter._id,
+      name: painter.name,
+      email: painter.email,
+      phone: painter.phone,
+      role: 'painter'
+    };
+
+    console.log(`✅ Painter logged in: ${painter.name} (${painter.email})`);
+    req.flash('success', 'Welcome back to Paintello Pro!');
+    res.redirect('/painter/dashboard');
+
+  } catch (error) {
+    console.error('Painter login error:', error);
+    req.flash('error', 'An error occurred during login');
+    req.flash('oldInput', req.body);
+    res.redirect('/auth/login-painter');
+  }
+});
 
 router.get('/login', (req, res) => {
   res.render('auth/login', { 
