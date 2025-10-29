@@ -1,3 +1,14 @@
+// server-setup.js - Add this at the very top of your main server file
+const originalEmit = process.emit;
+process.emit = function (name, data, ...args) {
+  if (name === 'warning' && 
+      data.name === 'DeprecationWarning' && 
+      data.message.includes('util.isArray')) {
+    return false; // Suppress this specific warning
+  }
+  return originalEmit.apply(process, arguments);
+};
+
 const express = require('express');
 const mongoose = require('mongoose');
 const session = require('express-session');
