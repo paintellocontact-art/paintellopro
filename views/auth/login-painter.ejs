@@ -1,0 +1,67 @@
+<%- include('../partials/header', { title: 'Painter Login - Paintello Pro' }) %>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-4">
+            <div class="card shadow-lg border-0">
+                <div class="card-body p-5">
+                    <div class="text-center mb-4">
+                        <h2 class="card-title">
+                            <i class="fas fa-brush text-primary me-2"></i>
+                            Painter Login
+                        </h2>
+                        <p class="text-muted">Sign in to your painter account</p>
+                    </div>
+
+                    <% if (error) { %>
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <%= error %>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    <% } %>
+
+                    <% if (success) { %>
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="fas fa-check-circle me-2"></i>
+                            <%= success %>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    <% } %>
+
+                    <form action="/auth/login-painter" method="POST">
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email Address</label>
+                            <input type="email" class="form-control" id="email" name="email" 
+                                   value="<%= oldInput.email || '' %>" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="password" name="password" required>
+                        </div>
+
+                        <div class="d-grid mb-3">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-sign-in-alt me-2"></i>Sign In as Painter
+                            </button>
+                        </div>
+
+                        <div class="text-center">
+                            <p class="mb-2">
+                                Don't have a painter account? 
+                                <a href="/auth/register-painter" class="text-decoration-none">Join as Painter</a>
+                            </p>
+                            <p class="mb-0">
+                                Are you a client? 
+                                <a href="/auth/login" class="text-decoration-none">Login as Client</a>
+                            </p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('../partials/footer') %>
