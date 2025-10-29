@@ -161,29 +161,40 @@ router.get('/painters/:id', async (req, res) => {
     });
   }
 });
-// Guest order creation page
+// Guest order creation page - UPDATED VERSION
 router.get('/painters/:id/order', async (req, res) => {
   try {
+    console.log('🔍 Loading guest order page for painter:', req.params.id);
+    
     const painter = await Painter.findById(req.params.id)
-      .select('name pricePerSqm specialization location');
+      .select('name pricePerSqm specialization location profilePicture experience rating verification isActive availability');
 
-    if (!painter || painter.verification.status !== 'verified') {
-      req.flash('error', 'Painter not available');
+    if (!painter) {
+      console.log('❌ Painter not found');
+      req.flash('error', 'Painter not found');
       return res.redirect('/painters');
     }
 
-    res.render('public/guest-order', {
-      title: `Hire ${painter.name} - Paintello Pro`,
-      painter: painter,
-      wilayas: wilayas,
-      user: req.session.user || null
-    });
-  } catch (error) {
-    console.error('Guest order page error:', error);
-    req.flash('error', 'Error loading order page');
-    res.redirect('/painters');
-  }
-});
+    // Check if painter can accept orders
+    if (painter.verification.status !== 'verified') {
+      console.log('❌ Painter not verified:', painter.verification.status);
+      req.flash('error', 'This painter is not yet verified and cannot accept orders.');
+      return res.redirect(`/painters/${painter._id}`);
+    }
+
+    if (!painter.isActive) {
+      console.log('❌ Painter not active');
+      req.flash('error', 'This painter account is currently inactive and cannot accept orders.');
+      return res.redirect(`/painters/${painter._id}`);
+    }
+
+    if (painter.availability !== 'available') {
+      console.log('❌ Painter not available:', painter.availability);
+      req.flash('warning', 'This painter is currently not available for new projects.');
+      // Still allow ordering but show warning
+    }
+
+    console.log('✅ Loading guest order form for:', painter.name);
 
     res.render('public/guest-order', {
       title: `Hire ${painter.name} - Paintello Pro`,
@@ -192,11 +203,12 @@ router.get('/painters/:id/order', async (req, res) => {
       user: req.session.user || null
     });
   } catch (error) {
-    console.error('Guest order page error:', error);
+    console.error('❌ Guest order page error:', error);
     req.flash('error', 'Error loading order page');
     res.redirect('/painters');
   }
 });
+
 
 // Handle guest order submission
 router.post('/painters/:id/order', async (req, res) => {
