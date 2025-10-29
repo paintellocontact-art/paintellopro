@@ -89,31 +89,43 @@
             </div>
 
             <!-- Quick Stats -->
-            <div class="card shadow-sm mt-4">
-                <div class="card-header bg-light">
-                    <h6 class="mb-0">Business Overview</h6>
-                </div>
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <span class="text-muted">Total Jobs</span>
-                        <span class="fw-bold text-primary"><%= stats.totalJobs || 0 %></span>
-                    </div>
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <span class="text-muted">Active Jobs</span>
-                        <span class="fw-bold text-warning"><%= stats.activeJobs || 0 %></span>
-                    </div>
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <span class="text-muted">Completed</span>
-                        <span class="fw-bold text-success"><%= stats.completedJobs || 0 %></span>
-                    </div>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <span class="text-muted">Total Earnings</span>
-                        <span class="fw-bold text-success"><%= stats.totalEarnings || 0 %> DZD</span>
-                    </div>
-                </div>
-
-            </div>
-
+            <!-- Business Overview Card - Updated with Commission -->
+<div class="card shadow-sm mt-4">
+    <div class="card-header bg-light">
+        <h6 class="mb-0">Business Overview</h6>
+    </div>
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <span class="text-muted">Total Jobs</span>
+            <span class="fw-bold text-primary"><%= stats.totalJobs || 0 %></span>
+        </div>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <span class="text-muted">Active Jobs</span>
+            <span class="fw-bold text-warning"><%= stats.activeJobs || 0 %></span>
+        </div>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <span class="text-muted">Completed</span>
+            <span class="fw-bold text-success"><%= stats.completedJobs || 0 %></span>
+        </div>
+        <hr>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <span class="text-muted">Total Revenue</span>
+            <span class="fw-bold text-info"><%= stats.totalRevenue || 0 %> DZD</span>
+        </div>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <span class="text-muted">Platform Commission</span>
+            <span class="fw-bold text-warning">-<%= stats.totalCommission || 0 %> DZD</span>
+        </div>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <span class="text-muted">Your Earnings</span>
+            <span class="fw-bold text-success"><%= stats.totalEarnings || 0 %> DZD</span>
+        </div>
+        <div class="d-flex justify-content-between align-items-center">
+            <small class="text-muted">Commission Rate</small>
+            <small class="text-muted">10%</small>
+        </div>
+    </div>
+</div>
             <!-- Store Points -->
             <div class="card shadow-sm mt-4 border-warning">
                 <div class="card-header bg-warning text-dark">
@@ -190,20 +202,20 @@
                     </div>
                 </div>
                 <div class="col-xl-3 col-md-6 mb-3">
-                    <div class="card card-hover border-0 shadow-sm">
-                        <div class="card-body">
-                            <div class="d-flex align-items-center">
-                                <div class="flex-shrink-0">
-                                    <i class="fas fa-wallet fa-2x text-info"></i>
-                                </div>
-                                <div class="flex-grow-1 ms-3">
-                                    <h4 class="mb-0"><%= stats.monthlyEarnings || 0 %> DZD</h4>
-                                    <span class="text-muted">This Month</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+    <div class="card card-hover border-0 shadow-sm">
+        <div class="card-body">
+            <div class="d-flex align-items-center">
+                <div class="flex-shrink-0">
+                    <i class="fas fa-wallet fa-2x text-info"></i>
                 </div>
+                <div class="flex-grow-1 ms-3">
+                    <h4 class="mb-0"><%= stats.monthlyEarnings || 0 %> DZD</h4>
+                    <span class="text-muted">This Month (After Commission)</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
             </div>
 
             <!-- Recent Jobs & Quick Actions -->
