@@ -97,7 +97,7 @@ router.get('/dashboard', async (req, res) => {
       responseRate,
       completionRate: totalJobs > 0 ? Math.round((completedJobs / totalJobs) * 100) : 0
     };
-
+console.log('📊 Dashboard loaded - Profile picture:', !!painter.profilePicture)
     res.render('painter/dashboard', {
       title: 'Painter Dashboard - Paintello Pro',
       painter: painter,
