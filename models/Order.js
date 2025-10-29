@@ -6,6 +6,23 @@ const orderSchema = new mongoose.Schema({
     ref: 'User',
     required: true
   },
+   // Add guest client information
+  guestClient: {
+    name: {
+      type: String,
+      required: function() { return !this.client; } // Required if no client ID
+    },
+    email: {
+      type: String,
+      required: function() { return !this.client; }
+    },
+    phone: {
+      type: String,
+      required: function() { return !this.client; }
+    },
+    wilaya: String,
+    address: String
+  },
   painter: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Painter',
