@@ -8,7 +8,7 @@ const flash = require('connect-flash');
 const path = require('path');
 const bodyParser = require('body-parser');
 require('dotenv').config();
-const painterRoutes = require('./painter');
+
 
 
 const app = express();
@@ -79,11 +79,12 @@ app.set('views', path.join(__dirname, 'views'));
 
 // Static files
 app.use(express.static(path.join(__dirname, 'public')));
+const painterRoutes = require('./routes/painter');
 // Mount painter routes
 router.use('/painter', painterRoutes);
 
 // Add this to your routes/index.js
-const clientRoutes = require('./client');
+const clientRoutes = require('./routes/client');
 
 // Mount client routes
 router.use('/client', clientRoutes);
