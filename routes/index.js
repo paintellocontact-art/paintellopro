@@ -5,6 +5,40 @@ const Painter = require('../models/Painter');
 const bcrypt = require('bcrypt');
 const { uploadIdCard, deleteFromCloudinary } = require('../utils/cloudinary');
 // Painter Login Page - FIXED PATH
+// Utility function to check if Cloudinary URL is accessible
+const checkCloudinaryUrl = async (url) => {
+  try {
+    const response = await fetch(url, { method: 'HEAD' });
+    return response.status === 200;
+  } catch (error) {
+    return false;
+  }
+};
+
+// Use it in your routes
+router.get('/validate-profile-picture', async (req, res) => {
+  try {
+    const painter = await Painter.findById(req.session.painter._id);
+    
+    if (painter.profilePicture && painter.profilePicture.url) {
+      const isValid = await checkCloudinaryUrl(painter.profilePicture.url);
+      
+      res.json({
+        hasProfilePicture: true,
+        url: painter.profilePicture.url,
+        isValid: isValid,
+        message: isValid ? 'Profile picture URL is valid' : 'Profile picture URL is invalid'
+      });
+    } else {
+      res.json({
+        hasProfilePicture: false,
+        message: 'No profile picture found'
+      });
+    }
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
 // Painter Login Page - FIXED VERSION
 // Universal Logout
 router.get('/logout', (req, res) => {
