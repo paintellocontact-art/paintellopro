@@ -162,47 +162,15 @@ router.get('/painters/:id', async (req, res) => {
   }
 });
 // Guest order creation page
-// Make sure this is in your public.js order route
 router.get('/painters/:id/order', async (req, res) => {
   try {
-    console.log('🔍 Loading guest order page for painter:', req.params.id);
-    
     const painter = await Painter.findById(req.params.id)
-      .select('name pricePerSqm specialization location profilePicture experience rating verification isActive availability');
+      .select('name pricePerSqm specialization location');
 
-    if (!painter) {
-      console.log('❌ Painter not found');
-      req.flash('error', 'Painter not found');
+    if (!painter || painter.verification.status !== 'verified') {
+      req.flash('error', 'Painter not available');
       return res.redirect('/painters');
     }
-
-    // DEBUG: Log painter status
-    console.log('🎨 Painter status:', {
-      verified: painter.verification.status === 'verified',
-      active: painter.isActive,
-      available: painter.availability === 'available'
-    });
-
-    // Allow order even if not available, just show warning
-    if (painter.verification.status !== 'verified') {
-      console.log('❌ Painter not verified');
-      req.flash('error', 'This painter is not yet verified.');
-      return res.redirect(`/painters/${painter._id}`);
-    }
-
-    if (!painter.isActive) {
-      console.log('❌ Painter not active');
-      req.flash('error', 'This painter account is currently inactive.');
-      return res.redirect(`/painters/${painter._id}`);
-    }
-
-    // Just warn if not available, but still allow ordering
-    if (painter.availability !== 'available') {
-      console.log('⚠️ Painter not available, but allowing order');
-      req.flash('warning', 'This painter may not be immediately available, but you can still place an order.');
-    }
-
-    console.log('✅ Loading guest order form for:', painter.name);
 
     res.render('public/guest-order', {
       title: `Hire ${painter.name} - Paintello Pro`,
@@ -211,7 +179,7 @@ router.get('/painters/:id/order', async (req, res) => {
       user: req.session.user || null
     });
   } catch (error) {
-    console.error('❌ Guest order page error:', error);
+    console.error('Guest order page error:', error);
     req.flash('error', 'Error loading order page');
     res.redirect('/painters');
   }
