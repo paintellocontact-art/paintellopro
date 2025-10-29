@@ -35,7 +35,21 @@ mongoose.connect(MONGODB_URI, {
 // Middleware
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-
+// Session configuration for production
+app.use(session({
+  secret: process.env.SESSION_SECRET || 'paintello-secret-key-2024',
+  resave: false,
+  saveUninitialized: false,
+  store: MongoStore.create({
+    mongoUrl: MONGODB_URI,
+    ttl: 14 * 24 * 60 * 60 // 14 days
+  }),
+  cookie: {
+    secure: process.env.NODE_ENV === 'production', // Should be true in production
+    httpOnly: true,
+    maxAge: 24 * 60 * 60 * 1000 // 24 hours
+  }
+}));
 // Session configuration
 app.use(session({
   secret: process.env.SESSION_SECRET || 'paintello-pro-fallback-secret',
