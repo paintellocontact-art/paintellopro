@@ -8,11 +8,7 @@ const painterSchema = new mongoose.Schema({
     trim: true
   },
   // In your Painter model, ensure you have:
-availability: {
-  type: String,
-  enum: ['available', 'busy', 'unavailable'],
-  default: 'available'
-},
+
   // In your Painter model, add this field:
 profilePicture: {
   publicId: String, // Cloudinary public_id
