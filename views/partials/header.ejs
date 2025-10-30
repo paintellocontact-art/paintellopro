@@ -11,8 +11,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <!-- Custom CSS -->
     <link href="/css/style.css" rel="stylesheet">
-    <!-- In your header or layout file -->
-
+    
     <style>
         :root {
             --primary-color: #4a6fff;
@@ -53,8 +52,19 @@
             background: linear-gradient(45deg, #FFD700, #FFA500);
             color: #000;
         }
-    </style>
 
+        /* RTL Support */
+        [dir="rtl"] {
+            text-align: right;
+        }
+        
+        [dir="rtl"] .me-1 { margin-right: 0 !important; margin-left: 0.25rem !important; }
+        [dir="rtl"] .me-2 { margin-right: 0 !important; margin-left: 0.5rem !important; }
+        [dir="rtl"] .me-3 { margin-right: 0 !important; margin-left: 1rem !important; }
+        [dir="rtl"] .ms-1 { margin-left: 0 !important; margin-right: 0.25rem !important; }
+        [dir="rtl"] .ms-2 { margin-left: 0 !important; margin-right: 0.5rem !important; }
+        [dir="rtl"] .ms-3 { margin-left: 0 !important; margin-right: 1rem !important; }
+    </style>
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
@@ -94,6 +104,7 @@
                 
                 <ul class="navbar-nav">
                     <% if (user) { %>
+                        <!-- User is logged in -->
                         <% if (user.role === 'client') { %>
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
@@ -110,7 +121,7 @@
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
                                     <i class="fas fa-brush me-1"></i> <%= user.name %>
-                                    <% if (painter && painter.verification && painter.verification.isVerified) { %>
+                                    <% if (painter && painter.verification && painter.verification.status === 'verified') { %>
                                         <span class="badge bg-success ms-1">Verified</span>
                                     <% } %>
                                 </a>
@@ -121,12 +132,12 @@
                                     <li><a class="dropdown-item" href="/painter/profile">
                                         <i class="fas fa-user-edit me-2"></i>Profile
                                     </a></li>
+                                    <li><a class="dropdown-item" href="/painter/orders">
+                                        <i class="fas fa-clipboard-list me-2"></i>My Jobs
+                                    </a></li>
                                     <li><a class="dropdown-item" href="/painter/store">
                                         <i class="fas fa-store me-2"></i>Team Store
                                         <span class="badge bg-warning ms-1">PRO</span>
-                                    </a></li>
-                                    <li><a class="dropdown-item" href="/painter/orders">
-                                        <i class="fas fa-clipboard-list me-2"></i>Jobs
                                     </a></li>
                                     <li><hr class="dropdown-divider"></li>
                                     <li><a class="dropdown-item" href="/auth/logout">
@@ -150,16 +161,23 @@
                             </li>
                         <% } %>
                     <% } else { %>
+                        <!-- User is not logged in -->
                         <li class="nav-item">
-                            <a class="nav-link" href="/auth/login">Login</a>
+                            <a class="nav-link" href="/auth/login">
+                                <i class="fas fa-sign-in-alt me-1"></i>Login
+                            </a>
                         </li>
                         <li class="nav-item dropdown">
                             <a class="btn btn-outline-light ms-2 dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                                Join Now
+                                <i class="fas fa-user-plus me-1"></i>Sign Up
                             </a>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="/auth/register">As Client</a></li>
-                                <li><a class="dropdown-item" href="/auth/register-painter">As Painter</a></li>
+                                <li><a class="dropdown-item" href="/auth/register">
+                                    <i class="fas fa-user me-2"></i>As Client
+                                </a></li>
+                                <li><a class="dropdown-item" href="/auth/register-painter">
+                                    <i class="fas fa-brush me-2"></i>As Painter
+                                </a></li>
                             </ul>
                         </li>
                     <% } %>
@@ -167,7 +185,4 @@
             </div>
         </div>
     </nav>
-
-   
-
 
