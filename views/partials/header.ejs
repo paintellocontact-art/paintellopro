@@ -102,86 +102,34 @@
                     </li>
                 </ul>
                 
-                <ul class="navbar-nav">
-                    <% if (user) { %>
-                        <!-- User is logged in -->
-                        <% if (user.role === 'client') { %>
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                                    <i class="fas fa-user me-1"></i> <%= user.name %>
-                                </a>
-                                <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="/client/dashboard">Dashboard</a></li>
-                                    <li><a class="dropdown-item" href="/client/orders">My Orders</a></li>
-                                    <li><hr class="dropdown-divider"></li>
-                                    <li><a class="dropdown-item" href="/auth/logout">Logout</a></li>
-                                </ul>
-                            </li>
-                        <% } else if (user.role === 'painter') { %>
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                                    <i class="fas fa-brush me-1"></i> <%= user.name %>
-                                    <% if (painter && painter.verification && painter.verification.status === 'verified') { %>
-                                        <span class="badge bg-success ms-1">Verified</span>
-                                    <% } %>
-                                </a>
-                                <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="/painter/dashboard">
-                                        <i class="fas fa-tachometer-alt me-2"></i>Dashboard
-                                    </a></li>
-                                    <li><a class="dropdown-item" href="/painter/profile">
-                                        <i class="fas fa-user-edit me-2"></i>Profile
-                                    </a></li>
-                                    <li><a class="dropdown-item" href="/painter/orders">
-                                        <i class="fas fa-clipboard-list me-2"></i>My Jobs
-                                    </a></li>
-                                    <li><a class="dropdown-item" href="/painter/store">
-                                        <i class="fas fa-store me-2"></i>Team Store
-                                        <span class="badge bg-warning ms-1">PRO</span>
-                                    </a></li>
-                                    <li><hr class="dropdown-divider"></li>
-                                    <li><a class="dropdown-item" href="/auth/logout">
-                                        <i class="fas fa-sign-out-alt me-2"></i>Logout
-                                    </a></li>
-                                </ul>
-                            </li>
-                        <% } else if (user.role === 'admin') { %>
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                                    <i class="fas fa-crown me-1"></i> Admin
-                                </a>
-                                <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="/admin/dashboard">Dashboard</a></li>
-                                    <li><a class="dropdown-item" href="/admin/painters">Painters</a></li>
-                                    <li><a class="dropdown-item" href="/admin/orders">Orders</a></li>
-                                    <li><a class="dropdown-item" href="/admin/store-management">Store Management</a></li>
-                                    <li><hr class="dropdown-divider"></li>
-                                    <li><a class="dropdown-item" href="/auth/logout">Logout</a></li>
-                                </ul>
-                            </li>
-                        <% } %>
-                    <% } else { %>
-                        <!-- User is not logged in -->
-                        <li class="nav-item">
-                            <a class="nav-link" href="/auth/login">
-                                <i class="fas fa-sign-in-alt me-1"></i>Login
-                            </a>
-                        </li>
-                        <li class="nav-item dropdown">
-                            <a class="btn btn-outline-light ms-2 dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                                <i class="fas fa-user-plus me-1"></i>Sign Up
-                            </a>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="/auth/register">
-                                    <i class="fas fa-user me-2"></i>As Client
-                                </a></li>
-                                <li><a class="dropdown-item" href="/auth/register-painter">
-                                    <i class="fas fa-brush me-2"></i>As Painter
-                                </a></li>
-                            </ul>
-                        </li>
-                    <% } %>
-                </ul>
+                <!-- In header.ejs - simplified version -->
+<ul class="navbar-nav">
+    <% if (typeof painter !== 'undefined' && painter) { %>
+        <!-- Painter is logged in -->
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                <i class="fas fa-brush me-1"></i> <%= painter.name %>
+                <% if (painter.verification && painter.verification.status === 'verified') { %>
+                    <span class="badge bg-success ms-1">Verified</span>
+                <% } %>
+            </a>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="/painter/dashboard">Dashboard</a></li>
+                <li><a class="dropdown-item" href="/painter/profile">Profile</a></li>
+                <li><a class="dropdown-item" href="/painter/orders">My Jobs</a></li>
+                <li><a class="dropdown-item" href="/painter/store">Team Store</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="/auth/logout">Logout</a></li>
+            </ul>
+        </li>
+    <% } else { %>
+        <!-- Not logged in -->
+        <li class="nav-item">
+            <a class="nav-link" href="/auth/login">Login</a>
+        </li>
+        <!-- ... sign up buttons ... -->
+    <% } %>
+</ul>
             </div>
         </div>
     </nav>
