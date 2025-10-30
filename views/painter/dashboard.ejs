@@ -90,40 +90,47 @@
 
             <!-- Quick Stats -->
   <!-- Business Overview with Commission -->
+<!-- Business Overview - Only shows financials for ACCEPTED orders -->
 <div class="card shadow-sm mt-4">
-    <div class="card-header bg-light">
+    <div class="card-header bg-light d-flex justify-content-between align-items-center">
         <h6 class="mb-0">Business Overview</h6>
+        <span class="badge bg-info">Accepted Jobs Only</span>
     </div>
     <div class="card-body">
         <div class="d-flex justify-content-between align-items-center mb-3">
-            <span class="text-muted">Total Jobs</span>
-            <span class="fw-bold text-primary"><%= stats.totalJobs || 0 %></span>
+            <span class="text-muted">Pending Jobs</span>
+            <span class="fw-bold text-warning"><%= stats.pendingJobs || 0 %></span>
         </div>
         <div class="d-flex justify-content-between align-items-center mb-3">
             <span class="text-muted">Active Jobs</span>
-            <span class="fw-bold text-warning"><%= stats.activeJobs || 0 %></span>
+            <span class="fw-bold text-primary"><%= stats.activeJobs || 0 %></span>
         </div>
         <div class="d-flex justify-content-between align-items-center mb-3">
             <span class="text-muted">Completed</span>
             <span class="fw-bold text-success"><%= stats.completedJobs || 0 %></span>
         </div>
+        
+        <!-- FINANCIAL SECTION - Only for accepted orders -->
+        <% if (stats.totalRevenue > 0) { %>
         <hr>
         <div class="d-flex justify-content-between align-items-center mb-2">
             <span class="text-muted">Total Revenue</span>
-            <span class="fw-bold text-info"><%= stats.totalRevenue || 0 %> DZD</span>
+            <span class="fw-bold text-info"><%= stats.totalRevenue %> DZD</span>
         </div>
         <div class="d-flex justify-content-between align-items-center mb-2">
-            <span class="text-muted">Platform Commission</span>
-            <span class="fw-bold text-warning">-<%= stats.totalCommission || 0 %> DZD</span>
+            <span class="text-muted">Platform Commission (10%)</span>
+            <span class="fw-bold text-warning">-<%= stats.totalCommission %> DZD</span>
         </div>
         <div class="d-flex justify-content-between align-items-center mb-3">
             <span class="text-muted fw-bold">Your Earnings</span>
-            <span class="fw-bold text-success"><%= stats.totalEarnings || 0 %> DZD</span>
+            <span class="fw-bold text-success"><%= stats.totalEarnings %> DZD</span>
         </div>
-        <div class="d-flex justify-content-between align-items-center">
-            <small class="text-muted">Commission Rate</small>
-            <small class="text-muted">10%</small>
+        <% } else { %>
+        <hr>
+        <div class="text-center py-2">
+            <small class="text-muted">Financial data will appear when you accept orders</small>
         </div>
+        <% } %>
     </div>
 </div>
             <!-- Store Points -->
@@ -325,38 +332,29 @@
                                 </small>
                                 <% } %>
                             </td>
-                            <td>
+                         <td>
     <div class="btn-group btn-group-sm">
-        <a href="/painter/orders/<%= job._id %>" class="btn btn-outline-primary" title="View Details">
-            <i class="fas fa-eye"></i>
-        </a>
         <% if (job.status === 'pending') { %>
-        <!-- Change from <a> to <form> for accept -->
+        <!-- Accept Button -->
         <form action="/painter/orders/<%= job._id %>/accept" method="POST" class="d-inline">
-            <button type="submit" class="btn btn-outline-success" title="Accept Order">
-                <i class="fas fa-check"></i>
+            <button type="submit" class="btn btn-success btn-sm" title="Accept Order">
+                <i class="fas fa-check"></i> Accept
             </button>
         </form>
-        <!-- Change from <a> to <form> for decline -->
+        <!-- Decline Button -->
         <form action="/painter/orders/<%= job._id %>/decline" method="POST" class="d-inline">
-            <button type="submit" class="btn btn-outline-danger" title="Decline Order">
-                <i class="fas fa-times"></i>
+            <button type="submit" class="btn btn-danger btn-sm" title="Decline Order">
+                <i class="fas fa-times"></i> Decline
             </button>
         </form>
-        <% } %>
-        <% if (job.status === 'accepted') { %>
-        <form action="/painter/orders/<%= job._ID %>/start" method="POST" class="d-inline">
-            <button type="submit" class="btn btn-outline-warning" title="Start Job">
-                <i class="fas fa-play"></i>
-            </button>
-        </form>
-        <% } %>
-        <% if (job.status === 'in_progress') { %>
-        <form action="/painter/orders/<%= job._id %>/complete" method="POST" class="d-inline">
-            <button type="submit" class="btn btn-outline-success" title="Complete Job">
-                <i class="fas fa-flag-checkered"></i>
-            </button>
-        </form>
+        <% } else { %>
+        <span class="badge bg-<%= 
+            job.status === 'completed' ? 'success' :
+            job.status === 'in_progress' ? 'primary' :
+            job.status === 'accepted' ? 'info' : 'secondary'
+        %> text-uppercase">
+            <%= job.status.replace('_', ' ') %>
+        </span>
         <% } %>
     </div>
 </td>
