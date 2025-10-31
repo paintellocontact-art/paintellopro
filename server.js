@@ -70,6 +70,8 @@ app.use((req, res, next) => {
   res.locals.currentUser = req.user;
   res.locals.currentPainter = req.session.painter;
   res.locals.isProduction = process.env.NODE_ENV === 'production';
+    res.locals.warning = req.flash('warning');
+  res.locals.info = req.flash('info');
   next();
 });
 
