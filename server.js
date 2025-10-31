@@ -112,7 +112,40 @@ app.get('/', (req, res) => {
     cloudinaryConfigured: !!process.env.CLOUDINARY_CLOUD_NAME
   });
 });
+// Temporary logout route in main app file
+app.get('/index/logout', (req, res) => {
+  console.log('🚪 Logging out user...');
+  
+  const userName = req.session.user?.name || req.session.painter?.name || 'User';
+  
+  req.session.destroy((err) => {
+    if (err) {
+      console.error('Logout error:', err);
+      return res.redirect('/painter/dashboard');
+    }
+    
+    res.clearCookie('connect.sid');
+    console.log('✅ Logout successful for:', userName);
+    res.redirect('/');
+  });
+});
 
+app.post('/index/logout', (req, res) => {
+  console.log('🚪 POST Logout...');
+  
+  const userName = req.session.user?.name || req.session.painter?.name || 'User';
+  
+  req.session.destroy((err) => {
+    if (err) {
+      console.error('Logout error:', err);
+      return res.redirect('/painter/dashboard');
+    }
+    
+    res.clearCookie('connect.sid');
+    console.log('✅ POST Logout successful for:', userName);
+    res.redirect('/');
+  });
+});
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error('🚨 Server Error:', err.message);
