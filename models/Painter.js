@@ -187,6 +187,19 @@ const painterSchema = new mongoose.Schema({
 }, {
   timestamps: true
 });
+// 🔒 Hash password before saving
+painterSchema.pre('save', async function (next) {
+  try {
+    // Only hash if password is new or modified
+    if (!this.isModified('password')) return next();
+
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
+    next();
+  } catch (err) {
+    next(err);
+  }
+});
 
 // Keep all your existing methods and virtuals...
 painterSchema.methods.comparePassword = async function(candidatePassword) {
