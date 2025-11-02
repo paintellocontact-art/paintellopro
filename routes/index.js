@@ -96,30 +96,16 @@ router.get('/validate-profile-picture', async (req, res) => {
 
 // Painter Login Page - FIXED VERSION
 router.get('/auth/login-painter', (req, res) => {
-  console.log('🔍 Painter login page accessed - Session check:');
-  console.log('   req.session.painter:', req.session.painter);
-  console.log('   req.session.user:', req.session.user);
-  
-  // Check if user is logged in as painter (in either session.user or session.painter)
-  const isPainterLoggedIn = (req.session.painter && req.session.painter.role === 'painter') || 
-                           (req.session.user && req.session.user.role === 'painter');
-  
-  if (isPainterLoggedIn) {
-    console.log('✅ Painter already logged in, redirecting to dashboard');
+  // Prevent logged-in users from seeing login page again
+  if (req.session.painter && req.session.painter.role === 'painter') {
     return res.redirect('/painter/dashboard');
   }
-  
-res.render('auth/login-painter', { 
-  title: 'Painter Login - Paintello Pro',
-  user: req.session.user || null,
-  success: req.flash('success'),
-  error: req.flash('error'),
-  warning: req.flash('warning'),
-  info: req.flash('info'),
-  oldInput: req.flash('oldInput')[0] || {}
+
+  res.render('auth/login-painter', {
+    title: 'Painter Login - Paintello Pro'
+  });
 });
 
-});
 
 // Client Login Page - FIXED PATH
 router.get('/auth/login', (req, res) => {
@@ -136,16 +122,10 @@ router.get('/auth/login', (req, res) => {
 router.get('/auth/register-painter', (req, res) => {
   res.render('auth/register-painter', {
     title: 'Join as Painter - Paintello Pro',
-    wilayas: wilayas,
-    oldInput: req.flash('oldInput')[0] || {},
-    success: req.flash('success'),
-    error: req.flash('error'),
-    warning: req.flash('warning'),
-    info: req.flash('info'),
-    user: req.session.user || null,
-    painter: req.session.painter || null
+    wilayas, // all wilayas list
   });
 });
+
 // 🎨 Painter Registration (with flash messages)
 router.post('/auth/register-painter', uploadIdCard.single('idCard'), async (req, res) => {
   try {
