@@ -6,27 +6,40 @@
             <div class="card shadow">
                 <div class="card-body p-4">
                     <h2 class="text-center mb-4">Painter Login</h2>
-                  <% if (success && success.length) { %>
+                  <!-- 🔔 Flash Messages Section -->
+<% if (success && success.length) { %>
   <% success.forEach(msg => { %>
-    <div class="alert alert-success"><%= msg %></div>
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      <i class="fas fa-check-circle me-2"></i><%= msg %>
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
   <% }) %>
 <% } %>
 
 <% if (error && error.length) { %>
   <% error.forEach(msg => { %>
-    <div class="alert alert-danger"><%= msg %></div>
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+      <i class="fas fa-times-circle me-2"></i><%= msg %>
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
   <% }) %>
 <% } %>
 
 <% if (warning && warning.length) { %>
   <% warning.forEach(msg => { %>
-    <div class="alert alert-warning"><%= msg %></div>
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+      <i class="fas fa-exclamation-triangle me-2"></i><%= msg %>
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
   <% }) %>
 <% } %>
 
 <% if (info && info.length) { %>
   <% info.forEach(msg => { %>
-    <div class="alert alert-info"><%= msg %></div>
+    <div class="alert alert-info alert-dismissible fade show" role="alert">
+      <i class="fas fa-info-circle me-2"></i><%= msg %>
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
   <% }) %>
 <% } %>
 
@@ -57,5 +70,13 @@
         </div>
     </div>
 </div>
+<script>
+  setTimeout(() => {
+    document.querySelectorAll('.alert').forEach(alert => {
+      const bsAlert = new bootstrap.Alert(alert);
+      bsAlert.close();
+    });
+  }, 4000); // 4 seconds
+</script>
 
 <%- include('../partials/footer') %>
