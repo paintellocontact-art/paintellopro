@@ -61,21 +61,21 @@ app.use(session({
 
 
 // Flash messages
-// Flash messages
+// Flash
 app.use(flash());
 
-// Global variables for templates - FIXED VERSION
+// Global variables for templates
 app.use((req, res, next) => {
-  // req.flash() returns an array, we need the first element
-  res.locals.success = req.flash('success')[0];
-  res.locals.error = req.flash('error')[0];
-  res.locals.warning = req.flash('warning')[0];
-  res.locals.info = req.flash('info')[0];
+  res.locals.success = req.flash('success');
+  res.locals.error   = req.flash('error');
+  res.locals.warning = req.flash('warning');
+  res.locals.info    = req.flash('info');
   res.locals.currentUser = req.user;
   res.locals.currentPainter = req.session.painter;
   res.locals.isProduction = process.env.NODE_ENV === 'production';
   next();
 });
+
 
 // View engine setup
 app.set('view engine', 'ejs');
