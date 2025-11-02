@@ -37,12 +37,14 @@ mongoose.connect(MONGODB_URI, {
 });
 
 // Middleware
+// 🧩 Body parsing middleware
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-// Session configuration for production
-// Trust Heroku proxy
+
+// 🧩 Trust Heroku proxy
 app.set('trust proxy', 1);
-// Updated Session configuration
+
+// 🧩 Session middleware (must come BEFORE flash)
 app.use(session({
   secret: process.env.SESSION_SECRET || 'paintello-secret-key-2024',
   resave: false,
@@ -52,27 +54,25 @@ app.use(session({
     ttl: 14 * 24 * 60 * 60 // 14 days
   }),
   cookie: {
-    secure: process.env.NODE_ENV === 'production', // Only HTTPS in production
+    secure: process.env.NODE_ENV === 'production',
     httpOnly: true,
-    maxAge: 24 * 60 * 60 * 1000, // 24 hours
+    maxAge: 24 * 60 * 60 * 1000,
     sameSite: 'lax'
   }
 }));
 
-
-// Flash messages
-// Flash
+// 🧩 Flash middleware (AFTER session)
 app.use(flash());
 
-// Global variables for templates
+// 🧩 Global locals middleware (AVAILABLE in all EJS files)
 app.use((req, res, next) => {
   res.locals.success = req.flash('success');
   res.locals.error   = req.flash('error');
   res.locals.warning = req.flash('warning');
   res.locals.info    = req.flash('info');
-  res.locals.currentUser = req.user;
-  res.locals.currentPainter = req.session.painter;
-  res.locals.isProduction = process.env.NODE_ENV === 'production';
+  res.locals.oldInput = req.flash('oldInput')[0] || {};
+  res.locals.currentUser = req.session.user || null;
+  res.locals.currentPainter = req.session.painter || null;
   next();
 });
 
