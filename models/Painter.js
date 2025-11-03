@@ -55,26 +55,34 @@ const painterSchema = new mongoose.Schema({
     verifiedAt: Date,
     adminNotes: String
   },
-  // PORTFOLIO FIELD - SINGLE DEFINITION (REMOVED DUPLICATE)
-  portfolio: [{
-    flickrUrl: String,
-    description: String,
-    uploadedByAdmin: {
-      type: Boolean,
-      default: true   // Changed to true since only you add photos
-    },
+ portfolio: [{
+  title: String, // Optional: name of the project
+  description: String,
+  category: {
+    type: String,
+    enum: ['interior', 'exterior', 'commercial', 'residential'],
+    default: 'interior'
+  },
+  projectSize: String,
+  clientType: String,
+  uploadedByAdmin: {
+    type: Boolean,
+    default: true
+  },
+  uploadedAt: {
+    type: Date,
+    default: Date.now
+  },
+  images: [{
+    publicId: String, // Cloudinary public_id
+    url: String,      // Cloudinary secure_url or any hosted image URL
     uploadedAt: {
       type: Date,
       default: Date.now
-    },
-    category: {
-      type: String,
-      enum: ['interior', 'exterior', 'commercial', 'residential'],
-      default: 'interior'
-    },
-    projectSize: String,
-    clientType: String
-  }],
+    }
+  }]
+}],
+
   // PROFILE PICTURE FIELD - ADD THIS (MISSING FROM YOUR MODEL)
   profilePicture: {
     publicId: String,
