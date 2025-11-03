@@ -1,107 +1,367 @@
-<%- include('../partials/header', { title: 'My Portfolio', painter: painter }) %>
+<%- include('../partials/header', { title: painter.name, painter: painter }) %>
 
-<div class="container py-5">
-  <!-- Painter Info Section -->
-  <div class="text-center mb-5">
-    <h2 class="fw-bold text-primary"><%= painter.name %></h2>
-    <p class="text-muted mb-2">
-      <i class="fas fa-map-marker-alt me-2"></i>
-      <%= painter.location?.wilaya || 'Unknown Wilaya' %>, Algeria
-    </p>
+<style>
+/* Page layout */
+.container { max-width: 1100px; }
 
-    <% if (painter.verification && painter.verification.status === 'verified') { %>
-      <span class="badge bg-success mb-3"><i class="fas fa-check-circle me-1"></i>Verified</span>
-    <% } %>
+/* Profile block */
+.profile-card { display: flex; gap: 20px; align-items: center; margin-bottom: 24px; }
+.avatar {
+  width: 120px; height: 120px; border-radius: 50%; overflow: hidden;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+}
+.avatar img { width:100%; height:100%; object-fit:cover; }
 
-    <div>
-      <% for (let i = 1; i <= 5; i++) { %>
-        <i class="fas fa-star <%= i <= (painter.rating || 0) ? 'text-warning' : 'text-muted' %>"></i>
+/* Availability badge */
+.badge-availability { padding: 6px 10px; border-radius: 12px; font-weight:600; }
+
+/* Project card */
+.card-hover { transition: transform .18s ease, box-shadow .18s ease; }
+.card-hover:hover { transform: translateY(-6px); box-shadow: 0 12px 40px rgba(0,0,0,0.08); }
+
+/* Bootstrap carousel image */
+.carousel-item img { width: 100%; height: 420px; object-fit: cover; border-radius: 8px; cursor: zoom-in; }
+
+/* Lightbox overlay */
+#lightboxOverlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: none;
+  z-index: 10500; justify-content: center; align-items: center; overflow: hidden;
+}
+#lightboxOverlay.active { display: flex; }
+
+#lightboxBox {
+  position: relative; max-width: 95%; max-height: 95%; display:flex; align-items:center; justify-content:center;
+}
+
+#lightboxImg {
+  transform-origin: center center;
+  transition: transform .18s ease;
+  max-width: 100%;
+  max-height: 100%;
+  touch-action: none; /* for pointer events dragging */
+  cursor: zoom-in;
+  border-radius: 8px;
+  box-shadow: 0 18px 60px rgba(0,0,0,0.6);
+}
+
+/* lightbox controls */
+.lightbox-close {
+  position: absolute; top: 18px; right: 22px; font-size: 28px; color: #fff; cursor: pointer;
+  background: rgba(0,0,0,0.4); border-radius: 50%; width:44px; height:44px; display:flex; align-items:center; justify-content:center;
+}
+.lightbox-nav {
+  position: absolute; top:50%; left:0; right:0; display:flex; justify-content:space-between; transform:translateY(-50%);
+  pointer-events: none;
+}
+.lightbox-nav button { pointer-events: auto; background: rgba(0,0,0,0.45); border:none; color:#fff; font-size:24px; width:52px; height:52px; border-radius:999px; }
+
+/* mobile adjustments */
+@media (max-width: 768px) {
+  .carousel-item img { height: 280px; }
+  .avatar { width: 96px; height: 96px; }
+}
+</style>
+
+<div class="container py-4">
+  <!-- Profile -->
+  <div class="profile-card">
+    <div class="avatar">
+      <% if (painter.profilePicture && painter.profilePicture.url) { %>
+        <img src="<%= painter.profilePicture.url %>" alt="<%= painter.name %>">
+      <% } else { %>
+        <img src="https://via.placeholder.com/300x300?text=Painter" alt="No profile">
       <% } %>
-      <span class="fw-bold ms-2"><%= (painter.rating || 0).toFixed(1) %></span>
-      <span class="text-muted">(<%= painter.completedJobs || 0 %> jobs)</span>
+    </div>
+
+    <div class="flex-grow-1">
+      <h2 class="mb-1"><%= painter.name %></h2>
+      <div class="mb-2 text-muted">
+        <i class="fas fa-map-marker-alt me-1"></i> <%= painter.location?.wilaya || 'Unknown Wilaya' %>
+      </div>
+
+      <div class="d-flex align-items-center gap-3 mb-2">
+        <div>
+          <% for (let i=1;i<=5;i++) { %>
+            <i class="fas fa-star <%= i <= (painter.rating||0) ? 'text-warning' : 'text-muted' %>"></i>
+          <% } %>
+          <span class="fw-bold ms-2"><%= (painter.rating||0).toFixed(1) %></span>
+          <small class="text-muted ms-2">(<%= painter.completedJobs||0 %> jobs)</small>
+        </div>
+
+        <div>
+          <span class="badge badge-availability
+            <% if (painter.availability === 'available') { %> bg-success text-white <% }
+               else if (painter.availability === 'busy') { %> bg-warning text-dark <% }
+               else { %> bg-secondary text-white <% } %>">
+            <i class="fas <%= painter.availability === 'available' ? 'fa-check-circle' : (painter.availability === 'busy' ? 'fa-clock' : 'fa-times-circle') %> me-1"></i>
+            <%= (painter.availability || 'unavailable').charAt(0).toUpperCase() + (painter.availability || 'unavailable').slice(1) %>
+          </span>
+        </div>
+
+        <div>
+          <span class="badge bg-primary"> <%= painter.pricePerSqm %> DZD / m²</span>
+        </div>
+      </div>
+
+      <% if (painter.verification && painter.verification.status === 'verified') { %>
+        <div><span class="badge bg-success"><i class="fas fa-check me-1"></i>Verified</span></div>
+      <% } %>
     </div>
   </div>
 
-  <!-- Portfolio Section -->
-  <div class="card border-0 shadow-sm">
-    <div class="card-header bg-light">
-      <h4 class="mb-0"><i class="fas fa-images me-2"></i>Portfolio Gallery</h4>
-    </div>
-    <div class="card-body">
-
-      <% if (!painter.portfolio || painter.portfolio.length === 0) { %>
-        <div class="text-center text-muted py-5">
-          <i class="fas fa-images fa-3x mb-3"></i>
-          <h5>No projects yet</h5>
-          <p>Send your photos via WhatsApp to be added to your portfolio.</p>
-        </div>
-      <% } else { %>
-        <% painter.portfolio.forEach((project, index) => { %>
-          <div class="card mb-5 border-0 shadow-sm card-hover">
-            <div class="card-body">
-              <h5 class="text-primary mb-1"><%= project.title || 'Untitled Project' %></h5>
-              <p class="text-muted small mb-2">
-                <%= project.description || 'No description provided' %>
-              </p>
-              <div class="mb-2">
-                <span class="badge bg-info text-dark me-1"><%= project.category || 'General' %></span>
-                <% if (project.clientType) { %>
-                  <span class="badge bg-secondary me-1"><%= project.clientType %></span>
-                <% } %>
-                <% if (project.projectSize) { %>
-                  <span class="badge bg-warning text-dark"><%= project.projectSize %></span>
-                <% } %>
-              </div>
+  <!-- Portfolio Projects -->
+  <% if (!painter.portfolio || painter.portfolio.length === 0) { %>
+    <div class="card p-4 text-center text-muted">No portfolio projects yet.</div>
+  <% } else { %>
+    <% painter.portfolio.forEach((project, pIndex) => { %>
+      <div class="card mb-5 card-hover">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-start mb-3">
+            <div>
+              <h5 class="mb-1 text-primary"><%= project.title || 'Project' %></h5>
+              <p class="text-muted small mb-0"><%= project.description || '' %></p>
             </div>
-
-            <% if (project.images && project.images.length > 0) { %>
-              <div id="carousel<%= index %>" class="carousel slide" data-bs-ride="carousel">
-                <div class="carousel-inner">
-                  <% project.images.forEach((img, i) => { %>
-                    <div class="carousel-item <%= i === 0 ? 'active' : '' %>">
-                      <img src="<%= img.url %>" class="d-block w-100"
-                           alt="Project Image"
-                           style="height: 400px; object-fit: cover; border-radius: 10px;">
-                    </div>
-                  <% }) %>
-                </div>
-                <% if (project.images.length > 1) { %>
-                  <button class="carousel-control-prev" type="button" data-bs-target="#carousel<%= index %>" data-bs-slide="prev">
-                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                  </button>
-                  <button class="carousel-control-next" type="button" data-bs-target="#carousel<%= index %>" data-bs-slide="next">
-                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                  </button>
-                <% } %>
-              </div>
-            <% } else { %>
-              <div class="text-center py-4 text-muted">
-                <img src="https://via.placeholder.com/600x400?text=No+Images" 
-                     class="img-fluid rounded" alt="No Images">
-              </div>
-            <% } %>
+            <div class="text-end">
+              <% if (project.category) { %><span class="badge bg-info text-dark"><%= project.category %></span><% } %>
+              <% if (project.projectSize) { %><span class="badge bg-warning text-dark ms-1"><%= project.projectSize %></span><% } %>
+            </div>
           </div>
-        <% }) %>
-      <% } %>
+
+          <% const imgs = Array.isArray(project.images) ? project.images.filter(i=>i&&i.url) : []; %>
+
+          <% if (imgs.length === 0) { %>
+            <div class="text-center py-4 text-muted">
+              <img src="https://via.placeholder.com/800x420?text=No+images" class="img-fluid rounded" alt="no images">
+            </div>
+          <% } else { %>
+            <!-- Bootstrap Carousel per project -->
+            <div id="projectCarousel<%= pIndex %>" class="carousel slide" data-bs-ride="carousel" data-bs-interval="4000">
+              <div class="carousel-inner">
+                <% imgs.forEach((img, i) => { %>
+                  <div class="carousel-item <%= i===0 ? 'active' : '' %>">
+                    <!-- clicking an image opens the lightbox at the absolute image index -->
+                    <img src="<%= img.url %>" class="d-block w-100" alt="proj <%= pIndex %> img <%= i %>"
+                         onclick="openLightboxFromProject(<%= pIndex %>, <%= i %>)">
+                  </div>
+                <% }) %>
+              </div>
+
+              <% if (imgs.length > 1) { %>
+                <button class="carousel-control-prev" type="button" data-bs-target="#projectCarousel<%= pIndex %>" data-bs-slide="prev">
+                  <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#projectCarousel<%= pIndex %>" data-bs-slide="next">
+                  <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                </button>
+              <% } %>
+            </div>
+          <% } %>
+        </div>
+      </div>
+    <% }) %>
+  <% } %>
+</div>
+
+<!-- Lightbox overlay for zoom & pan -->
+<div id="lightboxOverlay" role="dialog" aria-hidden="true">
+  <div id="lightboxBox">
+    <img id="lightboxImg" src="" alt="Zoomed">
+    <div class="lightbox-close" onclick="closeLightbox()" title="Close">&times;</div>
+    <div class="lightbox-nav">
+      <button onclick="prevLightbox()" title="Previous">❮</button>
+      <button onclick="nextLightbox()" title="Next">❯</button>
     </div>
   </div>
 </div>
 
-<style>
-.card-hover {
-  transition: transform 0.2s ease, box-shadow 0.3s ease;
-}
-.card-hover:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-}
-.carousel-inner img {
-  transition: transform 0.3s ease;
-}
-.carousel-inner img:hover {
-  transform: scale(1.03);
-}
-</style>
+<script>
+/*
+  Lightbox with interactive zoom + drag (mouse & touch)
+  - We flatten all project images into a single array to navigate across all projects.
+  - openLightboxFromProject(pIndex, imgIndex) resolves the absolute index.
+*/
+
+(function(){
+  // Build an array of all image URLs in order of projects -> images
+  const allImages = [];
+  const projectIndexMap = []; // [{pIndex, localIndex}] maps absolute index to project/local index
+  <% (painter.portfolio || []).forEach(function(project, pIndex){ 
+       const imgs = Array.isArray(project.images) ? project.images.filter(i=>i && i.url) : [];
+       imgs.forEach(function(img, localIdx){ %>
+         allImages.push("<%= img.url.replace(/"/g,'\\"') %>");
+         projectIndexMap.push({ project: <%= pIndex %>, local: <%= localIdx %> });
+  <%   }); 
+     }); %>
+
+  // Expose globally for debugging if needed
+  window.__paintello_allImages = allImages;
+
+  // Lightbox elements
+  const overlay = document.getElementById('lightboxOverlay');
+  const imgEl = document.getElementById('lightboxImg');
+
+  let absIndex = 0;
+  let scale = 1;
+  let translate = { x: 0, y: 0 };
+  let dragging = false;
+  let lastPointer = { x: 0, y: 0 };
+
+  // helper to update transform
+  function applyTransform() {
+    imgEl.style.transform = `translate(${translate.x}px, ${translate.y}px) scale(${scale})`;
+    imgEl.style.cursor = scale > 1 ? 'grab' : 'zoom-in';
+  }
+
+  // open on absolute index
+  function openAt(index) {
+    if (!allImages.length) return;
+    absIndex = (index + allImages.length) % allImages.length;
+    imgEl.src = allImages[absIndex];
+    resetTransform();
+    overlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function close() {
+    overlay.classList.remove('active');
+    document.body.style.overflow = '';
+    resetTransform();
+  }
+
+  function next() { openAt(absIndex + 1); }
+  function prev() { openAt(absIndex - 1); }
+
+  function resetTransform() {
+    scale = 1; translate = { x: 0, y: 0 };
+    applyTransform();
+  }
+
+  // Toggle zoom on double click or double tap
+  let lastTap = 0;
+  imgEl.addEventListener('dblclick', function(e) {
+    e.preventDefault();
+    toggleZoom(e.clientX, e.clientY);
+  });
+
+  // Pointer events for dragging (works for mouse & touch)
+  imgEl.addEventListener('pointerdown', function(e) {
+    if (scale <= 1) return; // only drag when zoomed
+    dragging = true;
+    lastPointer.x = e.clientX;
+    lastPointer.y = e.clientY;
+    imgEl.setPointerCapture(e.pointerId);
+    imgEl.style.cursor = 'grabbing';
+  });
+
+  imgEl.addEventListener('pointermove', function(e) {
+    if (!dragging) return;
+    const dx = e.clientX - lastPointer.x;
+    const dy = e.clientY - lastPointer.y;
+    lastPointer.x = e.clientX;
+    lastPointer.y = e.clientY;
+    translate.x += dx;
+    translate.y += dy;
+    limitTranslate();
+    applyTransform();
+  });
+
+  imgEl.addEventListener('pointerup', function(e) {
+    if (!dragging) return;
+    dragging = false;
+    imgEl.style.cursor = 'grab';
+    try { imgEl.releasePointerCapture(e.pointerId); } catch (err) {}
+  });
+
+  // Prevent default gestures that may interfere
+  imgEl.addEventListener('touchmove', function(e){ if (scale>1) e.preventDefault(); }, { passive: false });
+
+  // Wheel zoom (desktop)
+  imgEl.addEventListener('wheel', function(e) {
+    if (!e.ctrlKey && !e.metaKey) return; // require ctrl/meta to avoid page scroll unless you want otherwise
+    e.preventDefault();
+    const delta = -e.deltaY;
+    const zoomFactor = delta > 0 ? 1.12 : 0.9;
+    zoomAt(e.clientX, e.clientY, zoomFactor);
+  }, { passive: false });
+
+  // Simple single-tap open handler (prevent carousel from hijacking click)
+  window.openLightboxFromProject = function(pIndex, localIdx) {
+    // compute absolute index by summing previous projects' images counts
+    let acc = 0;
+    for (let i = 0; i < pIndex; ++i) {
+      const imgsCount = (<%= JSON.stringify((painter.portfolio||[]).map(pr => Array.isArray(pr.images)? pr.images.filter(i=>i&&i.url).length : 0)) %>)[i] || 0;
+      acc += imgsCount;
+    }
+    const abs = acc + localIdx;
+    openAt(abs);
+  };
+
+  // Expose controls for nav buttons
+  window.nextLightbox = next;
+  window.prevLightbox = prev;
+  window.openLightbox = openAt;
+  window.closeLightbox = close;
+
+  // close overlay when clicking outside the image
+  overlay.addEventListener('click', function(e) {
+    if (e.target === overlay) close();
+  });
+
+  // keyboard nav
+  document.addEventListener('keydown', function(e) {
+    if (!overlay.classList.contains('active')) return;
+    if (e.key === 'Escape') close();
+    if (e.key === 'ArrowRight') next();
+    if (e.key === 'ArrowLeft') prev();
+    if (e.key === '+' || e.key === '=') zoomAt(window.innerWidth/2, window.innerHeight/2, 1.2);
+    if (e.key === '-') zoomAt(window.innerWidth/2, window.innerHeight/2, 0.83);
+  });
+
+  // zoom helpers: zoom at a point (client coords)
+  function zoomAt(cx, cy, factor) {
+    // compute image bounding rect
+    const rect = imgEl.getBoundingClientRect();
+    // convert client coords to image-local coords before transform
+    const ix = (cx - rect.left - rect.width/2 - translate.x) / scale;
+    const iy = (cy - rect.top - rect.height/2 - translate.y) / scale;
+    // apply scale
+    scale = Math.max(1, Math.min(4, scale * factor));
+    // after scaling, adjust translate to keep the zoom-center stable
+    translate.x = (cx - rect.left - rect.width/2) - ix * scale;
+    translate.y = (cy - rect.top - rect.height/2) - iy * scale;
+    limitTranslate();
+    applyTransform();
+    imgEl.style.cursor = scale > 1 ? 'grab' : 'zoom-in';
+  }
+
+  function toggleZoom(cx, cy) {
+    if (scale <= 1) {
+      // zoom in centered at click
+      zoomAt(cx || window.innerWidth/2, cy || window.innerHeight/2, 2.2);
+    } else {
+      resetTransform();
+    }
+  }
+
+  // keep translate in bounds (prevent dragging image offscreen too far)
+  function limitTranslate() {
+    const rect = imgEl.getBoundingClientRect();
+    const parentW = window.innerWidth;
+    const parentH = window.innerHeight;
+    // compute visible size
+    const imgW = rect.width;
+    const imgH = rect.height;
+    const limitX = Math.max(0, (imgW - parentW) / 2 + 20); // some padding
+    const limitY = Math.max(0, (imgH - parentH) / 2 + 20);
+    translate.x = Math.max(-limitX, Math.min(limitX, translate.x));
+    translate.y = Math.max(-limitY, Math.min(limitY, translate.y));
+  }
+
+  // ensure transforms applied on load
+  applyTransform();
+
+})();
+</script>
 
 <%- include('../partials/footer') %>
 
