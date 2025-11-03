@@ -1,61 +1,49 @@
 <%- include('../partials/header', { title: title }) %>
 
-<!-- Add Swiper CSS -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
-
 <style>
-.swiper {
-    width: 100%;
-    height: 500px;
+.carousel {
     border-radius: 16px;
     overflow: hidden;
     box-shadow: 0 12px 40px rgba(0,0,0,0.15);
 }
 
-.swiper-slide {
-    text-align: center;
-    background: #fff;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: relative;
-    cursor: pointer;
+.carousel-inner {
+    height: 500px;
 }
 
-.swiper-slide img {
-    display: block;
+.carousel-item img {
     width: 100%;
     height: 100%;
     object-fit: cover;
 }
 
-.swiper-button-next,
-.swiper-button-prev {
-    color: white;
-    background: rgba(0,0,0,0.7);
+.carousel-control-prev,
+.carousel-control-next {
     width: 60px;
     height: 60px;
+    background: rgba(0,0,0,0.7);
     border-radius: 50%;
+    top: 50%;
+    transform: translateY(-50%);
+    margin: 0 20px;
     backdrop-filter: blur(20px);
     border: 2px solid rgba(255,255,255,0.3);
 }
 
-.swiper-button-next:after,
-.swiper-button-prev:after {
-    font-size: 24px;
-    font-weight: bold;
-}
-
-.swiper-pagination-bullet {
-    background: white;
-    opacity: 0.6;
-    width: 14px;
-    height: 14px;
-}
-
-.swiper-pagination-bullet-active {
+.carousel-control-prev:hover,
+.carousel-control-next:hover {
     background: #007bff;
-    opacity: 1;
+}
+
+.carousel-indicators {
+    bottom: 20px;
+}
+
+.carousel-indicators button {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin: 0 6px;
 }
 
 /* Project Info Overlay */
@@ -66,13 +54,15 @@
     right: 0;
     background: linear-gradient(transparent, rgba(0,0,0,0.9));
     color: white;
-    padding: 60px 20px 20px 20px;
+    padding: 80px 30px 30px 30px;
+    backdrop-filter: blur(10px);
 }
 
 .project-title {
     font-size: 1.4rem;
     font-weight: 700;
     margin-bottom: 12px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
 }
 
 .project-description {
@@ -90,6 +80,44 @@
     opacity: 0.9;
 }
 
+/* Thumbnail Navigation */
+.thumbnail-container {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+    padding: 10px;
+    overflow-x: auto;
+}
+
+.thumbnail-item {
+    flex: 0 0 auto;
+    width: 100px;
+    height: 80px;
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: pointer;
+    opacity: 0.6;
+    transition: all 0.3s ease;
+    border: 3px solid transparent;
+}
+
+.thumbnail-item:hover {
+    opacity: 0.8;
+    transform: scale(1.05);
+}
+
+.thumbnail-item.active {
+    opacity: 1;
+    border: 3px solid #007bff;
+    box-shadow: 0 8px 25px rgba(0,123,255,0.3);
+}
+
+.thumbnail-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
 /* Lightbox Modal */
 .lightbox-modal {
     display: none;
@@ -100,14 +128,15 @@
     width: 100%;
     height: 100%;
     background: rgba(0,0,0,0.98);
+    backdrop-filter: blur(20px);
 }
 
 .lightbox-content {
     position: relative;
-    margin: 2% auto;
+    margin: 1% auto;
     padding: 20px;
-    width: 90%;
-    height: 90%;
+    width: 95%;
+    height: 95%;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -119,6 +148,7 @@
     max-height: 80vh;
     object-fit: contain;
     border-radius: 12px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
 }
 
 .lightbox-info {
@@ -126,6 +156,11 @@
     text-align: center;
     margin-top: 30px;
     max-width: 700px;
+    background: rgba(255,255,255,0.1);
+    padding: 20px;
+    border-radius: 12px;
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.2);
 }
 
 .lightbox-close {
@@ -143,6 +178,15 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    backdrop-filter: blur(20px);
+    border: 2px solid rgba(255,255,255,0.3);
+    transition: all 0.3s ease;
+    z-index: 10000;
+}
+
+.lightbox-close:hover {
+    background: #dc3545;
+    transform: scale(1.1);
 }
 
 .lightbox-nav {
@@ -153,6 +197,7 @@
     justify-content: space-between;
     padding: 0 30px;
     transform: translateY(-50%);
+    z-index: 10000;
 }
 
 .lightbox-nav button {
@@ -164,6 +209,14 @@
     border-radius: 50%;
     font-size: 1.8rem;
     cursor: pointer;
+    backdrop-filter: blur(20px);
+    transition: all 0.3s ease;
+}
+
+.lightbox-nav button:hover {
+    background: #007bff;
+    border-color: #007bff;
+    transform: scale(1.1);
 }
 
 .image-counter {
@@ -175,6 +228,8 @@
     padding: 10px 20px;
     border-radius: 25px;
     font-size: 0.9rem;
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.2);
     z-index: 10;
 }
 
@@ -187,10 +242,42 @@
     font-weight: 600;
     margin-left: 10px;
 }
+
+/* Responsive */
+@media (max-width: 768px) {
+    .carousel-inner {
+        height: 350px;
+    }
+    
+    .thumbnail-item {
+        width: 80px;
+        height: 60px;
+    }
+    
+    .lightbox-content {
+        width: 98%;
+        height: 98%;
+        padding: 10px;
+    }
+    
+    .lightbox-nav button {
+        width: 50px;
+        height: 50px;
+        font-size: 1.3rem;
+    }
+    
+    .lightbox-close {
+        top: 15px;
+        right: 20px;
+        width: 45px;
+        height: 45px;
+        font-size: 1.8rem;
+    }
+}
 </style>
 
 <div class="container py-4">
-    <!-- Profile Header -->
+    <!-- Profile Header (identique) -->
     <div class="row mb-5">
         <div class="col-md-4 text-center">
             <div class="avatar-large mb-3 mx-auto" style="width: 150px; height: 150px; border-radius: 50%; overflow: hidden; background: #f8f9fa;">
@@ -269,7 +356,7 @@
         </div>
     </div>
 
-    <!-- Portfolio Section - VERSION SIMPLIFIÉE -->
+    <!-- Portfolio Section avec Bootstrap Carousel -->
     <div class="row">
         <div class="col-12">
             <div class="card shadow-sm border-0">
@@ -309,14 +396,6 @@
                     });
                     %>
                     
-                    <!-- DEBUG: Afficher les informations -->
-                    <div class="alert alert-info mb-4">
-                        <strong>Debug Info:</strong><br>
-                        Total Projects: <span class="badge bg-primary"><%= portfolio.length %></span><br>
-                        Total Images: <span class="badge bg-success"><%= totalImages %></span><br>
-                        Images Array: <span class="badge bg-warning"><%= allImages.length %></span>
-                    </div>
-                    
                     <% if (allImages.length === 0) { %>
                     <div class="text-center py-5">
                         <i class="fas fa-images fa-3x text-muted mb-3"></i>
@@ -328,18 +407,19 @@
                     <!-- Image Counter -->
                     <div class="image-counter">
                         <i class="fas fa-images me-2"></i>
-                        Image <span id="currentSlide">1</span> of <%= allImages.length %>
+                        <%= totalImages %> images in <%= portfolio.length %> projects
                     </div>
 
-                    <!-- Main Slider - VERSION SIMPLIFIÉE -->
-                    <div class="swiper portfolio-lightbox mb-3">
-                        <div class="swiper-wrapper">
+                    <!-- Main Carousel -->
+                    <div id="portfolioCarousel" class="carousel slide" data-bs-ride="carousel">
+                        <div class="carousel-inner">
                             <% allImages.forEach((image, index) => { %>
-                            <div class="swiper-slide" 
+                            <div class="carousel-item <%= index === 0 ? 'active' : '' %>" 
                                  data-image-index="<%= index %>"
                                  onclick="openLightbox(<%= index %>)">
                                  
                                 <img src="<%= image.url %>" 
+                                     class="d-block w-100"
                                      alt="<%= image.projectTitle %>"
                                      onerror="this.src='https://via.placeholder.com/800x500/f8f9fa/6c757d?text=Project+Image'">
                                 
@@ -348,7 +428,7 @@
                                         <%= image.projectTitle %>
                                         <% if (image.totalInProject > 1) { %>
                                         <span class="badge bg-info ms-2">
-                                            Image <%= image.imageIndex + 1 %> of <%= image.totalInProject %>
+                                            <%= image.imageIndex + 1 %>/<%= image.totalInProject %>
                                         </span>
                                         <% } %>
                                     </div>
@@ -379,24 +459,38 @@
                         </div>
                         
                         <!-- Navigation Buttons -->
-                        <div class="swiper-button-next"></div>
-                        <div class="swiper-button-prev"></div>
+                        <button class="carousel-control-prev" type="button" data-bs-target="#portfolioCarousel" data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Previous</span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#portfolioCarousel" data-bs-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Next</span>
+                        </button>
                         
-                        <!-- Pagination -->
-                        <div class="swiper-pagination"></div>
-                    </div>
-                    
-                    <!-- Simple Image Counter -->
-                    <div class="text-center mt-3">
-                        <div class="btn-group" role="group">
+                        <!-- Indicators -->
+                        <div class="carousel-indicators">
                             <% allImages.forEach((image, index) => { %>
                             <button type="button" 
-                                    class="btn btn-outline-primary btn-sm slide-indicator <%= index === 0 ? 'active' : '' %>"
-                                    onclick="goToSlide(<%= index %>)">
-                                <%= index + 1 %>
-                            </button>
+                                    data-bs-target="#portfolioCarousel" 
+                                    data-bs-slide-to="<%= index %>" 
+                                    class="<%= index === 0 ? 'active' : '' %>"
+                                    aria-label="Slide <%= index + 1 %>"></button>
                             <% }); %>
                         </div>
+                    </div>
+
+                    <!-- Thumbnail Navigation -->
+                    <div class="thumbnail-container">
+                        <% allImages.forEach((image, index) => { %>
+                        <div class="thumbnail-item <%= index === 0 ? 'active' : '' %>" 
+                             data-index="<%= index %>"
+                             onclick="goToSlide(<%= index %>)">
+                            <img src="<%= image.url %>" 
+                                 alt="Thumbnail <%= index + 1 %>"
+                                 onerror="this.src='https://via.placeholder.com/100x60/f8f9fa/6c757d?text=Thumb'">
+                        </div>
+                        <% }); %>
                     </div>
                     
                     <% } %>
@@ -408,6 +502,11 @@
     <!-- Lightbox Modal -->
     <div id="lightboxModal" class="lightbox-modal">
         <span class="lightbox-close" onclick="closeLightbox()">&times;</span>
+        
+        <!-- Image Counter in Lightbox -->
+        <div class="image-counter">
+            <span id="lightboxCounter">1/<%= allImages.length %></span>
+        </div>
         
         <div class="lightbox-nav">
             <button onclick="changeLightboxImage(-1)">❮</button>
@@ -428,89 +527,39 @@
     </div>
 </div>
 
-<!-- Add Swiper JS -->
-<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+<!-- Bootstrap 5 JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-// DEBUG
-console.log('=== SWIPER DEBUG ===');
-console.log('Total images in array:', <%= allImages.length %>);
-console.log('Images data:', <%= JSON.stringify(allImages.map(img => ({url: img.url, title: img.projectTitle}))) %>);
-
 const allImages = <%= JSON.stringify(allImages) %>;
 let currentLightboxIndex = 0;
 
-// SIMPLE SWIPER INITIALIZATION
-const swiper = new Swiper('.portfolio-lightbox', {
-    // BASIC CONFIGURATION
-    direction: 'horizontal',
-    loop: false, // NO LOOP for few images
-    slidesPerView: 1,
-    spaceBetween: 0,
-    
-    // Navigation
-    navigation: {
-        nextEl: '.swiper-button-next',
-        prevEl: '.swiper-button-prev',
-    },
-    
-    // Pagination
-    pagination: {
-        el: '.swiper-pagination',
-        clickable: true,
-    },
-    
-    // Basic effects
-    effect: 'slide',
-    speed: 400,
-    
-    // Events
-    on: {
-        init: function () {
-            console.log('Swiper initialized with slides:', this.slides.length);
-            updateSlideCounter();
-        },
-        slideChange: function () {
-            console.log('Slide changed to:', this.activeIndex);
-            updateSlideCounter();
-            updateSlideIndicators();
-        }
-    }
+// Initialize Bootstrap Carousel
+const portfolioCarousel = new bootstrap.Carousel(document.getElementById('portfolioCarousel'), {
+    interval: 5000,
+    wrap: true
 });
 
-// Update slide counter
-function updateSlideCounter() {
-    const current = swiper.activeIndex + 1;
-    const total = allImages.length;
-    document.getElementById('currentSlide').textContent = current;
-    console.log('Current slide:', current, 'of', total);
+// Go to specific slide
+function goToSlide(index) {
+    portfolioCarousel.to(index);
+    updateThumbnails(index);
 }
 
-// Update slide indicators
-function updateSlideIndicators() {
-    const indicators = document.querySelectorAll('.slide-indicator');
-    indicators.forEach((indicator, index) => {
-        if (index === swiper.activeIndex) {
-            indicator.classList.add('active');
-            indicator.classList.remove('btn-outline-primary');
-            indicator.classList.add('btn-primary');
+// Update thumbnail active state
+function updateThumbnails(activeIndex) {
+    const thumbnails = document.querySelectorAll('.thumbnail-item');
+    thumbnails.forEach((thumb, index) => {
+        if (index === activeIndex) {
+            thumb.classList.add('active');
         } else {
-            indicator.classList.remove('active');
-            indicator.classList.remove('btn-primary');
-            indicator.classList.add('btn-outline-primary');
+            thumb.classList.remove('active');
         }
     });
 }
 
-// Go to specific slide
-function goToSlide(index) {
-    console.log('Going to slide:', index);
-    swiper.slideTo(index);
-}
-
 // Lightbox Functions
 function openLightbox(index) {
-    console.log('Opening lightbox for image:', index);
     currentLightboxIndex = index;
     updateLightboxContent();
     document.getElementById('lightboxModal').style.display = 'block';
@@ -539,6 +588,7 @@ function updateLightboxContent() {
     document.getElementById('lightboxImage').src = image.url;
     document.getElementById('lightboxTitle').textContent = image.projectTitle;
     document.getElementById('lightboxDescription').textContent = image.description || '';
+    document.getElementById('lightboxCounter').textContent = `${currentLightboxIndex + 1}/${allImages.length}`;
     
     // Update category and date
     const categoryEl = document.getElementById('lightboxCategory');
@@ -574,10 +624,10 @@ document.getElementById('lightboxModal').addEventListener('click', function(e) {
     if (e.target === this) closeLightbox();
 });
 
-// Initialize
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOM loaded, swiper should be working');
-    updateSlideIndicators();
+// Update thumbnails on slide change
+document.getElementById('portfolioCarousel').addEventListener('slid.bs.carousel', function (e) {
+    const activeIndex = e.to;
+    updateThumbnails(activeIndex);
 });
 </script>
 
