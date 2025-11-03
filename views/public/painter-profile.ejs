@@ -4,249 +4,267 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
 
 <style>
-/* --- Layout --- */
 .swiper {
   width: 100%;
   height: 500px;
   border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-}
-.swiper-slide {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.15);
 }
 .swiper-slide img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform .3s ease;
 }
-.swiper-slide:hover img {
-  transform: scale(1.05);
-}
-
-/* --- Navigation --- */
-.swiper-button-next,
-.swiper-button-prev {
+.swiper-button-next, .swiper-button-prev {
   color: white;
   background: rgba(0,0,0,0.6);
-  width: 55px;
-  height: 55px;
+  width: 50px;
+  height: 50px;
   border-radius: 50%;
-  backdrop-filter: blur(20px);
-  transition: 0.3s;
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255,255,255,0.3);
 }
-.swiper-button-next:hover,
-.swiper-button-prev:hover {
+.swiper-button-next:hover, .swiper-button-prev:hover {
   background: #007bff;
-  transform: scale(1.1);
 }
-
-/* --- Thumbnails --- */
+.swiper-pagination-bullet-active {
+  background: #007bff;
+}
 .thumbnail-swiper {
   height: 100px;
-  margin-top: 15px;
+  margin-top: 20px;
 }
 .thumbnail-swiper .swiper-slide {
-  opacity: 0.6;
-  transition: 0.3s;
-  border-radius: 10px;
-  overflow: hidden;
+  opacity: 0.5;
+  transition: all 0.3s ease;
+  cursor: pointer;
 }
 .thumbnail-swiper .swiper-slide-thumb-active {
   opacity: 1;
-  border: 3px solid #007bff;
+  border: 2px solid #007bff;
 }
-.thumbnail-swiper img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-/* --- Lightbox --- */
 .lightbox {
   display: none;
   position: fixed;
   z-index: 9999;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
   background: rgba(0,0,0,0.95);
+  backdrop-filter: blur(10px);
   justify-content: center;
   align-items: center;
+  flex-direction: column;
 }
 .lightbox img {
   max-width: 90%;
   max-height: 85vh;
-  border-radius: 12px;
-  box-shadow: 0 20px 50px rgba(0,0,0,0.7);
+  border-radius: 10px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.6);
 }
 .lightbox-close {
   position: absolute;
-  top: 25px; right: 35px;
+  top: 25px;
+  right: 35px;
   color: white;
   font-size: 2rem;
   cursor: pointer;
   background: rgba(0,0,0,0.6);
+  padding: 8px 15px;
   border-radius: 50%;
-  padding: 10px 15px;
 }
-.lightbox-close:hover {
-  background: #dc3545;
-}
-
-/* --- Responsive --- */
-@media (max-width: 768px) {
-  .swiper { height: 350px; }
-  .thumbnail-swiper { height: 70px; }
+.project-count {
+  background: #007bff;
+  color: white;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-left: 10px;
 }
 </style>
 
-<div class="container py-5">
-  <div class="row mb-5 align-items-start">
-    <!-- LEFT: Painter Info -->
-    <div class="col-md-4 text-center mb-4">
-      <div class="avatar-large mb-3 mx-auto" style="width:150px;height:150px;border-radius:50%;overflow:hidden;">
+<div class="container py-4">
+  <!-- Painter Header -->
+  <div class="row mb-5">
+    <div class="col-md-4 text-center">
+      <div class="avatar-large mb-3 mx-auto" style="width: 150px; height: 150px; border-radius: 50%; overflow: hidden;">
         <% if (painter.profilePicture && painter.profilePicture.url) { %>
-          <img src="<%= painter.profilePicture.url %>" alt="<%= painter.name %>" style="width:100%;height:100%;object-fit:cover;">
+          <img src="<%= painter.profilePicture.url %>" alt="<%= painter.name %>"
+            style="width:100%;height:100%;object-fit:cover;"
+            onerror="this.src='https://via.placeholder.com/150/007bff/ffffff?text=P'">
         <% } else { %>
-          <div class="d-flex align-items-center justify-content-center bg-primary w-100 h-100 text-white">
-            <i class="fas fa-user fa-3x"></i>
+          <div class="d-flex align-items-center justify-content-center h-100 bg-primary text-white">
+            <i class="fas fa-paint-roller fa-2x"></i>
           </div>
         <% } %>
       </div>
 
-      <h4 class="fw-bold mb-1"><%= painter.name %></h4>
-      <p class="text-muted mb-1">
-        <i class="fas fa-map-marker-alt me-1"></i>
-        <%= painter.location.wilaya %>, Algeria
-      </p>
-
-      <!-- Rating -->
-      <div class="d-flex justify-content-center align-items-center mb-2">
-        <% for (let i = 1; i <= 5; i++) { %>
-          <i class="fas fa-star <%= i <= (painter.rating || 0) ? 'text-warning' : 'text-muted' %>"></i>
-        <% } %>
-        <span class="fw-bold ms-2"><%= (painter.rating || 0).toFixed(1) %></span>
+      <% if (painter.verification && painter.verification.status === 'verified') { %>
+      <div class="mb-3">
+        <span class="badge bg-success fs-6">
+          <i class="fas fa-check-circle me-1"></i>Verified Pro Painter
+        </span>
       </div>
-
-      <p class="text-muted mb-1"><%= painter.completedJobs || 0 %> jobs completed</p>
-
-      <!-- Availability -->
-      <% if (painter.availability === 'available') { %>
-        <span class="badge bg-success mb-2"><i class="fas fa-check-circle me-1"></i>Available</span>
-      <% } else if (painter.availability === 'busy') { %>
-        <span class="badge bg-warning mb-2"><i class="fas fa-clock me-1"></i>Busy</span>
-      <% } else { %>
-        <span class="badge bg-secondary mb-2"><i class="fas fa-times-circle me-1"></i>Unavailable</span>
       <% } %>
 
-      <p class="fw-semibold text-primary mt-2"><%= painter.pricePerSqm %> DZD/m²</p>
-
-      <a href="/painters/<%= painter._id %>/order" class="btn btn-primary w-100 mb-2">
-        <i class="fas fa-paint-roller me-2"></i>Hire This Painter
+      <h4 class="text-primary mb-1"><%= painter.pricePerSqm %> DZD</h4>
+      <small class="text-muted">Price per m²</small>
+      <a href="/painters/<%= painter._id %>/order" class="btn btn-primary btn-lg w-100 mt-3">
+        <i class="fas fa-paint-brush me-2"></i>Hire This Painter
       </a>
-
-      <% if (!user) { %><small class="text-muted">No account needed - order as guest</small><% } %>
     </div>
 
-    <!-- RIGHT: Portfolio -->
     <div class="col-md-8">
-      <h2 class="mb-4"><i class="fas fa-images me-2"></i>Portfolio</h2>
+      <h1 class="h3 mb-1"><%= painter.name %></h1>
+      <p class="text-muted mb-3">
+        <i class="fas fa-map-marker-alt me-1"></i>
+        <%= painter.location?.wilaya || 'Algeria' %>
+      </p>
 
-      <% 
-      const portfolio = painter.portfolio || [];
-      const allImages = [];
-      portfolio.forEach(p => {
-        if (p.images && p.images.length > 0) {
-          p.images.forEach(img => allImages.push(img.url));
-        } else if (p.flickrUrl) {
-          allImages.push(p.flickrUrl);
-        }
-      });
-      %>
+      <div class="d-flex align-items-center mb-2">
+        <% for (let i = 1; i <= 5; i++) { %>
+          <i class="fas fa-star <%= i <= (painter.rating || 0) ? 'text-warning' : 'text-muted' %> fs-5"></i>
+        <% } %>
+        <span class="fw-bold ms-2"><%= (painter.rating || 0).toFixed(1) %></span>
+        <span class="text-muted ms-1">(<%= painter.completedJobs || 0 %> jobs)</span>
+      </div>
 
+      <% if (painter.availability === 'available') { %>
+        <span class="badge bg-success p-2"><i class="fas fa-check-circle me-1"></i>Available</span>
+      <% } else if (painter.availability === 'busy') { %>
+        <span class="badge bg-warning p-2"><i class="fas fa-clock me-1"></i>Busy</span>
+      <% } else { %>
+        <span class="badge bg-secondary p-2"><i class="fas fa-times-circle me-1"></i>Unavailable</span>
+      <% } %>
+    </div>
+  </div>
+
+  <!-- Portfolio Section -->
+  <% 
+    const portfolio = painter.portfolio || [];
+    const allImages = [];
+    portfolio.forEach((p) => {
+      if (Array.isArray(p.images)) {
+        p.images.forEach(i => i.url && allImages.push(i.url));
+      } else if (p.flickrUrl) {
+        allImages.push(p.flickrUrl);
+      }
+    });
+  %>
+
+  <div class="card border-0 shadow-sm">
+    <div class="card-header bg-light border-0">
+      <h4 class="mb-0 d-flex align-items-center">
+        <i class="fas fa-images me-2"></i>Portfolio Gallery
+        <% if (allImages.length > 0) { %>
+        <span class="project-count"><%= allImages.length %> Images</span>
+        <% } %>
+      </h4>
+    </div>
+    <div class="card-body">
       <% if (allImages.length === 0) { %>
         <div class="text-center py-5">
           <i class="fas fa-images fa-3x text-muted mb-3"></i>
           <h5 class="text-muted">No portfolio images yet</h5>
         </div>
       <% } else { %>
-
-      <!-- MAIN SLIDER -->
-      <div class="swiper portfolio-swiper">
-        <div class="swiper-wrapper">
-          <% allImages.forEach((url, i) => { %>
-            <div class="swiper-slide" onclick="openLightbox(<%= i %>)">
-              <img src="<%= url %>" alt="Image <%= i+1 %>" loading="lazy" 
-                   onerror="this.src='https://via.placeholder.com/800x500?text=No+Image'">
-            </div>
-          <% }) %>
+        <!-- Main Swiper -->
+        <div class="swiper portfolio-swiper">
+          <div class="swiper-wrapper">
+            <% allImages.forEach((url, i) => { %>
+              <div class="swiper-slide">
+                <img src="<%= url %>" alt="Project <%= i + 1 %>" onclick="openLightbox(<%= i %>)">
+              </div>
+            <% }) %>
+          </div>
+          <div class="swiper-button-next"></div>
+          <div class="swiper-button-prev"></div>
+          <div class="swiper-pagination"></div>
         </div>
-        <div class="swiper-button-next"></div>
-        <div class="swiper-button-prev"></div>
-      </div>
 
-      <!-- THUMBNAILS -->
-      <div class="swiper thumbnail-swiper mt-3">
-        <div class="swiper-wrapper">
-          <% allImages.forEach((url, i) => { %>
-            <div class="swiper-slide">
-              <img src="<%= url %>" alt="Thumb <%= i+1 %>" 
-                   onerror="this.src='https://via.placeholder.com/100x60?text=No+Image'">
-            </div>
-          <% }) %>
+        <!-- Thumbnail Swiper -->
+        <div class="swiper thumbnail-swiper mt-3">
+          <div class="swiper-wrapper">
+            <% allImages.forEach((url) => { %>
+              <div class="swiper-slide">
+                <img src="<%= url %>" alt="Thumbnail" />
+              </div>
+            <% }) %>
+          </div>
         </div>
-      </div>
-
       <% } %>
     </div>
   </div>
-</div>
 
-<!-- LIGHTBOX -->
-<div id="lightbox" class="lightbox" onclick="closeLightbox()">
-  <span class="lightbox-close" onclick="closeLightbox()">&times;</span>
-  <img id="lightbox-img" src="">
+  <!-- Lightbox -->
+  <div id="lightbox" class="lightbox">
+    <span class="lightbox-close" onclick="closeLightbox()">&times;</span>
+    <img id="lightbox-img" src="">
+  </div>
 </div>
 
 <!-- Swiper JS -->
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
 <script>
 const allImages = <%= JSON.stringify(allImages) %>;
-let lightbox = document.getElementById('lightbox');
-let lightboxImg = document.getElementById('lightbox-img');
+let currentLightboxIndex = 0;
 
-// Swiper main gallery
-const swiper = new Swiper('.portfolio-swiper', {
-  loop: allImages.length > 2,
-  slidesPerView: 1,
-  spaceBetween: 0,
-  navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' },
-  autoplay: { delay: 4000, disableOnInteraction: false },
+document.addEventListener('DOMContentLoaded', () => {
+  if (allImages.length === 0) return;
+
+  const thumbs = new Swiper('.thumbnail-swiper', {
+    spaceBetween: 10,
+    slidesPerView: 'auto',
+    freeMode: true,
+    watchSlidesProgress: true,
+  });
+
+  const swiper = new Swiper('.portfolio-swiper', {
+    loop: allImages.length > 1,
+    navigation: {
+      nextEl: '.swiper-button-next',
+      prevEl: '.swiper-button-prev',
+    },
+    pagination: {
+      el: '.swiper-pagination',
+      clickable: true,
+    },
+    thumbs: { swiper: thumbs },
+  });
 });
 
-// Swiper thumbnails
-const thumbs = new Swiper('.thumbnail-swiper', {
-  slidesPerView: 'auto',
-  freeMode: true,
-  watchSlidesProgress: true,
-  spaceBetween: 10,
-});
-swiper.controller.control = thumbs;
-thumbs.controller.control = swiper;
-
-// Lightbox functions
-function openLightbox(i) {
+function openLightbox(index) {
+  const lightbox = document.getElementById('lightbox');
+  const img = document.getElementById('lightbox-img');
+  currentLightboxIndex = index;
+  img.src = allImages[index];
   lightbox.style.display = 'flex';
-  lightboxImg.src = allImages[i];
   document.body.style.overflow = 'hidden';
 }
+
 function closeLightbox() {
-  lightbox.style.display = 'none';
+  document.getElementById('lightbox').style.display = 'none';
   document.body.style.overflow = 'auto';
+}
+
+document.addEventListener('keydown', e => {
+  const lb = document.getElementById('lightbox');
+  if (lb.style.display === 'flex') {
+    if (e.key === 'Escape') closeLightbox();
+    if (e.key === 'ArrowRight') changeImage(1);
+    if (e.key === 'ArrowLeft') changeImage(-1);
+  }
+});
+
+function changeImage(dir) {
+  currentLightboxIndex += dir;
+  if (currentLightboxIndex < 0) currentLightboxIndex = allImages.length - 1;
+  if (currentLightboxIndex >= allImages.length) currentLightboxIndex = 0;
+  document.getElementById('lightbox-img').src = allImages[currentLightboxIndex];
 }
 </script>
 
