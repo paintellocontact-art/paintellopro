@@ -6,7 +6,7 @@ const bcrypt = require('bcrypt');
 const { uploadIdCard, deleteFromCloudinary } = require('../utils/cloudinary');
 // Painter Login Page - FIXED PATH
 // Route pour la recherche des peintres en arabe
-/ Route pour la recherche des peintres en arabe
+
 router.get('/ar/painters', async (req, res) => {
   try {
     const { wilaya, specialization, minRating, maxPrice, minExperience, availability, sort = 'rating' } = req.query;
