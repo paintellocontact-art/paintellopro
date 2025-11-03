@@ -7,7 +7,8 @@
             <div class="avatar-large mb-3 mx-auto" style="width: 150px; height: 150px; border-radius: 50%; overflow: hidden; background: #f8f9fa;">
                 <% if (painter.profilePicture && painter.profilePicture.url) { %>
                     <img src="<%= painter.profilePicture.url %>" alt="<%= painter.name %>" 
-                         style="width: 100%; height: 100%; object-fit: cover;">
+                         style="width: 100%; height: 100%; object-fit: cover;"
+                         onerror="this.src='https://via.placeholder.com/150/007bff/ffffff?text=P'">
                 <% } else { %>
                     <div class="w-100 h-100 d-flex align-items-center justify-content-center bg-primary">
                         <i class="fas fa-brush fa-3x text-white"></i>
@@ -15,7 +16,7 @@
                 <% } %>
             </div>
             
-            <% if (painter.verification.status === 'verified') { %>
+            <% if (isVerified) { %>
             <div class="mb-3">
                 <span class="badge bg-success fs-6">
                     <i class="fas fa-check-circle me-1"></i>Verified Pro Painter
@@ -44,17 +45,20 @@
                     <p class="text-muted mb-2">
                         <i class="fas fa-map-marker-alt me-1"></i>
                         <%= painter.location.wilaya %>, Algeria
+                        <% if (painter.location.address) { %>
+                            <br><small class="text-muted"><%= painter.location.address %></small>
+                        <% } %>
                     </p>
                     
                     <!-- Rating -->
                     <div class="d-flex align-items-center mb-3">
                         <div class="star-rating me-2">
                             <% for (let i = 1; i <= 5; i++) { %>
-                            <i class="fas fa-star <%= i <= painter.rating ? 'text-warning' : 'text-muted' %> fs-5"></i>
+                            <i class="fas fa-star <%= i <= (painter.rating || 0) ? 'text-warning' : 'text-muted' %> fs-5"></i>
                             <% } %>
                         </div>
-                        <span class="fw-bold me-2"><%= painter.rating.toFixed(1) %></span>
-                        <span class="text-muted">(<%= painter.completedJobs %> jobs completed)</span>
+                        <span class="fw-bold me-2"><%= (painter.rating || 0).toFixed(1) %></span>
+                        <span class="text-muted">(<%= painter.completedJobs || 0 %> jobs completed)</span>
                     </div>
                 </div>
                 
@@ -81,7 +85,7 @@
                 <div class="col-md-6">
                     <div class="card border-0 bg-light">
                         <div class="card-body text-center">
-                            <h3 class="text-primary mb-1"><%= painter.experience %></h3>
+                            <h3 class="text-primary mb-1"><%= painter.experience || 0 %></h3>
                             <p class="text-muted mb-0">Years Experience</p>
                         </div>
                     </div>
@@ -91,9 +95,16 @@
                         <div class="card-body">
                             <h6 class="mb-2">Specialization</h6>
                             <div class="d-flex flex-wrap gap-1">
-                                <% painter.specialization.forEach(spec => { %>
+                                <% 
+                                const specialties = painter.specialization || [];
+                                if (specialties.length > 0) {
+                                    specialties.forEach(spec => { 
+                                %>
                                 <span class="badge bg-primary"><%= spec %></span>
-                                <% }); %>
+                                <% });
+                                } else { %>
+                                <span class="badge bg-secondary">General Painting</span>
+                                <% } %>
                             </div>
                         </div>
                     </div>
@@ -109,7 +120,7 @@
             <% } %>
 
             <!-- Business Info -->
-            <% if (painter.businessName || painter.teamSize > 1) { %>
+            <% if (painter.businessName || (painter.teamSize && painter.teamSize > 1)) { %>
             <div class="mb-4">
                 <h5 class="mb-2">Business Information</h5>
                 <div class="row">
@@ -118,7 +129,7 @@
                         <strong>Business:</strong> <%= painter.businessName %>
                     </div>
                     <% } %>
-                    <% if (painter.teamSize > 1) { %>
+                    <% if (painter.teamSize && painter.teamSize > 1) { %>
                     <div class="col-md-6">
                         <strong>Team Size:</strong> <%= painter.teamSize %> people
                     </div>
@@ -129,44 +140,93 @@
         </div>
     </div>
 
-    <!-- Portfolio Section -->
+    <!-- Portfolio Section - CORRECTION APPLIQUÉE -->
     <div class="row">
         <div class="col-12">
             <div class="card shadow-sm">
                 <div class="card-header bg-light">
                     <h4 class="mb-0">
                         <i class="fas fa-images me-2"></i>Portfolio
+                        <% if (painter.portfolio && painter.portfolio.length > 0) { %>
                         <span class="badge bg-primary ms-2"><%= painter.portfolio.length %> projects</span>
+                        <% } %>
                     </h4>
                 </div>
                 <div class="card-body">
-                    <% if (painter.portfolio.length === 0) { %>
+                    <% 
+                    // Gestion robuste du portfolio
+                    const portfolio = painter.portfolio || [];
+                    %>
+                    
+                    <% if (portfolio.length === 0) { %>
                     <div class="text-center py-4">
                         <i class="fas fa-images fa-3x text-muted mb-3"></i>
                         <p class="text-muted">No portfolio items yet</p>
                     </div>
                     <% } else { %>
                     <div class="row">
-                        <% painter.portfolio.forEach(work => { %>
+                        <% portfolio.forEach(project => { %>
                         <div class="col-xl-3 col-lg-4 col-md-6 mb-4">
-                            <div class="card h-100">
-                                <div class="portfolio-image" style="height: 200px; overflow: hidden;">
-                                    <img src="<%= work.flickrUrl %>" 
-                                         class="card-img-top" 
-                                         alt="Portfolio work"
-                                         style="width: 100%; height: 100%; object-fit: cover;"
-                                         onerror="this.src='https://via.placeholder.com/300x200/f8f9fa/6c757d?text=Work+Image'">
+                            <div class="card h-100 border-0 shadow-sm">
+                                <div class="portfolio-image" style="height: 200px; overflow: hidden; position: relative;">
+                                    <% 
+                                    // CORRECTION : Utiliser project.images[0].url au lieu de project.flickrUrl
+                                    const projectImage = project.images && project.images[0] ? project.images[0].url : null;
+                                    %>
+                                    
+                                    <% if (projectImage) { %>
+                                        <img src="<%= projectImage %>" 
+                                             class="card-img-top" 
+                                             alt="<%= project.title || 'Portfolio Project' %>"
+                                             style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;"
+                                             onerror="this.src='https://via.placeholder.com/300x200/f8f9fa/6c757d?text=Project+Image'"
+                                             onmouseover="this.style.transform='scale(1.05)'"
+                                             onmouseout="this.style.transform='scale(1)'">
+                                    <% } else { %>
+                                        <div class="w-100 h-100 d-flex align-items-center justify-content-center bg-light">
+                                            <i class="fas fa-image fa-2x text-muted"></i>
+                                        </div>
+                                    <% } %>
+                                    
+                                    <!-- Verified Badge -->
+                                    <% if (project.uploadedByAdmin) { %>
+                                        <span class="position-absolute top-0 end-0 m-2 badge bg-success" style="font-size: 0.7rem;">
+                                            <i class="fas fa-check-circle me-1"></i>Verified
+                                        </span>
+                                    <% } %>
                                 </div>
                                 <div class="card-body">
-                                    <% if (work.description) { %>
-                                    <p class="card-text small"><%= work.description %></p>
+                                    <h6 class="card-title mb-2">
+                                        <%= project.title || 'Project' %>
+                                    </h6>
+                                    
+                                    <% if (project.description) { %>
+                                    <p class="card-text small text-muted mb-3" 
+                                       style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                                        <%= project.description %>
+                                    </p>
                                     <% } %>
+                                    
                                     <div class="d-flex justify-content-between align-items-center">
-                                        <span class="badge bg-light text-dark"><%= work.category %></span>
-                                        <% if (work.projectSize) { %>
-                                        <small class="text-muted"><%= work.projectSize %></small>
+                                        <span class="badge bg-light text-dark border">
+                                            <%= project.category || 'Painting' %>
+                                        </span>
+                                        
+                                        <!-- Image Count -->
+                                        <% if (project.images && project.images.length > 1) { %>
+                                            <small class="text-muted">
+                                                <i class="fas fa-images me-1"></i><%= project.images.length %>
+                                            </small>
                                         <% } %>
                                     </div>
+                                    
+                                    <!-- Project Date -->
+                                    <% if (project.uploadedAt) { %>
+                                    <small class="text-muted d-block mt-2">
+                                        <i class="fas fa-calendar me-1"></i>
+                                        <%= new Date(project.uploadedAt).toLocaleDateString() %>
+                                    </small>
+                                    <% } %>
                                 </div>
                             </div>
                         </div>
@@ -179,33 +239,41 @@
     </div>
 
     <!-- Recent Jobs -->
-    <% if (recentJobs.length > 0) { %>
+    <% if (recentJobs && recentJobs.length > 0) { %>
     <div class="row mt-4">
         <div class="col-12">
             <div class="card shadow-sm">
                 <div class="card-header bg-light">
                     <h4 class="mb-0">
                         <i class="fas fa-history me-2"></i>Recent Completed Jobs
+                        <span class="badge bg-success ms-2"><%= recentJobs.length %></span>
                     </h4>
                 </div>
                 <div class="card-body">
                     <div class="row">
                         <% recentJobs.forEach(job => { %>
                         <div class="col-md-4 mb-3">
-                            <div class="card border-0 bg-light">
+                            <div class="card border-0 bg-light h-100">
                                 <div class="card-body">
-                                    <h6 class="card-title"><%= job.serviceType %></h6>
-                                    <p class="card-text text-muted small mb-1">
+                                    <h6 class="card-title text-primary mb-2">
+                                        <i class="fas fa-paint-roller me-1"></i><%= job.serviceType %>
+                                    </h6>
+                                    <p class="card-text text-muted small mb-2">
                                         <% if (job.client && job.client.name) { %>
                                         For: <%= job.client.name %>
                                         <% } else { %>
                                         Completed project
                                         <% } %>
                                     </p>
-                                    <p class="card-text text-primary fw-bold mb-1"><%= job.budget %> DZD</p>
+                                    <p class="card-text text-success fw-bold mb-2">
+                                        <i class="fas fa-wallet me-1"></i><%= job.budget %> DZD
+                                    </p>
+                                    <% if (job.completedAt) { %>
                                     <small class="text-muted">
+                                        <i class="fas fa-calendar me-1"></i>
                                         <%= new Date(job.completedAt).toLocaleDateString() %>
                                     </small>
+                                    <% } %>
                                 </div>
                             </div>
                         </div>
@@ -217,5 +285,24 @@
     </div>
     <% } %>
 </div>
+
+<style>
+.portfolio-image img {
+    transition: transform 0.3s ease;
+}
+
+.card:hover .portfolio-image img {
+    transform: scale(1.05);
+}
+
+.star-rating {
+    color: #ffc107;
+}
+
+.avatar-large {
+    border: 4px solid #fff;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+</style>
 
 <%- include('../partials/footer') %>
