@@ -1,4 +1,4 @@
-<%- include('../partials/header', { title: 'Join as Painter - Paintello Pro' }) %>
+<<%- include('../partials/header', { title: 'انضم كدهان - بينتيلو برو' }) %>
 
 <div class="container py-5">
     <div class="row justify-content-center">
@@ -8,13 +8,12 @@
                     <div class="text-center mb-4">
                         <h2 class="card-title">
                             <i class="fas fa-brush text-primary me-2"></i>
-                            Join Our Pro Team
+                            انضم إلى فريقنا المحترف
                         </h2>
-                        <p class="text-muted">Become a verified Paintello Pro painter and grow your business</p>
+                        <p class="text-muted">كن دهانًا موثوقًا في بينتيلو برو ونمِّ عملك</p>
                     </div>
 
-  
-<!-- 🔔 Global Flash Messages (use res.locals) -->
+<!-- 🔔 رسائل التنبيه العامة -->
 <% if (success && success.length) { %>
   <% success.forEach(msg => { %>
     <div class="alert alert-success alert-dismissible fade show"><%= msg %></div>
@@ -39,104 +38,103 @@
   <% }) %>
 <% } %>
 
-
                     <form action="/auth/register-painter" method="POST" enctype="multipart/form-data">
-                        <!-- Personal Information -->
+                        <!-- المعلومات الشخصية -->
                         <h5 class="mb-3 text-primary">
-                            <i class="fas fa-user me-2"></i>Personal Information
+                            <i class="fas fa-user me-2"></i>المعلومات الشخصية
                         </h5>
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label for="name" class="form-label">Full Name *</label>
+                                <label for="name" class="form-label">الاسم الكامل *</label>
                                 <input type="text" class="form-control" id="name" name="name" 
                                        value="<%= oldInput.name || '' %>" required>
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label for="phone" class="form-label">Phone Number *</label>
+                                <label for="phone" class="form-label">رقم الهاتف *</label>
                                 <input type="tel" class="form-control" id="phone" name="phone" 
                                        value="<%= oldInput.phone || '' %>" pattern="[0]{1}[5-7]{1}[0-9]{8}" required>
-                                <div class="form-text">Format: 05XX XXX XXX, 06XX XXX XXX, or 07XX XXX XXX</div>
+                                <div class="form-text">التنسيق: 05XX XXX XXX, 06XX XXX XXX, أو 07XX XXX XXX</div>
                             </div>
                         </div>
 
                         <div class="mb-3">
-                            <label for="email" class="form-label">Email Address *</label>
+                            <label for="email" class="form-label">البريد الإلكتروني *</label>
                             <input type="email" class="form-control" id="email" name="email" 
                                    value="<%= oldInput.email || '' %>" required>
                         </div>
 
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label for="password" class="form-label">Password *</label>
+                                <label for="password" class="form-label">كلمة المرور *</label>
                                 <input type="password" class="form-control" id="password" name="password" required>
-                                <div class="form-text">Minimum 6 characters</div>
+                                <div class="form-text">6 أحرف على الأقل</div>
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label for="confirmPassword" class="form-label">Confirm Password *</label>
+                                <label for="confirmPassword" class="form-label">تأكيد كلمة المرور *</label>
                                 <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required>
                             </div>
                         </div>
 
-                        <!-- Professional Information -->
+                        <!-- المعلومات المهنية -->
                         <h5 class="mb-3 mt-4 text-primary">
-                            <i class="fas fa-briefcase me-2"></i>Professional Information
+                            <i class="fas fa-briefcase me-2"></i>المعلومات المهنية
                         </h5>
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label for="experience" class="form-label">Years of Experience *</label>
+                                <label for="experience" class="form-label">سنوات الخبرة *</label>
                                 <input type="number" class="form-control" id="experience" name="experience" 
                                        value="<%= oldInput.experience || '' %>" min="0" max="50" required>
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label for="pricePerSqm" class="form-label">Price per m² (DZD) *</label>
+                                <label for="pricePerSqm" class="form-label">السعر لكل متر مربع (دج) *</label>
                                 <input type="number" class="form-control" id="pricePerSqm" name="pricePerSqm" 
                                        value="<%= oldInput.pricePerSqm || '' %>" min="0" required>
                             </div>
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label">Specialization *</label>
+                            <label class="form-label">التخصص *</label>
                             <div class="row">
                                 <div class="col-md-3">
                                     <div class="form-check">
                                         <input class="form-check-input" type="checkbox" name="specialization" value="interior" 
                                                id="interior" <%= (oldInput.specialization && oldInput.specialization.includes('interior')) ? 'checked' : '' %>>
-                                        <label class="form-check-label" for="interior">Interior</label>
+                                        <label class="form-check-label" for="interior">دهان داخلي</label>
                                     </div>
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-check">
                                         <input class="form-check-input" type="checkbox" name="specialization" value="exterior" 
                                                id="exterior" <%= (oldInput.specialization && oldInput.specialization.includes('exterior')) ? 'checked' : '' %>>
-                                        <label class="form-check-label" for="exterior">Exterior</label>
+                                        <label class="form-check-label" for="exterior">دهان خارجي</label>
                                     </div>
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-check">
                                         <input class="form-check-input" type="checkbox" name="specialization" value="commercial" 
                                                id="commercial" <%= (oldInput.specialization && oldInput.specialization.includes('commercial')) ? 'checked' : '' %>>
-                                        <label class="form-check-label" for="commercial">Commercial</label>
+                                        <label class="form-check-label" for="commercial">تجاري</label>
                                     </div>
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-check">
                                         <input class="form-check-input" type="checkbox" name="specialization" value="residential" 
                                                id="residential" <%= (oldInput.specialization && oldInput.specialization.includes('residential')) ? 'checked' : '' %>>
-                                        <label class="form-check-label" for="residential">Residential</label>
+                                        <label class="form-check-label" for="residential">سكني</label>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Location Information -->
+                        <!-- معلومات الموقع -->
                         <h5 class="mb-3 mt-4 text-primary">
-                            <i class="fas fa-map-marker-alt me-2"></i>Location Information
+                            <i class="fas fa-map-marker-alt me-2"></i>معلومات الموقع
                         </h5>
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label for="wilaya" class="form-label">Wilaya *</label>
+                                <label for="wilaya" class="form-label">الولاية *</label>
                                 <select class="form-select" id="wilaya" name="wilaya" required>
-                                    <option value="">Select Wilaya</option>
+                                    <option value="">اختر الولاية</option>
                                     <% wilayas.forEach(wilaya => { %>
                                     <option value="<%= wilaya.name %>" 
                                             <%= (oldInput.wilaya === wilaya.name) ? 'selected' : '' %>>
@@ -146,65 +144,62 @@
                                 </select>
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label for="wilayaNumber" class="form-label">Wilaya Number *</label>
+                                <label for="wilayaNumber" class="form-label">رقم الولاية *</label>
                                 <input type="number" class="form-control" id="wilayaNumber" name="wilayaNumber" 
                                        value="<%= oldInput.wilayaNumber || '' %>" readonly required>
                             </div>
                         </div>
 
                         <div class="mb-3">
-                            <label for="address" class="form-label">Full Address *</label>
+                            <label for="address" class="form-label">العنوان الكامل *</label>
                             <textarea class="form-control" id="address" name="address" rows="2" required><%= oldInput.address || '' %></textarea>
                         </div>
 
-                        <!-- Verification -->
+                        <!-- التحقق -->
                         <h5 class="mb-3 mt-4 text-primary">
-                            <i class="fas fa-id-card me-2"></i>Verification
+                            <i class="fas fa-id-card me-2"></i>التحقق
                         </h5>
                         <div class="mb-3">
-                            <label for="idCard" class="form-label">ID Card Photo *</label>
+                            <label for="idCard" class="form-label">صورة بطاقة الهوية *</label>
                             <input type="file" class="form-control" id="idCard" name="idCard" accept="image/*" required>
                             <div class="form-text">
                                 <i class="fas fa-info-circle text-info me-1"></i>
-                                Upload a clear photo of your national ID card. 
-                                Maximum size: 2MB. Supported formats: JPG, PNG, WebP.
+                                قم برفع صورة واضحة لبطاقة الهوية الوطنية.
+                                الحجم الأقصى: 2 ميجابايت. الصيغ المدعومة: JPG, PNG, WebP.
                             </div>
                         </div>
 
-                        <!-- Portfolio (Optional - Manual process) -->
+                        <!-- المحفظة (اختياري - عملية يدوية) -->
                         <div class="mb-3">
-                            <label class="form-label">Portfolio Photos</label>
+                            <label class="form-label">صور الأعمال السابقة</label>
                             <div class="alert alert-info">
                                 <i class="fas fa-info-circle me-2"></i>
-                                <strong>Portfolio Submission Process:</strong><br>
-                                After registration, you can send your portfolio photos to our admin team. 
-                                We will upload them to our gallery and add them to your profile manually.
+                                <strong>عملية إرسال المحفظة:</strong><br>
+                                بعد التسجيل، يمكنك إرسال صور أعمالك إلى فريق الإدارة.
+                                سنقوم برفعها إلى المعرض وإضافتها إلى ملفك الشخصي يدويًا.
                             </div>
                         </div>
 
                         <div class="form-check mb-4">
                             <input class="form-check-input" type="checkbox" id="terms" required>
                             <label class="form-check-label" for="terms">
-                                I agree to the <a href="/terms" class="text-decoration-none">Terms of Service</a>, 
-                                <a href="/privacy" class="text-decoration-none">Privacy Policy</a>, and commission structure
+                                أوافق على <a href="/terms" class="text-decoration-none">شروط الخدمة</a>، 
+                                <a href="/privacy" class="text-decoration-none">سياسة الخصوصية</a>، وهيكل العمولة
                             </label>
                         </div>
 
                         <div class="d-grid mb-3">
                             <button type="submit" class="btn btn-primary btn-lg">
-                                <i class="fas fa-user-check me-2"></i>Apply as Pro Painter
+                                <i class="fas fa-user-check me-2"></i>تقديم طلب الانضمام كدهان محترف
                             </button>
                         </div>
 
                         <div class="text-center">
                             <p class="mb-0">
-                                Already have an account? 
-                                <a href="/auth/login-painter" class="text-decoration-none">Sign in as Painter</a>
+                                هل لديك حساب بالفعل؟ 
+                                <a href="/auth/login-painter" class="text-decoration-none">سجل الدخول كدهان</a>
                             </p>
-                            <p class="mt-2">
-                                Looking to hire a painter? 
-                                <a href="/auth/register" class="text-decoration-none">Sign up as Client</a>
-                            </p>
+                            
                         </div>
                     </form>
                 </div>
@@ -212,6 +207,7 @@
         </div>
     </div>
 </div>
+
 <script>
   setTimeout(() => {
     document.querySelectorAll('.alert').forEach(alert => {
@@ -222,4 +218,3 @@
 </script>
 
 <%- include('../partials/footer') %>
-
