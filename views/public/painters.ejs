@@ -153,20 +153,21 @@
                                      style="width: 40px; height: 40px; overflow: hidden;">
                                     <% if (painter.profilePicture && painter.profilePicture.url) { %>
                                         <img src="<%= painter.profilePicture.url %>" alt="<%= painter.name %>" 
-                                             style="width: 100%; height: 100%; object-fit: cover;">
-                                    <% } else { %>
-                                        <i class="fas fa-brush text-white"></i>
+                                             style="width: 100%; height: 100%; object-fit: cover;"
+                                             onerror="this.style.display='none'">
                                     <% } %>
+                                    <i class="fas fa-brush text-white" 
+                                       style="<%= (painter.profilePicture && painter.profilePicture.url) ? 'display: none;' : '' %>"></i>
                                 </div>
                                 <div>
                                     <h6 class="mb-0"><%= painter.name %></h6>
                                     <small class="text-muted">
                                         <i class="fas fa-map-marker-alt me-1"></i>
-                                        <%= painter.location.wilaya %>
+                                        <%= painter.location?.wilaya || 'Location not specified' %>
                                     </small>
                                 </div>
                             </div>
-                            <% if (painter.verification.status === 'verified') { %>
+                            <% if (painter.verification?.status === 'verified') { %>
                             <span class="badge bg-success">
                                 <i class="fas fa-check-circle me-1"></i>Verified
                             </span>
@@ -179,13 +180,13 @@
                                 <div>
                                     <div class="star-rating">
                                         <% for (let i = 1; i <= 5; i++) { %>
-                                        <i class="fas fa-star <%= i <= painter.rating ? 'text-warning' : 'text-muted' %>"></i>
+                                        <i class="fas fa-star <%= i <= (painter.rating || 0) ? 'text-warning' : 'text-muted' %>"></i>
                                         <% } %>
-                                        <small class="text-muted ms-1">(<%= painter.rating.toFixed(1) %>)</small>
+                                        <small class="text-muted ms-1">(<%= (painter.rating || 0).toFixed(1) %>)</small>
                                     </div>
                                 </div>
                                 <div class="text-end">
-                                    <div class="fw-bold text-primary"><%= painter.experience %> years</div>
+                                    <div class="fw-bold text-primary"><%= painter.experience || 0 %> years</div>
                                     <small class="text-muted">Experience</small>
                                 </div>
                             </div>
@@ -194,34 +195,67 @@
                             <div class="mb-3">
                                 <small class="text-muted d-block mb-1">Specialization:</small>
                                 <div class="d-flex flex-wrap gap-1">
-                                    <% painter.specialization.forEach(spec => { %>
+                                    <% 
+                                    const specialties = painter.specialization || [];
+                                    if (specialties.length > 0) {
+                                        specialties.forEach(spec => { 
+                                    %>
                                     <span class="badge bg-light text-dark border"><%= spec %></span>
-                                    <% }); %>
+                                    <% });
+                                    } else { %>
+                                    <span class="badge bg-light text-dark border">General Painting</span>
+                                    <% } %>
                                 </div>
                             </div>
 
-                            <!-- Portfolio Preview -->
-                            <% if (painter.portfolio && painter.portfolio.length > 0) { %>
+                            <!-- Portfolio Preview - CORRECTION APPLIQUÉE -->
+                            <% 
+                            const portfolio = painter.portfolio || [];
+                            const portfolioImages = [];
+                            
+                            // Collecter la première image de chaque projet
+                            portfolio.forEach(project => {
+                                if (project.images && project.images.length > 0 && project.images[0].url) {
+                                    portfolioImages.push(project.images[0].url);
+                                }
+                            });
+                            %>
+                            
+                            <% if (portfolioImages.length > 0) { %>
                             <div class="mb-3">
                                 <small class="text-muted d-block mb-1">Portfolio Preview:</small>
                                 <div class="row g-1">
-                                    <% painter.portfolio.slice(0, 3).forEach((work, index) => { %>
+                                    <% portfolioImages.slice(0, 3).forEach((imageUrl, index) => { %>
                                     <div class="col-4">
-                                        <img src="<%= work.flickrUrl %>" 
+                                        <img src="<%= imageUrl %>" 
                                              class="img-fluid rounded" 
-                                             alt="Portfolio work"
+                                             alt="Portfolio work <%= index + 1 %>"
                                              style="height: 60px; object-fit: cover; width: 100%;"
                                              onerror="this.src='https://via.placeholder.com/80x60/f8f9fa/6c757d?text=Work'">
                                     </div>
                                     <% }); %>
-                                    <% if (painter.portfolio.length > 3) { %>
+                                    <% if (portfolioImages.length > 3) { %>
                                     <div class="col-4">
                                         <div class="bg-light rounded d-flex align-items-center justify-content-center"
                                              style="height: 60px;">
-                                            <small class="text-muted">+<%= painter.portfolio.length - 3 %></small>
+                                            <small class="text-muted">+<%= portfolioImages.length - 3 %></small>
                                         </div>
                                     </div>
                                     <% } %>
+                                </div>
+                                <small class="text-muted mt-1">
+                                    <i class="fas fa-images me-1"></i>
+                                    <%= portfolio.length %> project<%= portfolio.length !== 1 ? 's' : '' %>
+                                </small>
+                            </div>
+                            <% } else if (portfolio.length > 0) { %>
+                            <div class="mb-3">
+                                <small class="text-muted d-block mb-1">Portfolio:</small>
+                                <div class="bg-light rounded p-2 text-center">
+                                    <small class="text-muted">
+                                        <i class="fas fa-images me-1"></i>
+                                        <%= portfolio.length %> project<%= portfolio.length !== 1 ? 's' : '' %> (no images)
+                                    </small>
                                 </div>
                             </div>
                             <% } %>
@@ -229,7 +263,7 @@
                             <!-- Price and Availability -->
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
-                                    <h5 class="text-primary mb-0"><%= painter.pricePerSqm %> DZD</h5>
+                                    <h5 class="text-primary mb-0"><%= painter.pricePerSqm || 0 %> DZD</h5>
                                     <small class="text-muted">per m²</small>
                                 </div>
                                 <div class="text-end">
@@ -241,7 +275,7 @@
                                     <span class="badge bg-secondary">Unavailable</span>
                                     <% } %>
                                     <div class="text-muted small">
-                                        <%= painter.completedJobs %> jobs
+                                        <%= painter.completedJobs || 0 %> job<%= (painter.completedJobs || 0) !== 1 ? 's' : '' %>
                                     </div>
                                 </div>
                             </div>
@@ -265,6 +299,30 @@
         </div>
     </div>
 </div>
+
+<style>
+.card-hover {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border: 1px solid rgba(0,0,0,0.125);
+}
+
+.card-hover:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important;
+}
+
+.star-rating {
+    color: #ffc107;
+}
+
+.avatar-placeholder {
+    background: linear-gradient(135deg, #007bff, #0056b3);
+}
+
+.badge {
+    font-size: 0.75rem;
+}
+</style>
 
 <script>
 document.getElementById('sortSelect').addEventListener('change', function() {
