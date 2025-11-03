@@ -1,634 +1,191 @@
-<%- include('../partials/header', { title: title }) %>
+<%- include('../partials/header', { title: 'Portfolio - Paintello Pro' }) %>
 
 <style>
 .carousel {
-    border-radius: 16px;
-    overflow: hidden;
-    box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
 }
-
-.carousel-inner {
-    height: 500px;
-}
-
+.carousel-inner { height: 500px; }
 .carousel-item img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  cursor: pointer;
+  transition: transform 0.3s ease;
 }
-
-.carousel-control-prev,
-.carousel-control-next {
-    width: 60px;
-    height: 60px;
-    background: rgba(0,0,0,0.7);
-    border-radius: 50%;
-    top: 50%;
-    transform: translateY(-50%);
-    margin: 0 20px;
-    backdrop-filter: blur(20px);
-    border: 2px solid rgba(255,255,255,0.3);
+.carousel-item img:hover { transform: scale(1.02); }
+.carousel-control-prev, .carousel-control-next {
+  width: 60px; height: 60px;
+  background: rgba(0,0,0,0.6);
+  border-radius: 50%;
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
 }
-
-.carousel-control-prev:hover,
-.carousel-control-next:hover {
-    background: #007bff;
+.carousel-control-prev:hover, .carousel-control-next:hover {
+  background: #007bff;
 }
-
-.carousel-indicators {
-    bottom: 20px;
-}
-
-.carousel-indicators button {
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    margin: 0 6px;
-}
-
-/* Project Info Overlay */
-.project-info-overlay {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: linear-gradient(transparent, rgba(0,0,0,0.9));
-    color: white;
-    padding: 80px 30px 30px 30px;
-    backdrop-filter: blur(10px);
-}
-
-.project-title {
-    font-size: 1.4rem;
-    font-weight: 700;
-    margin-bottom: 12px;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
-}
-
-.project-description {
-    font-size: 1rem;
-    opacity: 0.95;
-    margin-bottom: 15px;
-    line-height: 1.5;
-}
-
-.project-meta {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 0.9rem;
-    opacity: 0.9;
-}
-
-/* Thumbnail Navigation */
 .thumbnail-container {
-    display: flex;
-    gap: 10px;
-    margin-top: 20px;
-    padding: 10px;
-    overflow-x: auto;
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+  overflow-x: auto;
+  padding: 10px;
 }
-
 .thumbnail-item {
-    flex: 0 0 auto;
-    width: 100px;
-    height: 80px;
-    border-radius: 12px;
-    overflow: hidden;
-    cursor: pointer;
-    opacity: 0.6;
-    transition: all 0.3s ease;
-    border: 3px solid transparent;
+  flex: 0 0 auto;
+  width: 100px;
+  height: 80px;
+  border-radius: 10px;
+  overflow: hidden;
+  opacity: 0.7;
+  cursor: pointer;
+  transition: 0.3s;
 }
-
-.thumbnail-item:hover {
-    opacity: 0.8;
-    transform: scale(1.05);
+.thumbnail-item.active, .thumbnail-item:hover {
+  opacity: 1;
+  border: 3px solid #007bff;
 }
-
-.thumbnail-item.active {
-    opacity: 1;
-    border: 3px solid #007bff;
-    box-shadow: 0 8px 25px rgba(0,123,255,0.3);
-}
-
 .thumbnail-item img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
-
-/* Lightbox Modal */
-.lightbox-modal {
-    display: none;
-    position: fixed;
-    z-index: 9999;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.98);
-    backdrop-filter: blur(20px);
+/* Lightbox */
+.lightbox {
+  display: none;
+  position: fixed;
+  z-index: 9999;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.95);
+  justify-content: center;
+  align-items: center;
 }
-
-.lightbox-content {
-    position: relative;
-    margin: 1% auto;
-    padding: 20px;
-    width: 95%;
-    height: 95%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+.lightbox img {
+  max-width: 90%;
+  max-height: 90vh;
+  border-radius: 10px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.7);
 }
-
-.lightbox-image {
-    max-width: 90%;
-    max-height: 80vh;
-    object-fit: contain;
-    border-radius: 12px;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
-}
-
-.lightbox-info {
-    color: white;
-    text-align: center;
-    margin-top: 30px;
-    max-width: 700px;
-    background: rgba(255,255,255,0.1);
-    padding: 20px;
-    border-radius: 12px;
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(255,255,255,0.2);
-}
-
 .lightbox-close {
-    position: absolute;
-    top: 30px;
-    right: 40px;
-    color: white;
-    font-size: 2.5rem;
-    font-weight: bold;
-    cursor: pointer;
-    background: rgba(0,0,0,0.6);
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    backdrop-filter: blur(20px);
-    border: 2px solid rgba(255,255,255,0.3);
-    transition: all 0.3s ease;
-    z-index: 10000;
+  position: absolute;
+  top: 20px; right: 30px;
+  font-size: 2rem;
+  color: white;
+  cursor: pointer;
 }
-
-.lightbox-close:hover {
-    background: #dc3545;
-    transform: scale(1.1);
-}
-
-.lightbox-nav {
-    position: absolute;
-    top: 50%;
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    padding: 0 30px;
-    transform: translateY(-50%);
-    z-index: 10000;
-}
-
-.lightbox-nav button {
-    background: rgba(0,0,0,0.7);
-    color: white;
-    border: 2px solid rgba(255,255,255,0.3);
-    width: 70px;
-    height: 70px;
-    border-radius: 50%;
-    font-size: 1.8rem;
-    cursor: pointer;
-    backdrop-filter: blur(20px);
-    transition: all 0.3s ease;
-}
-
-.lightbox-nav button:hover {
-    background: #007bff;
-    border-color: #007bff;
-    transform: scale(1.1);
-}
-
-.image-counter {
-    position: absolute;
-    top: 30px;
-    left: 30px;
-    background: rgba(0,0,0,0.8);
-    color: white;
-    padding: 10px 20px;
-    border-radius: 25px;
-    font-size: 0.9rem;
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(255,255,255,0.2);
-    z-index: 10;
-}
-
-.project-count {
-    background: #007bff;
-    color: white;
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    margin-left: 10px;
-}
-
-/* Responsive */
 @media (max-width: 768px) {
-    .carousel-inner {
-        height: 350px;
-    }
-    
-    .thumbnail-item {
-        width: 80px;
-        height: 60px;
-    }
-    
-    .lightbox-content {
-        width: 98%;
-        height: 98%;
-        padding: 10px;
-    }
-    
-    .lightbox-nav button {
-        width: 50px;
-        height: 50px;
-        font-size: 1.3rem;
-    }
-    
-    .lightbox-close {
-        top: 15px;
-        right: 20px;
-        width: 45px;
-        height: 45px;
-        font-size: 1.8rem;
-    }
+  .carousel-inner { height: 350px; }
+  .thumbnail-item { width: 80px; height: 60px; }
 }
 </style>
 
-<div class="container py-4">
-    <!-- Profile Header (identique) -->
-    <div class="row mb-5">
-        <div class="col-md-4 text-center">
-            <div class="avatar-large mb-3 mx-auto" style="width: 150px; height: 150px; border-radius: 50%; overflow: hidden; background: #f8f9fa;">
-                <% if (painter.profilePicture && painter.profilePicture.url) { %>
-                    <img src="<%= painter.profilePicture.url %>" alt="<%= painter.name %>" 
-                         style="width: 100%; height: 100%; object-fit: cover;"
-                         onerror="this.src='https://via.placeholder.com/150/007bff/ffffff?text=P'">
-                <% } else { %>
-                    <div class="w-100 h-100 d-flex align-items-center justify-content-center bg-primary">
-                        <i class="fas fa-brush fa-3x text-white"></i>
-                    </div>
-                <% } %>
-            </div>
-            
-            <% if (isVerified) { %>
-            <div class="mb-3">
-                <span class="badge bg-success fs-6">
-                    <i class="fas fa-check-circle me-1"></i>Verified Pro Painter
-                </span>
-            </div>
-            <% } %>
-            
-            <div class="mb-3">
-                <h4 class="text-primary mb-1"><%= painter.pricePerSqm %> DZD</h4>
-                <small class="text-muted">Price per m²</small>
-            </div>
-            
-            <a href="/painters/<%= painter._id %>/order" class="btn btn-primary btn-lg w-100 mb-2">
-                <i class="fas fa-paint-roller me-2"></i>Hire This Painter
-            </a>
-            
-            <% if (!user) { %>
-            <small class="text-muted">No account needed - order as guest</small>
-            <% } %>
-        </div>
-        
-        <div class="col-md-8">
-            <div class="d-flex justify-content-between align-items-start mb-3">
-                <div>
-                    <h1 class="h2 mb-1"><%= painter.name %></h1>
-                    <p class="text-muted mb-2">
-                        <i class="fas fa-map-marker-alt me-1"></i>
-                        <%= painter.location.wilaya %>, Algeria
-                        <% if (painter.location.address) { %>
-                            <br><small class="text-muted"><%= painter.location.address %></small>
-                        <% } %>
-                    </p>
-                    
-                    <div class="d-flex align-items-center mb-3">
-                        <div class="star-rating me-2">
-                            <% for (let i = 1; i <= 5; i++) { %>
-                            <i class="fas fa-star <%= i <= (painter.rating || 0) ? 'text-warning' : 'text-muted' %> fs-5"></i>
-                            <% } %>
-                        </div>
-                        <span class="fw-bold me-2"><%= (painter.rating || 0).toFixed(1) %></span>
-                        <span class="text-muted">(<%= painter.completedJobs || 0 %> jobs completed)</span>
-                    </div>
-                </div>
-                
-                <div class="text-end">
-                    <% if (painter.availability === 'available') { %>
-                    <span class="badge bg-success fs-6 p-2">
-                        <i class="fas fa-check-circle me-1"></i>Available
-                    </span>
-                    <% } else if (painter.availability === 'busy') { %>
-                    <span class="badge bg-warning fs-6 p-2">
-                        <i class="fas fa-clock me-1"></i>Busy
-                    </span>
-                    <% } else { %>
-                    <span class="badge bg-secondary fs-6 p-2">
-                        <i class="fas fa-times-circle me-1"></i>Unavailable
-                    </span>
-                    <% } %>
-                </div>
-            </div>
-        </div>
+<div class="container py-5">
+  <div class="row mb-5">
+    <div class="col-md-4 text-center">
+      <div class="avatar-large mb-3 mx-auto" style="width:150px;height:150px;border-radius:50%;overflow:hidden;">
+        <% if (painter.profilePicture && painter.profilePicture.url) { %>
+          <img src="<%= painter.profilePicture.url %>" alt="<%= painter.name %>" style="width:100%;height:100%;object-fit:cover;">
+        <% } else { %>
+          <div class="d-flex align-items-center justify-content-center bg-primary w-100 h-100 text-white">
+            <i class="fas fa-user fa-3x"></i>
+          </div>
+        <% } %>
+      </div>
+      <h4 class="fw-bold mb-1"><%= painter.name %></h4>
+      <p class="text-muted mb-1"><i class="fas fa-map-marker-alt me-1"></i><%= painter.location.wilaya %>, Algeria</p>
+      <p class="fw-semibold text-primary"><%= painter.pricePerSqm %> DZD/m²</p>
+      <a href="/painters/<%= painter._id %>/order" class="btn btn-primary w-100">
+        <i class="fas fa-paint-roller me-2"></i>Hire This Painter
+      </a>
     </div>
 
-    <!-- Portfolio Section avec Bootstrap Carousel -->
-    <div class="row">
-        <div class="col-12">
-            <div class="card shadow-sm border-0">
-                <div class="card-header bg-light border-0">
-                    <h4 class="mb-0 d-flex align-items-center">
-                        <i class="fas fa-images me-2"></i>Portfolio Gallery
-                        <% if (painter.portfolio && painter.portfolio.length > 0) { %>
-                        <span class="project-count">
-                            <%= painter.portfolio.length %> <%= painter.portfolio.length === 1 ? 'Project' : 'Projects' %>
-                        </span>
-                        <% } %>
-                    </h4>
-                </div>
-                <div class="card-body p-4">
-                    <% 
-                    const portfolio = painter.portfolio || [];
-                    const allImages = [];
-                    let totalImages = 0;
-                    
-                    // Collecter TOUTES les images
-                    portfolio.forEach((project, projectIndex) => {
-                        if (project.images && Array.isArray(project.images)) {
-                            project.images.forEach((img, imgIndex) => {
-                                allImages.push({
-                                    url: img.url,
-                                    projectTitle: project.title || `Project ${projectIndex + 1}`,
-                                    description: project.description,
-                                    category: project.category,
-                                    uploadedAt: project.uploadedAt,
-                                    projectIndex: projectIndex,
-                                    imageIndex: imgIndex,
-                                    totalInProject: project.images.length
-                                });
-                                totalImages++;
-                            });
-                        }
-                    });
-                    %>
-                    
-                    <% if (allImages.length === 0) { %>
-                    <div class="text-center py-5">
-                        <i class="fas fa-images fa-3x text-muted mb-3"></i>
-                        <h5 class="text-muted">No portfolio images yet</h5>
-                        <p class="text-muted">This painter hasn't uploaded any project photos</p>
-                    </div>
-                    <% } else { %>
-                    
-                    <!-- Image Counter -->
-                    <div class="image-counter">
-                        <i class="fas fa-images me-2"></i>
-                        <%= totalImages %> images in <%= portfolio.length %> projects
-                    </div>
+    <div class="col-md-8">
+      <h2 class="mb-4"><i class="fas fa-images me-2"></i>Portfolio Gallery</h2>
 
-                    <!-- Main Carousel -->
-                    <div id="portfolioCarousel" class="carousel slide" data-bs-ride="carousel">
-                        <div class="carousel-inner">
-                            <% allImages.forEach((image, index) => { %>
-                            <div class="carousel-item <%= index === 0 ? 'active' : '' %>" 
-                                 data-image-index="<%= index %>"
-                                 onclick="openLightbox(<%= index %>)">
-                                 
-                                <img src="<%= image.url %>" 
-                                     class="d-block w-100"
-                                     alt="<%= image.projectTitle %>"
-                                     onerror="this.src='https://via.placeholder.com/800x500/f8f9fa/6c757d?text=Project+Image'">
-                                
-                                <div class="project-info-overlay">
-                                    <div class="project-title">
-                                        <%= image.projectTitle %>
-                                        <% if (image.totalInProject > 1) { %>
-                                        <span class="badge bg-info ms-2">
-                                            <%= image.imageIndex + 1 %>/<%= image.totalInProject %>
-                                        </span>
-                                        <% } %>
-                                    </div>
-                                    
-                                    <% if (image.description) { %>
-                                    <div class="project-description">
-                                        <%= image.description %>
-                                    </div>
-                                    <% } %>
-                                    
-                                    <div class="project-meta">
-                                        <% if (image.category) { %>
-                                        <span class="badge bg-primary">
-                                            <i class="fas fa-tag me-1"></i><%= image.category %>
-                                        </span>
-                                        <% } %>
-                                        
-                                        <% if (image.uploadedAt) { %>
-                                        <span>
-                                            <i class="fas fa-calendar me-1"></i>
-                                            <%= new Date(image.uploadedAt).toLocaleDateString() %>
-                                        </span>
-                                        <% } %>
-                                    </div>
-                                </div>
-                            </div>
-                            <% }); %>
-                        </div>
-                        
-                        <!-- Navigation Buttons -->
-                        <button class="carousel-control-prev" type="button" data-bs-target="#portfolioCarousel" data-bs-slide="prev">
-                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                            <span class="visually-hidden">Previous</span>
-                        </button>
-                        <button class="carousel-control-next" type="button" data-bs-target="#portfolioCarousel" data-bs-slide="next">
-                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                            <span class="visually-hidden">Next</span>
-                        </button>
-                        
-                        <!-- Indicators -->
-                        <div class="carousel-indicators">
-                            <% allImages.forEach((image, index) => { %>
-                            <button type="button" 
-                                    data-bs-target="#portfolioCarousel" 
-                                    data-bs-slide-to="<%= index %>" 
-                                    class="<%= index === 0 ? 'active' : '' %>"
-                                    aria-label="Slide <%= index + 1 %>"></button>
-                            <% }); %>
-                        </div>
-                    </div>
+      <% 
+      const portfolio = painter.portfolio || [];
+      const allImages = [];
 
-                    <!-- Thumbnail Navigation -->
-                    <div class="thumbnail-container">
-                        <% allImages.forEach((image, index) => { %>
-                        <div class="thumbnail-item <%= index === 0 ? 'active' : '' %>" 
-                             data-index="<%= index %>"
-                             onclick="goToSlide(<%= index %>)">
-                            <img src="<%= image.url %>" 
-                                 alt="Thumbnail <%= index + 1 %>"
-                                 onerror="this.src='https://via.placeholder.com/100x60/f8f9fa/6c757d?text=Thumb'">
-                        </div>
-                        <% }); %>
-                    </div>
-                    
-                    <% } %>
-                </div>
+      portfolio.forEach((p) => {
+        if (p.images && p.images.length > 0) {
+          p.images.forEach(img => allImages.push(img.url));
+        } else if (p.flickrUrl) {
+          allImages.push(p.flickrUrl);
+        }
+      });
+      %>
+
+      <% if (allImages.length === 0) { %>
+        <div class="text-center py-5">
+          <i class="fas fa-images fa-3x text-muted mb-3"></i>
+          <h5 class="text-muted">No portfolio photos yet</h5>
+        </div>
+      <% } else { %>
+        <!-- Carousel -->
+        <div id="portfolioCarousel" class="carousel slide" data-bs-ride="carousel">
+          <div class="carousel-inner">
+            <% allImages.forEach((img, i) => { %>
+              <div class="carousel-item <%= i === 0 ? 'active' : '' %>">
+                <img src="<%= img %>" alt="Project Image <%= i+1 %>" onclick="openLightbox(<%= i %>)" onerror="this.src='https://via.placeholder.com/800x500?text=Image+Not+Found'">
+              </div>
+            <% }) %>
+          </div>
+
+          <button class="carousel-control-prev" type="button" data-bs-target="#portfolioCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon"></span>
+          </button>
+          <button class="carousel-control-next" type="button" data-bs-target="#portfolioCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon"></span>
+          </button>
+        </div>
+
+        <!-- Thumbnails -->
+        <div class="thumbnail-container mt-3">
+          <% allImages.forEach((img, i) => { %>
+            <div class="thumbnail-item <%= i === 0 ? 'active' : '' %>" onclick="goToSlide(<%= i %>)">
+              <img src="<%= img %>" alt="Thumbnail <%= i+1 %>">
             </div>
+          <% }) %>
         </div>
+      <% } %>
     </div>
-
-    <!-- Lightbox Modal -->
-    <div id="lightboxModal" class="lightbox-modal">
-        <span class="lightbox-close" onclick="closeLightbox()">&times;</span>
-        
-        <!-- Image Counter in Lightbox -->
-        <div class="image-counter">
-            <span id="lightboxCounter">1/<%= allImages.length %></span>
-        </div>
-        
-        <div class="lightbox-nav">
-            <button onclick="changeLightboxImage(-1)">❮</button>
-            <button onclick="changeLightboxImage(1)">❯</button>
-        </div>
-        
-        <div class="lightbox-content">
-            <img id="lightboxImage" class="lightbox-image" src="" alt="">
-            <div class="lightbox-info">
-                <h3 id="lightboxTitle" class="mb-3"></h3>
-                <p id="lightboxDescription" class="mb-3"></p>
-                <div class="d-flex justify-content-center gap-3">
-                    <span id="lightboxCategory" class="badge bg-primary"></span>
-                    <span id="lightboxDate" class="text-muted"></span>
-                </div>
-            </div>
-        </div>
-    </div>
+  </div>
 </div>
 
-<!-- Bootstrap 5 JavaScript -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Lightbox -->
+<div id="lightbox" class="lightbox" onclick="closeLightbox()">
+  <span class="lightbox-close" onclick="closeLightbox()">&times;</span>
+  <img id="lightbox-img" src="">
+</div>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
 const allImages = <%= JSON.stringify(allImages) %>;
-let currentLightboxIndex = 0;
+const carousel = new bootstrap.Carousel(document.getElementById('portfolioCarousel'));
+let lightbox = document.getElementById('lightbox');
+let lightboxImg = document.getElementById('lightbox-img');
 
-// Initialize Bootstrap Carousel
-const portfolioCarousel = new bootstrap.Carousel(document.getElementById('portfolioCarousel'), {
-    interval: 5000,
-    wrap: true
-});
-
-// Go to specific slide
-function goToSlide(index) {
-    portfolioCarousel.to(index);
-    updateThumbnails(index);
+function goToSlide(i) {
+  carousel.to(i);
+  document.querySelectorAll('.thumbnail-item').forEach((el, idx) => {
+    el.classList.toggle('active', idx === i);
+  });
 }
 
-// Update thumbnail active state
-function updateThumbnails(activeIndex) {
-    const thumbnails = document.querySelectorAll('.thumbnail-item');
-    thumbnails.forEach((thumb, index) => {
-        if (index === activeIndex) {
-            thumb.classList.add('active');
-        } else {
-            thumb.classList.remove('active');
-        }
-    });
-}
-
-// Lightbox Functions
-function openLightbox(index) {
-    currentLightboxIndex = index;
-    updateLightboxContent();
-    document.getElementById('lightboxModal').style.display = 'block';
-    document.body.style.overflow = 'hidden';
+function openLightbox(i) {
+  lightbox.style.display = 'flex';
+  lightboxImg.src = allImages[i];
+  document.body.style.overflow = 'hidden';
 }
 
 function closeLightbox() {
-    document.getElementById('lightboxModal').style.display = 'none';
-    document.body.style.overflow = 'auto';
+  lightbox.style.display = 'none';
+  document.body.style.overflow = 'auto';
 }
-
-function changeLightboxImage(direction) {
-    currentLightboxIndex += direction;
-    
-    if (currentLightboxIndex < 0) {
-        currentLightboxIndex = allImages.length - 1;
-    } else if (currentLightboxIndex >= allImages.length) {
-        currentLightboxIndex = 0;
-    }
-    
-    updateLightboxContent();
-}
-
-function updateLightboxContent() {
-    const image = allImages[currentLightboxIndex];
-    document.getElementById('lightboxImage').src = image.url;
-    document.getElementById('lightboxTitle').textContent = image.projectTitle;
-    document.getElementById('lightboxDescription').textContent = image.description || '';
-    document.getElementById('lightboxCounter').textContent = `${currentLightboxIndex + 1}/${allImages.length}`;
-    
-    // Update category and date
-    const categoryEl = document.getElementById('lightboxCategory');
-    const dateEl = document.getElementById('lightboxDate');
-    
-    if (image.category) {
-        categoryEl.textContent = image.category;
-        categoryEl.style.display = 'inline-block';
-    } else {
-        categoryEl.style.display = 'none';
-    }
-    
-    if (image.uploadedAt) {
-        dateEl.textContent = new Date(image.uploadedAt).toLocaleDateString();
-        dateEl.style.display = 'inline-block';
-    } else {
-        dateEl.style.display = 'none';
-    }
-}
-
-// Keyboard navigation
-document.addEventListener('keydown', function(e) {
-    const lightbox = document.getElementById('lightboxModal');
-    if (lightbox.style.display === 'block') {
-        if (e.key === 'Escape') closeLightbox();
-        if (e.key === 'ArrowLeft') changeLightboxImage(-1);
-        if (e.key === 'ArrowRight') changeLightboxImage(1);
-    }
-});
-
-// Close lightbox when clicking outside image
-document.getElementById('lightboxModal').addEventListener('click', function(e) {
-    if (e.target === this) closeLightbox();
-});
-
-// Update thumbnails on slide change
-document.getElementById('portfolioCarousel').addEventListener('slid.bs.carousel', function (e) {
-    const activeIndex = e.to;
-    updateThumbnails(activeIndex);
-});
 </script>
 
 <%- include('../partials/footer') %>
+
