@@ -1,49 +1,66 @@
-<%- include('../partials/header', { title: title }) %>
+<%- include('../partials/header', { title: painter.name }) %>
 
 <!-- Swiper CSS -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
 
 <style>
 body {
-  background: #f6f8fa;
+  background: #f7f9fc;
 }
+
 .container {
   max-width: 1100px;
 }
 
-/* Profile Header */
+.card {
+  border-radius: 20px;
+  border: none;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.05);
+}
+
 .avatar-large {
   width: 140px;
   height: 140px;
   border-radius: 50%;
   overflow: hidden;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.1);
   margin: 0 auto;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.15);
 }
-.card {
-  border-radius: 20px;
-  border: none;
-}
+
+/* Swiper styling */
 .swiper {
   width: 100%;
-  height: 480px;
-  border-radius: 16px;
+  height: 460px;
+  border-radius: 15px;
   overflow: hidden;
 }
 .swiper-slide img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  cursor: pointer;
+  transition: transform 0.4s ease;
+}
+.swiper-slide img:hover {
+  transform: scale(1.05);
+}
+.swiper-button-next,
+.swiper-button-prev {
+  color: white;
+  background: rgba(0,0,0,0.4);
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
 }
 .thumbnail-swiper {
   height: 100px;
-  margin-top: 20px;
+  margin-top: 15px;
 }
 .thumbnail-swiper .swiper-slide {
-  opacity: 0.6;
-  cursor: pointer;
+  opacity: 0.5;
   border-radius: 10px;
   overflow: hidden;
+  cursor: pointer;
   transition: all 0.3s ease;
 }
 .thumbnail-swiper .swiper-slide-thumb-active {
@@ -80,7 +97,7 @@ body {
 
 <div class="container py-5">
 
-  <!-- Header -->
+  <!-- Header Section -->
   <div class="row mb-5 align-items-center">
     <div class="col-md-4 text-center">
       <div class="avatar-large mb-3">
@@ -88,12 +105,14 @@ body {
           <img src="<%= painter.profilePicture.url %>" alt="<%= painter.name %>" style="width:100%; height:100%; object-fit:cover;">
         <% } else { %>
           <div class="bg-primary w-100 h-100 d-flex align-items-center justify-content-center text-white">
-            <i class="fas fa-brush fa-2x"></i>
+            <i class="fas fa-user fa-2x"></i>
           </div>
         <% } %>
       </div>
       <div class="mb-2">
-        <span class="badge bg-success"><i class="fas fa-check-circle me-1"></i>Verified Pro Painter</span>
+        <% if (painter.verification && painter.verification.status === 'verified') { %>
+          <span class="badge bg-success"><i class="fas fa-check-circle me-1"></i>Verified Pro Painter</span>
+        <% } %>
       </div>
       <h5 class="text-primary mb-1"><%= painter.pricePerSqm %> DZD</h5>
       <small class="text-muted">Price per m²</small>
@@ -104,7 +123,9 @@ body {
 
     <div class="col-md-8">
       <h2 class="fw-bold"><%= painter.name %></h2>
-      <p class="text-muted mb-1"><i class="fas fa-map-marker-alt me-1"></i><%= painter.location.wilaya %>, Algeria</p>
+      <p class="text-muted mb-1">
+        <i class="fas fa-map-marker-alt me-1"></i><%= painter.location.wilaya %>, Algeria
+      </p>
 
       <div class="d-flex align-items-center mb-3">
         <% for (let i = 1; i <= 5; i++) { %>
@@ -124,7 +145,7 @@ body {
     </div>
   </div>
 
-  <!-- Portfolio -->
+  <!-- Portfolio Section -->
   <div class="card shadow-sm p-4">
     <div class="d-flex align-items-center mb-3">
       <i class="fas fa-images text-primary me-2"></i>
@@ -139,8 +160,6 @@ body {
       (painter.portfolio || []).forEach(project => {
         if (project.images && Array.isArray(project.images)) {
           project.images.forEach(img => allImages.push(img.url));
-        } else if (project.flickrUrl) {
-          allImages.push(project.flickrUrl);
         }
       });
     %>
@@ -157,7 +176,7 @@ body {
         <div class="swiper-wrapper">
           <% allImages.forEach((url, i) => { %>
             <div class="swiper-slide">
-              <img src="<%= url %>" alt="Project <%= i+1 %>" onclick="openLightbox(<%= i %>)" loading="lazy">
+              <img src="<%= url %>" alt="Project <%= i+1 %>" onclick="openLightbox(<%= i %>)">
             </div>
           <% }) %>
         </div>
@@ -166,12 +185,12 @@ body {
         <div class="swiper-pagination"></div>
       </div>
 
-      <!-- Thumbnails -->
+      <!-- Thumbnail Swiper -->
       <div class="swiper thumbnail-swiper">
         <div class="swiper-wrapper">
           <% allImages.forEach((url, i) => { %>
             <div class="swiper-slide">
-              <img src="<%= url %>" alt="thumb <%= i+1 %>">
+              <img src="<%= url %>" alt="Thumb <%= i+1 %>">
             </div>
           <% }) %>
         </div>
@@ -185,7 +204,6 @@ body {
     <span class="lightbox-close" onclick="closeLightbox()">&times;</span>
     <img id="lightbox-img" src="" alt="">
   </div>
-
 </div>
 
 <!-- Swiper JS -->
@@ -207,7 +225,7 @@ function closeLightbox() {
   document.body.style.overflow = 'auto';
 }
 
-// Initialize Swiper AFTER page load
+// Swiper initialization (main + thumbs)
 window.addEventListener('load', () => {
   const thumbs = new Swiper('.thumbnail-swiper', {
     slidesPerView: 5,
@@ -223,8 +241,7 @@ window.addEventListener('load', () => {
 
   const swiper = new Swiper('.portfolio-swiper', {
     loop: allImages.length > 1,
-    preventClicks: false,
-    preventClicksPropagation: false,
+    spaceBetween: 10,
     navigation: {
       nextEl: '.swiper-button-next',
       prevEl: '.swiper-button-prev',
@@ -239,6 +256,5 @@ window.addEventListener('load', () => {
 </script>
 
 <%- include('../partials/footer') %>
-
 
 
