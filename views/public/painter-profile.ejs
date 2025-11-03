@@ -1,198 +1,107 @@
-<%- include('../partials/header', { title: title }) %>
-
-<!-- Swiper CSS -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
-
-<style>
-.swiper {
-  width: 100%;
-  height: 500px;
-  border-radius: 16px;
-  overflow: hidden;
-  box-shadow: 0 12px 40px rgba(0,0,0,0.15);
-}
-.swiper-slide {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: #000;
-}
-.swiper-slide img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-/* Lightbox */
-.lightbox-modal {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.95);
-  z-index: 9999;
-  align-items: center;
-  justify-content: center;
-}
-.lightbox-modal.active {
-  display: flex;
-}
-.lightbox-content {
-  position: relative;
-  max-width: 90%;
-  max-height: 90%;
-}
-.lightbox-content img {
-  max-width: 100%;
-  max-height: 80vh;
-  border-radius: 12px;
-  cursor: zoom-in;
-  transition: transform 0.3s ease;
-}
-.lightbox-close {
-  position: absolute;
-  top: 20px;
-  right: 30px;
-  font-size: 2rem;
-  color: white;
-  cursor: pointer;
-}
-.lightbox-nav button {
-  background: rgba(0,0,0,0.5);
-  color: white;
-  border: none;
-  font-size: 2rem;
-  border-radius: 50%;
-  padding: 10px 20px;
-  cursor: pointer;
-}
-.lightbox-nav {
-  position: absolute;
-  top: 50%;
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  transform: translateY(-50%);
-}
-</style>
+<%- include('../partials/header', { title: 'My Portfolio', painter: painter }) %>
 
 <div class="container py-5">
-  <!-- Painter Info -->
+  <!-- Painter Info Section -->
   <div class="text-center mb-5">
-    <h2 class="fw-bold"><%= painter.name %></h2>
-    <p class="text-muted"><i class="fas fa-map-marker-alt me-2"></i><%= painter.location.wilaya %>, Algeria</p>
+    <h2 class="fw-bold text-primary"><%= painter.name %></h2>
+    <p class="text-muted mb-2">
+      <i class="fas fa-map-marker-alt me-2"></i>
+      <%= painter.location?.wilaya || 'Unknown Wilaya' %>, Algeria
+    </p>
+
+    <% if (painter.verification && painter.verification.status === 'verified') { %>
+      <span class="badge bg-success mb-3"><i class="fas fa-check-circle me-1"></i>Verified</span>
+    <% } %>
+
     <div>
       <% for (let i = 1; i <= 5; i++) { %>
         <i class="fas fa-star <%= i <= (painter.rating || 0) ? 'text-warning' : 'text-muted' %>"></i>
       <% } %>
-      <span class="ms-2 fw-bold"><%= (painter.rating || 0).toFixed(1) %></span>
+      <span class="fw-bold ms-2"><%= (painter.rating || 0).toFixed(1) %></span>
       <span class="text-muted">(<%= painter.completedJobs || 0 %> jobs)</span>
     </div>
   </div>
 
-  <!-- Portfolio -->
+  <!-- Portfolio Section -->
   <div class="card border-0 shadow-sm">
     <div class="card-header bg-light">
       <h4 class="mb-0"><i class="fas fa-images me-2"></i>Portfolio Gallery</h4>
     </div>
     <div class="card-body">
-      <% 
-      const allImages = [];
-      (painter.portfolio || []).forEach(project => {
-        if (Array.isArray(project.images)) {
-          project.images.forEach(img => {
-            if (img.url) allImages.push(img.url);
-          });
-        }
-      });
-      %>
 
-      <% if (allImages.length === 0) { %>
-        <div class="text-center py-5 text-muted">
+      <% if (!painter.portfolio || painter.portfolio.length === 0) { %>
+        <div class="text-center text-muted py-5">
           <i class="fas fa-images fa-3x mb-3"></i>
-          <p>No portfolio images yet</p>
+          <h5>No projects yet</h5>
+          <p>Send your photos via WhatsApp to be added to your portfolio.</p>
         </div>
       <% } else { %>
-        <div class="swiper mySwiper">
-          <div class="swiper-wrapper">
-            <% allImages.forEach((url, i) => { %>
-              <div class="swiper-slide">
-                <img src="<%= url %>" onclick="openLightbox(<%= i %>)">
+        <% painter.portfolio.forEach((project, index) => { %>
+          <div class="card mb-5 border-0 shadow-sm card-hover">
+            <div class="card-body">
+              <h5 class="text-primary mb-1"><%= project.title || 'Untitled Project' %></h5>
+              <p class="text-muted small mb-2">
+                <%= project.description || 'No description provided' %>
+              </p>
+              <div class="mb-2">
+                <span class="badge bg-info text-dark me-1"><%= project.category || 'General' %></span>
+                <% if (project.clientType) { %>
+                  <span class="badge bg-secondary me-1"><%= project.clientType %></span>
+                <% } %>
+                <% if (project.projectSize) { %>
+                  <span class="badge bg-warning text-dark"><%= project.projectSize %></span>
+                <% } %>
               </div>
-            <% }) %>
+            </div>
+
+            <% if (project.images && project.images.length > 0) { %>
+              <div id="carousel<%= index %>" class="carousel slide" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                  <% project.images.forEach((img, i) => { %>
+                    <div class="carousel-item <%= i === 0 ? 'active' : '' %>">
+                      <img src="<%= img.url %>" class="d-block w-100"
+                           alt="Project Image"
+                           style="height: 400px; object-fit: cover; border-radius: 10px;">
+                    </div>
+                  <% }) %>
+                </div>
+                <% if (project.images.length > 1) { %>
+                  <button class="carousel-control-prev" type="button" data-bs-target="#carousel<%= index %>" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                  </button>
+                  <button class="carousel-control-next" type="button" data-bs-target="#carousel<%= index %>" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                  </button>
+                <% } %>
+              </div>
+            <% } else { %>
+              <div class="text-center py-4 text-muted">
+                <img src="https://via.placeholder.com/600x400?text=No+Images" 
+                     class="img-fluid rounded" alt="No Images">
+              </div>
+            <% } %>
           </div>
-          <div class="swiper-button-next"></div>
-          <div class="swiper-button-prev"></div>
-          <div class="swiper-pagination"></div>
-        </div>
+        <% }) %>
       <% } %>
     </div>
   </div>
 </div>
 
-<!-- Lightbox -->
-<div id="lightbox" class="lightbox-modal">
-  <div class="lightbox-content">
-    <span class="lightbox-close" onclick="closeLightbox()">&times;</span>
-    <img id="lightboxImg" src="" alt="">
-    <div class="lightbox-nav">
-      <button onclick="changeImage(-1)">❮</button>
-      <button onclick="changeImage(1)">❯</button>
-    </div>
-  </div>
-</div>
-
-<!-- Swiper JS -->
-<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-<script>
-const allImages = <%= JSON.stringify(allImages) %>;
-let currentIndex = 0;
-
-const swiper = new Swiper(".mySwiper", {
-  loop: allImages.length > 1,
-  pagination: { el: ".swiper-pagination", clickable: true },
-  navigation: { nextEl: ".swiper-button-next", prevEl: ".swiper-button-prev" },
-  autoplay: { delay: 4000 },
-});
-
-function openLightbox(i) {
-  currentIndex = i;
-  document.getElementById("lightboxImg").src = allImages[i];
-  document.getElementById("lightbox").classList.add("active");
-  document.body.style.overflow = 'hidden';
+<style>
+.card-hover {
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
 }
-function closeLightbox() {
-  document.getElementById("lightbox").classList.remove("active");
-  document.body.style.overflow = 'auto';
+.card-hover:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
 }
-function changeImage(dir) {
-  currentIndex = (currentIndex + dir + allImages.length) % allImages.length;
-  document.getElementById("lightboxImg").src = allImages[currentIndex];
+.carousel-inner img {
+  transition: transform 0.3s ease;
 }
-
-// Zoom functionality
-const lightboxImg = document.getElementById("lightboxImg");
-let zoomed = false;
-
-lightboxImg.addEventListener("click", function(e) {
-  zoomed = !zoomed;
-  if (zoomed) {
-    this.style.transform = "scale(1.8)";
-    this.style.cursor = "zoom-out";
-  } else {
-    this.style.transform = "scale(1)";
-    this.style.cursor = "zoom-in";
-  }
-});
-
-// Swipe navigation in lightbox (for mobile)
-let touchStartX = 0, touchEndX = 0;
-document.getElementById('lightbox').addEventListener('touchstart', e => touchStartX = e.changedTouches[0].screenX);
-document.getElementById('lightbox').addEventListener('touchend', e => {
-  touchEndX = e.changedTouches[0].screenX;
-  if (touchStartX - touchEndX > 50) changeImage(1);
-  if (touchStartX - touchEndX < -50) changeImage(-1);
-});
-</script>
+.carousel-inner img:hover {
+  transform: scale(1.03);
+}
+</style>
 
 <%- include('../partials/footer') %>
 
