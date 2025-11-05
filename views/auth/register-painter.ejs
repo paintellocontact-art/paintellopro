@@ -282,6 +282,21 @@ document.getElementById('painterRegistrationForm').addEventListener('submit', fu
 });
 </script>
 <script>
+window.dataLayer = window.dataLayer || [];
+
+document.getElementById('painterRegistrationForm').addEventListener('submit', function(e) {
+    // These names MUST match your GTM variables exactly
+    window.dataLayer.push({
+        'event': 'ga4_sign_up',
+        'user_wilaya': document.getElementById('wilaya').value,
+        'painter_price_sqm': parseInt(document.getElementById('pricePerSqm').value) || 0,
+        'painter_experience': parseInt(document.getElementById('experience').value) || 0,
+        'painter_specialization': Array.from(document.querySelectorAll('input[name="specialization"]:checked'))
+                                    .map(cb => cb.value).join(', ')
+    });
+});
+</script>
+<script>
   setTimeout(() => {
     document.querySelectorAll('.alert').forEach(alert => {
       const bsAlert = new bootstrap.Alert(alert);
