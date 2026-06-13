@@ -1,500 +1,564 @@
 <%- include('../partials/header', { title: 'Find Painters - Paintello Pro' }) %>
 
 <style>
-/* Modern Muula/Instagram Style for Search Page */
+/* Muula/Modern Style */
 :root {
-    --primary: #007bff;
-    --primary-dark: #0056b3;
-    --background: #fafafa;
-    --card-bg: #ffffff;
-    --text-dark: #262626;
-    --text-gray: #8e8e8e;
-    --border-color: #dbdbdb;
+    --primary-blue: #2C5F8A;
+    --primary-green: #4A9B6E;
+    --primary-light: #7AB2C8;
+    --text-dark: #2D3748;
+    --text-gray: #718096;
+    --bg-light: #F7FAFC;
+    --bg-white: #FFFFFF;
+    --border-light: #E2E8F0;
+    --shadow-sm: 0 2px 8px rgba(0,0,0,0.05);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+    --shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
+    --radius-lg: 20px;
+    --radius-md: 16px;
+    --radius-sm: 12px;
 }
 
 body {
-    background: var(--background);
+    background: var(--bg-light);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
 
-/* Modern Filter Bar - Like Instagram Stories */
-.filter-bar-modern {
-    background: var(--card-bg);
-    border-bottom: 1px solid var(--border-color);
-    padding: 15px 0;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    backdrop-filter: blur(10px);
-    background: rgba(255, 255, 255, 0.95);
+/* Hero Section - Modern Header */
+.painters-hero {
+    background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-light) 100%);
+    padding: 48px 0;
+    margin-bottom: 32px;
+    border-radius: 0 0 30px 30px;
 }
 
-.filter-container {
+.hero-container {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 0 20px;
-    overflow-x: auto;
-    white-space: nowrap;
-    scrollbar-width: thin;
+    padding: 0 24px;
+    text-align: center;
 }
 
-.filter-container::-webkit-scrollbar {
-    height: 4px;
+.hero-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 12px;
 }
 
-.filter-container::-webkit-scrollbar-track {
-    background: var(--border-color);
-    border-radius: 10px;
+.hero-subtitle {
+    font-size: 1.1rem;
+    color: rgba(255,255,255,0.9);
+    margin-bottom: 32px;
 }
 
-.filter-container::-webkit-scrollbar-thumb {
-    background: var(--primary);
-    border-radius: 10px;
+/* Modern Search Bar */
+.search-bar-modern {
+    max-width: 600px;
+    margin: 0 auto;
+    position: relative;
 }
 
-.filter-chips {
-    display: inline-flex;
+.search-bar-modern input {
+    width: 100%;
+    padding: 16px 24px;
+    padding-left: 52px;
+    border: none;
+    border-radius: 50px;
+    font-size: 1rem;
+    box-shadow: var(--shadow-lg);
+    background: var(--bg-white);
+    transition: all 0.3s ease;
+}
+
+.search-bar-modern input:focus {
+    outline: none;
+    box-shadow: 0 8px 28px rgba(0,0,0,0.15);
+    transform: translateY(-2px);
+}
+
+.search-bar-modern i {
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-gray);
+    font-size: 1.1rem;
+}
+
+/* Filter Chips - Modern Style */
+.filter-section {
+    max-width: 1200px;
+    margin: 0 auto 32px;
+    padding: 0 24px;
+}
+
+.filter-chips-modern {
+    display: flex;
+    flex-wrap: wrap;
     gap: 12px;
-    padding-bottom: 5px;
+    margin-bottom: 24px;
 }
 
-.filter-chip {
+.chip {
+    padding: 10px 20px;
+    background: var(--bg-white);
+    border: 1px solid var(--border-light);
+    border-radius: 40px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-dark);
+    cursor: pointer;
+    transition: all 0.2s ease;
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    padding: 8px 20px;
-    background: white;
-    border: 1px solid var(--border-color);
-    border-radius: 30px;
+}
+
+.chip i {
     font-size: 0.9rem;
-    color: var(--text-dark);
-    cursor: pointer;
-    transition: all 0.3s ease;
-    white-space: nowrap;
+    color: var(--text-gray);
 }
 
-.filter-chip i {
-    font-size: 1rem;
+.chip:hover {
+    border-color: var(--primary-green);
+    background: #F0FAF4;
+    transform: translateY(-2px);
 }
 
-.filter-chip.active {
-    background: var(--primary);
-    border-color: var(--primary);
+.chip.active {
+    background: var(--primary-green);
+    border-color: var(--primary-green);
     color: white;
 }
 
-.filter-chip:hover:not(.active) {
-    border-color: var(--primary);
-    background: #f8f9fa;
+.chip.active i {
+    color: white;
 }
 
-/* Stats Header */
-.stats-header {
+/* Results Header */
+.results-header {
     max-width: 1200px;
-    margin: 20px auto 0;
-    padding: 0 20px;
+    margin: 0 auto 24px;
+    padding: 0 24px;
     display: flex;
     justify-content: space-between;
     align-items: baseline;
     flex-wrap: wrap;
-    gap: 15px;
+    gap: 16px;
 }
 
-.results-count h2 {
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: var(--text-dark);
-    margin-bottom: 5px;
-}
-
-.results-count p {
-    color: var(--text-gray);
-    margin: 0;
-}
-
-.sort-modern select {
-    padding: 8px 16px;
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    background: white;
-    color: var(--text-dark);
-    font-size: 0.9rem;
-    cursor: pointer;
-}
-
-/* Painter Grid - Instagram Style */
-.painters-grid-modern {
-    max-width: 1200px;
-    margin: 30px auto;
-    padding: 0 20px;
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 25px;
-}
-
-/* Painter Card - Like Instagram Profile Card */
-.painter-card-modern {
-    background: var(--card-bg);
-    border-radius: 12px;
-    overflow: hidden;
-    border: 1px solid var(--border-color);
-    transition: all 0.3s ease;
-    cursor: pointer;
-    position: relative;
-}
-
-.painter-card-modern:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-}
-
-/* Card Header with Cover and Avatar */
-.card-cover {
-    position: relative;
-    height: 120px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    overflow: hidden;
-}
-
-.card-cover img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.avatar-modern-card {
-    position: absolute;
-    bottom: -40px;
-    left: 20px;
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    border: 3px solid white;
-    background: white;
-    overflow: hidden;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-}
-
-.avatar-modern-card img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.verified-badge-card {
-    position: absolute;
-    bottom: -5px;
-    right: -5px;
-    background: #28a745;
-    border-radius: 50%;
-    width: 22px;
-    height: 22px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 2px solid white;
-}
-
-.verified-badge-card i {
-    font-size: 0.7rem;
-    color: white;
-}
-
-/* Card Body */
-.card-body-modern {
-    padding: 50px 16px 16px;
-}
-
-.painter-name {
-    font-size: 1.1rem;
+.results-count h3 {
+    font-size: 1.25rem;
     font-weight: 600;
     color: var(--text-dark);
     margin-bottom: 4px;
 }
 
-.painter-location {
+.results-count p {
+    color: var(--text-gray);
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+.sort-modern select {
+    padding: 10px 16px;
+    border: 1px solid var(--border-light);
+    border-radius: 12px;
+    background: var(--bg-white);
+    font-size: 0.9rem;
+    color: var(--text-dark);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.sort-modern select:hover {
+    border-color: var(--primary-green);
+}
+
+/* Painter Cards - Muula Style */
+.painters-grid {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px 48px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 28px;
+}
+
+.painter-card-muula {
+    background: var(--bg-white);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow-sm);
+    cursor: pointer;
+    position: relative;
+}
+
+.painter-card-muula:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-lg);
+}
+
+/* Card Cover */
+.card-cover-muula {
+    height: 140px;
+    background: linear-gradient(135deg, var(--primary-blue), var(--primary-light));
+    position: relative;
+    overflow: hidden;
+}
+
+.card-cover-muula img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Avatar */
+.avatar-muula {
+    position: absolute;
+    bottom: -35px;
+    left: 20px;
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    border: 4px solid var(--bg-white);
+    background: var(--bg-white);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+}
+
+.avatar-muula img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.verified-badge-muula {
+    position: absolute;
+    bottom: -2px;
+    right: -2px;
+    background: var(--primary-green);
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid var(--bg-white);
+}
+
+.verified-badge-muula i {
+    font-size: 0.6rem;
+    color: white;
+}
+
+/* Card Body */
+.card-body-muula {
+    padding: 48px 20px 20px;
+}
+
+.painter-name-muula {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.location-muula {
     font-size: 0.8rem;
     color: var(--text-gray);
     display: flex;
     align-items: center;
     gap: 4px;
-    margin-bottom: 12px;
+    margin-bottom: 16px;
 }
 
 /* Stats Row */
-.stats-row {
+.stats-row-muula {
     display: flex;
-    justify-content: space-around;
+    gap: 20px;
     padding: 12px 0;
-    border-top: 1px solid var(--border-color);
-    border-bottom: 1px solid var(--border-color);
-    margin-bottom: 12px;
+    border-top: 1px solid var(--border-light);
+    border-bottom: 1px solid var(--border-light);
+    margin-bottom: 16px;
 }
 
-.stat-item-card {
+.stat-item-muula {
     text-align: center;
+    flex: 1;
 }
 
-.stat-value-card {
+.stat-value-muula {
     font-size: 1rem;
-    font-weight: 600;
-    color: var(--text-dark);
+    font-weight: 700;
+    color: var(--primary-blue);
     display: block;
 }
 
-.stat-label-card {
+.stat-label-muula {
     font-size: 0.7rem;
     color: var(--text-gray);
 }
 
 /* Rating Stars */
-.rating-modern {
+.rating-muula {
     display: flex;
     align-items: center;
-    gap: 5px;
+    gap: 8px;
     margin-bottom: 12px;
 }
 
-.stars {
+.stars-muula {
     display: flex;
     gap: 2px;
 }
 
-.stars i {
+.stars-muula i {
     font-size: 0.8rem;
 }
 
-.rating-number {
+.rating-number-muula {
     font-size: 0.8rem;
-    font-weight: 600;
+    font-weight: 500;
     color: var(--text-dark);
 }
 
-/* Specializations */
-.specializations-modern {
+/* Specialties */
+.specialties-muula {
     display: flex;
     flex-wrap: wrap;
-    gap: 6px;
-    margin-bottom: 12px;
+    gap: 8px;
+    margin-bottom: 16px;
 }
 
-.spec-tag {
+.specialty-tag-muula {
     font-size: 0.7rem;
-    padding: 4px 10px;
-    background: #f0f0f0;
-    border-radius: 12px;
+    padding: 4px 12px;
+    background: var(--bg-light);
+    border-radius: 20px;
     color: var(--text-dark);
 }
 
 /* Price Section */
-.price-section-modern {
+.price-section-muula {
     display: flex;
     justify-content: space-between;
-    align-items: baseline;
-    margin-bottom: 16px;
+    align-items: center;
+    margin-bottom: 20px;
 }
 
-.price-modern {
-    font-size: 1.3rem;
+.price-muula {
+    font-size: 1.4rem;
     font-weight: 700;
-    color: var(--primary);
+    color: var(--primary-green);
 }
 
-.price-modern small {
+.price-muula small {
     font-size: 0.7rem;
     font-weight: 400;
     color: var(--text-gray);
 }
 
-.availability-badge-modern {
+.availability-muula {
     padding: 4px 12px;
     border-radius: 20px;
     font-size: 0.7rem;
     font-weight: 600;
 }
 
-.availability-badge-modern.available {
-    background: #d4edda;
-    color: #155724;
+.availability-muula.available {
+    background: #E6F7EC;
+    color: var(--primary-green);
 }
 
-.availability-badge-modern.busy {
-    background: #fff3cd;
-    color: #856404;
-}
-
-.availability-badge-modern.unavailable {
-    background: #f8d7da;
-    color: #721c24;
+.availability-muula.busy {
+    background: #FEF3E2;
+    color: #E67E22;
 }
 
 /* Action Buttons */
-.card-actions-modern {
+.actions-muula {
     display: flex;
-    gap: 10px;
-    margin-top: 12px;
+    gap: 12px;
 }
 
-.btn-view-modern, .btn-hire-modern {
+.btn-muula {
     flex: 1;
-    padding: 8px;
-    border-radius: 8px;
+    padding: 10px;
+    border-radius: 40px;
     font-size: 0.85rem;
     font-weight: 600;
     text-align: center;
-    transition: all 0.3s ease;
     cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
     border: none;
+    font-family: inherit;
 }
 
-.btn-view-modern {
-    background: transparent;
-    border: 1px solid var(--border-color);
-    color: var(--text-dark);
-}
-
-.btn-view-modern:hover {
-    border-color: var(--primary);
-    color: var(--primary);
-}
-
-.btn-hire-modern {
-    background: linear-gradient(135deg, #28a745, #20c997);
+.btn-muula-primary {
+    background: var(--primary-green);
     color: white;
 }
 
-.btn-hire-modern:hover {
+.btn-muula-primary:hover {
+    background: #3D8A5E;
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+}
+
+.btn-muula-secondary {
+    background: transparent;
+    border: 1px solid var(--border-light);
+    color: var(--text-dark);
+}
+
+.btn-muula-secondary:hover {
+    border-color: var(--primary-green);
+    background: #F0FAF4;
 }
 
 /* Portfolio Preview */
-.portfolio-preview {
+.portfolio-preview-muula {
     display: flex;
-    gap: 4px;
-    margin-bottom: 12px;
-    padding: 8px;
-    background: #f8f9fa;
-    border-radius: 8px;
+    gap: 8px;
+    margin-bottom: 16px;
 }
 
-.preview-image {
-    flex: 1;
-    height: 50px;
-    border-radius: 4px;
+.preview-img-muula {
+    width: 60px;
+    height: 60px;
+    border-radius: var(--radius-sm);
     object-fit: cover;
+    background: var(--bg-light);
 }
 
-/* No Results */
-.no-results-modern {
+/* Empty State */
+.empty-state {
     text-align: center;
-    padding: 80px 20px;
-    background: white;
-    border-radius: 12px;
-    border: 1px solid var(--border-color);
+    padding: 80px 24px;
+    background: var(--bg-white);
+    border-radius: var(--radius-lg);
+    max-width: 600px;
+    margin: 0 auto;
 }
 
-.no-results-modern i {
+.empty-state i {
     font-size: 4rem;
     color: var(--text-gray);
     margin-bottom: 20px;
 }
 
-.no-results-modern h3 {
+.empty-state h3 {
     color: var(--text-dark);
-    margin-bottom: 10px;
+    margin-bottom: 12px;
 }
 
-.no-results-modern p {
+.empty-state p {
     color: var(--text-gray);
-    margin-bottom: 20px;
+    margin-bottom: 24px;
 }
 
-/* Floating Filter Button for Mobile */
-.floating-filter-btn {
+/* Mobile Filter Drawer */
+.filter-drawer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--bg-white);
+    border-radius: 24px 24px 0 0;
+    padding: 24px;
+    transform: translateY(100%);
+    transition: transform 0.3s ease;
+    z-index: 1000;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
+}
+
+.filter-drawer.active {
+    transform: translateY(0);
+}
+
+.filter-drawer-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 999;
     display: none;
+}
+
+.filter-drawer-overlay.active {
+    display: block;
+}
+
+.filter-drawer-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.filter-group {
+    margin-bottom: 24px;
+}
+
+.filter-group label {
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 12px;
+    display: block;
+}
+
+.floating-filter-btn {
     position: fixed;
     bottom: 20px;
     right: 20px;
     width: 56px;
     height: 56px;
     border-radius: 50%;
-    background: var(--primary);
+    background: var(--primary-green);
     color: white;
     border: none;
-    box-shadow: 0 4px 15px rgba(0, 123, 255, 0.4);
+    box-shadow: var(--shadow-lg);
     cursor: pointer;
-    z-index: 1000;
+    z-index: 100;
+    display: none;
     transition: all 0.3s ease;
 }
 
 .floating-filter-btn:hover {
-    transform: scale(1.1);
-}
-
-/* Sidebar Filter Modal for Mobile */
-.filter-sidebar-modern {
-    position: fixed;
-    top: 0;
-    right: -100%;
-    width: 85%;
-    max-width: 350px;
-    height: 100%;
-    background: white;
-    z-index: 1050;
-    transition: right 0.3s ease;
-    box-shadow: -2px 0 20px rgba(0, 0, 0, 0.1);
-    overflow-y: auto;
-}
-
-.filter-sidebar-modern.active {
-    right: 0;
-}
-
-.filter-sidebar-header {
-    padding: 20px;
-    border-bottom: 1px solid var(--border-color);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    position: sticky;
-    top: 0;
-    background: white;
-    z-index: 1;
-}
-
-.filter-sidebar-body {
-    padding: 20px;
-}
-
-.filter-group {
-    margin-bottom: 20px;
-}
-
-.filter-group label {
-    font-weight: 600;
-    color: var(--text-dark);
-    margin-bottom: 10px;
-    display: block;
-}
-
-.overlay-dark {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 1040;
-}
-
-.overlay-dark.active {
-    display: block;
+    transform: scale(1.05);
 }
 
 /* Responsive */
 @media (max-width: 768px) {
-    .filter-bar-modern {
+    .hero-title {
+        font-size: 1.8rem;
+    }
+    
+    .hero-subtitle {
+        font-size: 0.95rem;
+    }
+    
+    .painters-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+        padding: 0 16px 80px;
+    }
+    
+    .filter-section {
         display: none;
     }
     
@@ -504,158 +568,171 @@ body {
         justify-content: center;
     }
     
-    .stats-header {
+    .results-header {
         flex-direction: column;
         align-items: flex-start;
-    }
-    
-    .painters-grid-modern {
-        grid-template-columns: 1fr;
-        gap: 16px;
         padding: 0 16px;
     }
     
-    .results-count h2 {
-        font-size: 1.2rem;
+    .chip span {
+        display: none;
+    }
+    
+    .chip i {
+        margin: 0;
+    }
+    
+    .chip {
+        padding: 10px 14px;
     }
 }
 
 @media (min-width: 769px) and (max-width: 1024px) {
-    .painters-grid-modern {
+    .painters-grid {
         grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
     }
 }
 
-/* Loading Animation */
-@keyframes shimmer {
-    0% { background-position: -1000px 0; }
-    100% { background-position: 1000px 0; }
+/* Animation */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
-.loading-card {
-    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-    background-size: 1000px 100%;
-    animation: shimmer 2s infinite;
+.painter-card-muula {
+    animation: fadeInUp 0.4s ease forwards;
+    opacity: 0;
 }
 </style>
 
-<!-- Floating Filter Button (Mobile) -->
-<button class="floating-filter-btn" onclick="toggleFilterSidebar()">
-    <i class="fas fa-sliders-h"></i>
-</button>
-
-<!-- Overlay -->
-<div class="overlay-dark" id="overlayDark" onclick="toggleFilterSidebar()"></div>
-
-<!-- Filter Sidebar (Mobile) -->
-<div class="filter-sidebar-modern" id="filterSidebar">
-    <div class="filter-sidebar-header">
-        <h6 class="mb-0">Filters</h6>
-        <button class="btn-close" onclick="toggleFilterSidebar()"></button>
-    </div>
-    <div class="filter-sidebar-body">
-        <form id="mobileSearchForm" action="/painters" method="GET">
-            <!-- Wilaya Filter -->
-            <div class="filter-group">
-                <label>Wilaya</label>
-                <select class="form-select" name="wilaya">
-                    <option value="">All Wilayas</option>
-                    <% wilayas.forEach(wilaya => { %>
-                    <option value="<%= wilaya.name %>" <%= query.wilaya === wilaya.name ? 'selected' : '' %>>
-                        <%= wilaya.name %>
-                    </option>
-                    <% }); %>
-                </select>
-            </div>
-
-            <!-- Availability -->
-            <div class="filter-group">
-                <label>Availability</label>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="availability" value="true" 
-                           id="mobileAvailable" <%= query.availability === 'true' ? 'checked' : '' %>>
-                    <label class="form-check-label" for="mobileAvailable">
-                        Available Now
-                    </label>
-                </div>
-            </div>
-
-            <!-- Experience -->
-            <div class="filter-group">
-                <label>Minimum Experience</label>
-                <select class="form-select" name="minExperience">
-                    <option value="">Any experience</option>
-                    <option value="1" <%= query.minExperience === '1' ? 'selected' : '' %>>1+ years</option>
-                    <option value="3" <%= query.minExperience === '3' ? 'selected' : '' %>>3+ years</option>
-                    <option value="5" <%= query.minExperience === '5' ? 'selected' : '' %>>5+ years</option>
-                    <option value="10" <%= query.minExperience === '10' ? 'selected' : '' %>>10+ years</option>
-                </select>
-            </div>
-
-            <!-- Rating -->
-            <div class="filter-group">
-                <label>Minimum Rating</label>
-                <select class="form-select" name="minRating">
-                    <option value="">Any rating</option>
-                    <option value="4" <%= query.minRating === '4' ? 'selected' : '' %>>4★ & above</option>
-                    <option value="3" <%= query.minRating === '3' ? 'selected' : '' %>>3★ & above</option>
-                    <option value="2" <%= query.minRating === '2' ? 'selected' : '' %>>2★ & above</option>
-                </select>
-            </div>
-
-            <!-- Price Range -->
-            <div class="filter-group">
-                <label>Price per m²</label>
-                <div class="row g-2">
-                    <div class="col-6">
-                        <input type="number" class="form-control" placeholder="Min" name="minPrice" 
-                               value="<%= query.minPrice || '' %>">
-                    </div>
-                    <div class="col-6">
-                        <input type="number" class="form-control" placeholder="Max" name="maxPrice" 
-                               value="<%= query.maxPrice || '' %>">
-                    </div>
-                </div>
-            </div>
-
-            <div class="d-grid gap-2">
-                <button type="submit" class="btn btn-primary">Apply Filters</button>
-                <a href="/painters" class="btn btn-outline-secondary">Reset All</a>
-            </div>
-        </form>
-    </div>
-</div>
-
-<!-- Modern Filter Bar (Desktop) -->
-<div class="filter-bar-modern">
-    <div class="filter-container">
-        <div class="filter-chips">
-            <div class="filter-chip <%= !query.wilaya ? 'active' : '' %>" data-filter="all">
-                <i class="fas fa-th-large"></i> All
-            </div>
-            <div class="filter-chip" data-filter="available" data-availability="true">
-                <i class="fas fa-check-circle"></i> Available Now
-            </div>
-            <div class="filter-chip" data-filter="top-rated" data-rating="4">
-                <i class="fas fa-star"></i> Top Rated
-            </div>
-            <div class="filter-chip" data-filter="experienced" data-experience="5">
-                <i class="fas fa-trophy"></i> Experienced (5+ yrs)
-            </div>
-            <% if (query.wilaya) { %>
-            <div class="filter-chip active" data-filter="wilaya">
-                <i class="fas fa-map-marker-alt"></i> <%= query.wilaya %>
-            </div>
-            <% } %>
+<!-- Hero Section -->
+<div class="painters-hero">
+    <div class="hero-container">
+        <h1 class="hero-title">Find Your Perfect Painter</h1>
+        <p class="hero-subtitle">Discover skilled painters across Algeria. Quality work, fair prices.</p>
+        
+        <!-- Search Bar -->
+        <div class="search-bar-modern">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchInput" placeholder="Search by painter name, city, or specialty..." value="<%= query.search || '' %>">
         </div>
     </div>
 </div>
 
-<!-- Stats Header -->
-<div class="stats-header">
+<!-- Floating Filter Button (Mobile) -->
+<button class="floating-filter-btn" onclick="toggleFilterDrawer()">
+    <i class="fas fa-sliders-h"></i>
+</button>
+
+<!-- Filter Drawer (Mobile) -->
+<div class="filter-drawer-overlay" id="filterDrawerOverlay" onclick="toggleFilterDrawer()"></div>
+<div class="filter-drawer" id="filterDrawer">
+    <div class="filter-drawer-header">
+        <h6 class="mb-0">Filter Painters</h6>
+        <button class="btn-close" onclick="toggleFilterDrawer()"></button>
+    </div>
+    <form id="mobileFilterForm" action="/painters" method="GET">
+        <div class="filter-group">
+            <label>Wilaya</label>
+            <select class="form-select" name="wilaya">
+                <option value="">All Wilayas</option>
+                <% wilayas.forEach(wilaya => { %>
+                <option value="<%= wilaya.name %>" <%= query.wilaya === wilaya.name ? 'selected' : '' %>>
+                    <%= wilaya.name %>
+                </option>
+                <% }); %>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label>Availability</label>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="availability" value="true" 
+                       id="mobileAvailable" <%= query.availability === 'true' ? 'checked' : '' %>>
+                <label class="form-check-label" for="mobileAvailable">Available Now</label>
+            </div>
+        </div>
+        <div class="filter-group">
+            <label>Min Experience</label>
+            <select class="form-select" name="minExperience">
+                <option value="">Any</option>
+                <option value="1" <%= query.minExperience === '1' ? 'selected' : '' %>>1+ years</option>
+                <option value="3" <%= query.minExperience === '3' ? 'selected' : '' %>>3+ years</option>
+                <option value="5" <%= query.minExperience === '5' ? 'selected' : '' %>>5+ years</option>
+                <option value="10" <%= query.minExperience === '10' ? 'selected' : '' %>>10+ years</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label>Min Rating</label>
+            <select class="form-select" name="minRating">
+                <option value="">Any</option>
+                <option value="4" <%= query.minRating === '4' ? 'selected' : '' %>>4★ & above</option>
+                <option value="3" <%= query.minRating === '3' ? 'selected' : '' %>>3★ & above</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label>Price per m²</label>
+            <div class="row g-2">
+                <div class="col-6">
+                    <input type="number" class="form-control" placeholder="Min" name="minPrice" value="<%= query.minPrice || '' %>">
+                </div>
+                <div class="col-6">
+                    <input type="number" class="form-control" placeholder="Max" name="maxPrice" value="<%= query.maxPrice || '' %>">
+                </div>
+            </div>
+        </div>
+        <div class="d-grid gap-2">
+            <button type="submit" class="btn" style="background: var(--primary-green); color: white; padding: 12px; border-radius: 40px; border: none; font-weight: 600;">Apply Filters</button>
+            <a href="/painters" class="btn" style="background: transparent; border: 1px solid var(--border-light); padding: 12px; border-radius: 40px; text-align: center; text-decoration: none; color: var(--text-dark);">Reset All</a>
+        </div>
+        <% if (Object.keys(query).length > 0 && query.wilaya) { %>
+        <input type="hidden" name="search" value="<%= query.search || '' %>">
+        <% } %>
+    </form>
+</div>
+
+<!-- Filter Chips (Desktop) -->
+<div class="filter-section">
+    <div class="filter-chips-modern">
+        <div class="chip <%= !query.wilaya && !query.availability && !query.minRating ? 'active' : '' %>" data-filter="all">
+            <i class="fas fa-th-large"></i><span>All Painters</span>
+        </div>
+        <div class="chip" data-filter="available" data-availability="true">
+            <i class="fas fa-check-circle"></i><span>Available Now</span>
+        </div>
+        <div class="chip" data-filter="top-rated" data-rating="4">
+            <i class="fas fa-star"></i><span>Top Rated</span>
+        </div>
+        <div class="chip" data-filter="experienced" data-experience="5">
+            <i class="fas fa-trophy"></i><span>5+ Years Exp</span>
+        </div>
+        <% if (query.wilaya) { %>
+        <div class="chip active">
+            <i class="fas fa-map-marker-alt"></i><span><%= query.wilaya %></span>
+        </div>
+        <% } %>
+    </div>
+    
+    <form id="desktopFilterForm" action="/painters" method="GET" style="display: none;">
+        <input type="hidden" name="wilaya" id="desktopWilaya" value="<%= query.wilaya || '' %>">
+        <input type="hidden" name="availability" id="desktopAvailability" value="<%= query.availability || '' %>">
+        <input type="hidden" name="minExperience" id="desktopExperience" value="<%= query.minExperience || '' %>">
+        <input type="hidden" name="minRating" id="desktopRating" value="<%= query.minRating || '' %>">
+        <input type="hidden" name="search" id="desktopSearch" value="<%= query.search || '' %>">
+    </form>
+</div>
+
+<!-- Results Header -->
+<div class="results-header">
     <div class="results-count">
-        <h2>Find Professional Painters</h2>
-        <p><strong><%= painters.length %></strong> painters found in Algeria</p>
+        <h3><%= painters.length %> painter<%= painters.length !== 1 ? 's' : '' %> found</h3>
+        <p>Professional painters ready to bring your vision to life</p>
     </div>
     <div class="sort-modern">
         <select id="sortSelect">
@@ -669,17 +746,17 @@ body {
 
 <!-- Painters Grid -->
 <% if (painters.length === 0) { %>
-<div class="painters-grid-modern">
-    <div class="no-results-modern">
+<div class="painters-grid">
+    <div class="empty-state">
         <i class="fas fa-search"></i>
         <h3>No painters found</h3>
-        <p>Try adjusting your filters or search in a different wilaya</p>
-        <a href="/painters" class="btn btn-primary">Clear All Filters</a>
+        <p>Try adjusting your filters or search in a different area</p>
+        <a href="/painters" class="btn-muula btn-muula-primary" style="display: inline-block; padding: 12px 28px;">Clear All Filters</a>
     </div>
 </div>
 <% } else { %>
-<div class="painters-grid-modern">
-    <% painters.forEach(painter => { 
+<div class="painters-grid">
+    <% painters.forEach((painter, cardIndex) => { 
         const portfolioImages = [];
         (painter.portfolio || []).forEach(project => {
             if (project.images && project.images.length > 0 && project.images[0].url) {
@@ -688,104 +765,96 @@ body {
         });
         const coverImage = portfolioImages[0] || null;
     %>
-    <div class="painter-card-modern" onclick="viewProfile('<%= painter._id %>')">
+    <div class="painter-card-muula" style="animation-delay: <%= cardIndex * 0.05 %>s" onclick="viewProfile('<%= painter._id %>')">
         <!-- Card Cover -->
-        <div class="card-cover">
+        <div class="card-cover-muula">
             <% if (coverImage) { %>
                 <img src="<%= coverImage %>" alt="Cover" onerror="this.style.display='none'">
-            <% } else { %>
-                <img src="https://via.placeholder.com/400x120/667eea/ffffff?text=Painter" alt="Cover">
             <% } %>
         </div>
         
         <!-- Avatar -->
-        <div class="avatar-modern-card">
+        <div class="avatar-muula">
             <% if (painter.profilePicture && painter.profilePicture.url) { %>
-                <img src="<%= painter.profilePicture.url %>" alt="<%= painter.name %>"
-                     onerror="this.src='https://via.placeholder.com/80x80/007bff/ffffff?text=P'">
+                <img src="<%= painter.profilePicture.url %>" alt="<%= painter.name %>" onerror="this.src='https://placehold.co/200x200/2C5F8A/white?text=P'">
             <% } else { %>
-                <img src="https://via.placeholder.com/80x80/007bff/ffffff?text=P" alt="<%= painter.name %>">
+                <img src="https://placehold.co/200x200/2C5F8A/white?text=P" alt="<%= painter.name %>">
             <% } %>
             <% if (painter.verification?.status === 'verified') { %>
-                <div class="verified-badge-card">
+                <div class="verified-badge-muula">
                     <i class="fas fa-check"></i>
                 </div>
             <% } %>
         </div>
         
         <!-- Card Body -->
-        <div class="card-body-modern">
-            <div class="painter-name"><%= painter.name %></div>
-            <div class="painter-location">
+        <div class="card-body-muula">
+            <div class="painter-name-muula">
+                <%= painter.name %>
+            </div>
+            <div class="location-muula">
                 <i class="fas fa-map-marker-alt"></i>
-                <%= painter.location?.wilaya || 'Location not specified' %>
+                <%= painter.location?.wilaya || 'Algeria' %>
             </div>
             
             <!-- Stats Row -->
-            <div class="stats-row">
-                <div class="stat-item-card">
-                    <span class="stat-value-card"><%= painter.completedJobs || 0 %></span>
-                    <span class="stat-label-card">Jobs</span>
+            <div class="stats-row-muula">
+                <div class="stat-item-muula">
+                    <span class="stat-value-muula"><%= painter.completedJobs || 0 %></span>
+                    <span class="stat-label-muula">Jobs Done</span>
                 </div>
-                <div class="stat-item-card">
-                    <span class="stat-value-card"><%= painter.experience || 0 %></span>
-                    <span class="stat-label-card">Years</span>
+                <div class="stat-item-muula">
+                    <span class="stat-value-muula"><%= painter.experience || 0 %></span>
+                    <span class="stat-label-muula">Years Exp</span>
                 </div>
             </div>
             
             <!-- Rating -->
-            <div class="rating-modern">
-                <div class="stars">
+            <div class="rating-muula">
+                <div class="stars-muula">
                     <% for (let i = 1; i <= 5; i++) { %>
-                        <i class="fas fa-star <%= i <= Math.floor(painter.rating || 0) ? 'text-warning' : 'text-muted' %>"></i>
+                        <i class="fas fa-star <%= i <= Math.round(painter.rating || 0) ? 'text-warning' : 'text-muted' %>" style="color: <%= i <= Math.round(painter.rating || 0) ? '#FBBF24' : '#E2E8F0' %>;"></i>
                     <% } %>
                 </div>
-                <span class="rating-number">(<%= (painter.rating || 0).toFixed(1) %>)</span>
+                <span class="rating-number-muula">(<%= (painter.rating || 0).toFixed(1) %>)</span>
             </div>
             
-            <!-- Specializations -->
+            <!-- Specialties -->
             <% const specialties = painter.specialization || []; %>
             <% if (specialties.length > 0) { %>
-            <div class="specializations-modern">
-                <% specialties.slice(0, 3).forEach(spec => { %>
-                    <span class="spec-tag"><%= spec %></span>
+            <div class="specialties-muula">
+                <% specialties.slice(0, 2).forEach(spec => { %>
+                    <span class="specialty-tag-muula"><%= spec %></span>
                 <% }) %>
-                <% if (specialties.length > 3) { %>
-                    <span class="spec-tag">+<%= specialties.length - 3 %></span>
+                <% if (specialties.length > 2) { %>
+                    <span class="specialty-tag-muula">+<%= specialties.length - 2 %></span>
                 <% } %>
             </div>
             <% } %>
             
             <!-- Portfolio Preview -->
             <% if (portfolioImages.length > 0) { %>
-            <div class="portfolio-preview">
+            <div class="portfolio-preview-muula">
                 <% portfolioImages.slice(0, 3).forEach((img, idx) => { %>
-                    <img src="<%= img %>" class="preview-image" alt="Work <%= idx + 1 %>"
-                         onerror="this.style.display='none'">
+                    <img src="<%= img %>" class="preview-img-muula" alt="Work" onerror="this.style.display='none'">
                 <% }) %>
             </div>
             <% } %>
             
             <!-- Price & Availability -->
-            <div class="price-section-modern">
-                <div>
-                    <span class="price-modern"><%= painter.pricePerSqm || 0 %><small> DA/m²</small></span>
+            <div class="price-section-muula">
+                <div class="price-muula">
+                    <%= painter.pricePerSqm || 0 %><small> DA/m²</small>
                 </div>
-                <div>
-                    <span class="availability-badge-modern <%= painter.availability === 'available' ? 'available' : (painter.availability === 'busy' ? 'busy' : 'unavailable') %>">
-                        <%= painter.availability === 'available' ? 'Available' : (painter.availability === 'busy' ? 'Busy' : 'Unavailable') %>
-                    </span>
+                <div class="availability-muula <%= painter.availability === 'available' ? 'available' : 'busy' %>">
+                    <%= painter.availability === 'available' ? 'Available' : 'Busy' %>
                 </div>
             </div>
             
-            <!-- Action Buttons -->
-            <div class="card-actions-modern" onclick="event.stopPropagation()">
-                <a href="/painters/<%= painter._id %>" class="btn-view-modern">
-                    <i class="fas fa-user"></i> Profile
-                </a>
-                <a href="/painters/<%= painter._id %>/order" class="btn-hire-modern">
-                    <i class="fas fa-calendar-check"></i> Hire
-                </a>
+            <!-- Actions -->
+            <div class="actions-muula" onclick="event.stopPropagation()">
+                <a href="/painters/<%= painter._id %>" class="btn-muula btn-muula-secondary">Profile</a>
+                <a href="/painters/<%= painter._id %>/order" class="btn-muula btn-muula-primary">Hire</a>
             </div>
         </div>
     </div>
@@ -799,13 +868,22 @@ function viewProfile(painterId) {
     window.location.href = `/painters/${painterId}`;
 }
 
-// Toggle filter sidebar for mobile
-function toggleFilterSidebar() {
-    const sidebar = document.getElementById('filterSidebar');
-    const overlay = document.getElementById('overlayDark');
-    sidebar.classList.toggle('active');
+// Toggle filter drawer (mobile)
+function toggleFilterDrawer() {
+    const drawer = document.getElementById('filterDrawer');
+    const overlay = document.getElementById('filterDrawerOverlay');
+    drawer.classList.toggle('active');
     overlay.classList.toggle('active');
 }
+
+// Search functionality
+document.getElementById('searchInput').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        const url = new URL(window.location);
+        url.searchParams.set('search', this.value);
+        window.location.href = url.toString();
+    }
+});
 
 // Sort functionality
 document.getElementById('sortSelect').addEventListener('change', function() {
@@ -814,8 +892,8 @@ document.getElementById('sortSelect').addEventListener('change', function() {
     window.location.href = url.toString();
 });
 
-// Filter chips functionality
-document.querySelectorAll('.filter-chip').forEach(chip => {
+// Filter chips (desktop)
+document.querySelectorAll('.chip[data-filter]').forEach(chip => {
     chip.addEventListener('click', function() {
         const filter = this.dataset.filter;
         const url = new URL(window.location);
@@ -835,36 +913,12 @@ document.querySelectorAll('.filter-chip').forEach(chip => {
     });
 });
 
-// Remove loading state
-document.addEventListener('DOMContentLoaded', () => {
-    // Add animation to cards
-    const cards = document.querySelectorAll('.painter-card-modern');
-    cards.forEach((card, index) => {
-        card.style.animation = `fadeInUp 0.5s ease ${index * 0.05}s forwards`;
-        card.style.opacity = '0';
-        card.style.transform = 'translateY(20px)';
-    });
-});
-
-// Add keyframes dynamically
-const style = document.createElement('style');
-style.textContent = `
-    @keyframes fadeInUp {
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-`;
-document.head.appendChild(style);
-
-// Close filter sidebar on escape key
+// Close filter drawer on escape
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
-        const sidebar = document.getElementById('filterSidebar');
-        const overlay = document.getElementById('overlayDark');
-        if (sidebar.classList.contains('active')) {
-            toggleFilterSidebar();
+        const drawer = document.getElementById('filterDrawer');
+        if (drawer.classList.contains('active')) {
+            toggleFilterDrawer();
         }
     }
 });
