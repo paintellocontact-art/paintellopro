@@ -1,19 +1,20 @@
-require('./server-setup'); // Add this at the very top
+// Ensure deprecation warnings are handled (optional)
+require('./server-setup'); // Keep only if this file exists – otherwise remove this line
 
 const express = require('express');
 const mongoose = require('mongoose');
 const session = require('express-session');
-const MongoStore = require('connect-mongo');
 const flash = require('connect-flash');
 const path = require('path');
 const bodyParser = require('body-parser');
 require('dotenv').config();
 
-
+// Import connect-mongo – we'll handle both old and new versions
+let MongoStore = require('connect-mongo');
 
 const app = express();
 
-// MongoDB Connection with your specific URI
+// MongoDB URI
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/paintello';
 
 console.log('🔧 Starting Paintello Pro Server...');
@@ -32,27 +33,43 @@ mongoose.connect(MONGODB_URI, {
 })
 .catch(err => {
   console.error('❌ MongoDB connection error:', err.message);
-  console.log('   Please check your MONGODB_URI in Heroku config vars');
+  console.log('   Please check your MONGODB_URI in environment variables');
   process.exit(1);
 });
 
+// ---------- 🛠️ FIX FOR MongoStore.create error ----------
+// This works with both connect-mongo v3.x (old) and v4.x (new)
+let sessionStore;
+
+// Check if the modern .create() method exists
+if (typeof MongoStore.create === 'function') {
+  // ----- connect-mongo v4.x or higher -----
+  sessionStore = MongoStore.create({
+    mongoUrl: MONGODB_URI,
+    ttl: 14 * 24 * 60 * 60   // 14 days
+  });
+} else {
+  // ----- connect-mongo v3.x (legacy) -----
+  // In v3.x, the module returns a function that needs the 'session' object
+  MongoStore = MongoStore(session);   // re-assign the legacy store constructor
+  sessionStore = new MongoStore({
+    mongooseConnection: mongoose.connection,
+    ttl: 14 * 24 * 60 * 60
+  });
+}
+// -------------------------------------------------------
+
 // Middleware
-// 🧩 Body parsing middleware
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-
-// 🧩 Trust Heroku proxy
 app.set('trust proxy', 1);
 
-// 🧩 Session middleware (must come BEFORE flash)
+// Session middleware (using the compatible store)
 app.use(session({
   secret: process.env.SESSION_SECRET || 'paintello-secret-key-2024',
   resave: false,
   saveUninitialized: false,
-  store: MongoStore.create({
-    mongoUrl: MONGODB_URI,
-    ttl: 14 * 24 * 60 * 60 // 14 days
-  }),
+  store: sessionStore,
   cookie: {
     secure: process.env.NODE_ENV === 'production',
     httpOnly: true,
@@ -61,10 +78,10 @@ app.use(session({
   }
 }));
 
-// 🧩 Flash middleware (AFTER session)
+// Flash middleware
 app.use(flash());
 
-// 🧩 Global locals middleware (AVAILABLE in all EJS files)
+// Global locals middleware
 app.use((req, res, next) => {
   res.locals.success = req.flash('success');
   res.locals.error   = req.flash('error');
@@ -76,8 +93,7 @@ app.use((req, res, next) => {
   next();
 });
 
-
-// View engine setup
+// View engine
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
@@ -87,10 +103,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Routes
 const indexRoutes = require('./routes/index');
 app.use('/', indexRoutes);
-// Mount public routes
+
 const publicRoutes = require('./routes/public');
 app.use('/', publicRoutes);
-// Health check endpoint
+
+// Health check
 app.get('/health', async (req, res) => {
   const dbStatus = mongoose.connection.readyState === 1 ? 'Connected' : 'Disconnected';
   const cloudinaryStatus = process.env.CLOUDINARY_CLOUD_NAME ? 'Configured' : 'Not configured';
@@ -116,10 +133,10 @@ app.get('/', (req, res) => {
     cloudinaryConfigured: !!process.env.CLOUDINARY_CLOUD_NAME
   });
 });
-// Temporary logout route in main app file
+
+// Logout routes
 app.get('/index/logout', (req, res) => {
   console.log('🚪 Logging out user...');
-  
   const userName = req.session.user?.name || req.session.painter?.name || 'User';
   
   req.session.destroy((err) => {
@@ -127,7 +144,6 @@ app.get('/index/logout', (req, res) => {
       console.error('Logout error:', err);
       return res.redirect('/painter/dashboard');
     }
-    
     res.clearCookie('connect.sid');
     console.log('✅ Logout successful for:', userName);
     res.redirect('/');
@@ -136,7 +152,6 @@ app.get('/index/logout', (req, res) => {
 
 app.post('/index/logout', (req, res) => {
   console.log('🚪 POST Logout...');
-  
   const userName = req.session.user?.name || req.session.painter?.name || 'User';
   
   req.session.destroy((err) => {
@@ -144,12 +159,12 @@ app.post('/index/logout', (req, res) => {
       console.error('Logout error:', err);
       return res.redirect('/painter/dashboard');
     }
-    
     res.clearCookie('connect.sid');
     console.log('✅ POST Logout successful for:', userName);
     res.redirect('/');
   });
 });
+
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error('🚨 Server Error:', err.message);
