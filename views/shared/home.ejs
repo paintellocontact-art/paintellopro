@@ -1,140 +1,923 @@
 <%- include('../partials/header', { title: 'Paintello Pro - Find Professional Painters in Algeria' }) %>
 
-<!-- Hero Section -->
-<section class="hero-section">
-    <div class="container">
-        <div class="row align-items-center">
-            <div class="col-lg-6">
-                <h1 class="display-4 fw-bold mb-4">Find Professional Painters in Your Area</h1>
-                <p class="lead mb-4">Connect with verified painters across Algeria. Quality service, fair prices, and guaranteed satisfaction for all your painting projects.</p>
-                <div class="d-flex flex-wrap gap-3">
-                    <a href="/painters" class="btn btn-light btn-lg">
-                        <i class="fas fa-search me-2"></i>Find Painters
+<style>
+/* Modern Muula Style - Homepage */
+:root {
+    --primary-blue: #2C5F8A;
+    --primary-green: #4A9B6E;
+    --primary-light: #7AB2C8;
+    --text-dark: #2D3748;
+    --text-gray: #718096;
+    --bg-light: #F7FAFC;
+    --bg-white: #FFFFFF;
+    --border-light: #E2E8F0;
+    --shadow-sm: 0 2px 8px rgba(0,0,0,0.05);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+    --shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
+    --radius-lg: 24px;
+    --radius-md: 16px;
+    --radius-sm: 12px;
+}
+
+/* Hero Section - Modern Split Layout */
+.hero-modern {
+    background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-light) 100%);
+    position: relative;
+    overflow: hidden;
+    padding: 80px 0;
+}
+
+.hero-modern::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="rgba(255,255,255,0.05)" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,122.7C672,117,768,139,864,154.7C960,171,1056,181,1152,165.3C1248,149,1344,107,1392,85.3L1440,64L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>') no-repeat bottom;
+    background-size: cover;
+    opacity: 0.3;
+}
+
+.hero-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+    position: relative;
+    z-index: 2;
+}
+
+.hero-grid {
+    display: flex;
+    align-items: center;
+    gap: 60px;
+    flex-wrap: wrap;
+}
+
+.hero-content {
+    flex: 1;
+    min-width: 280px;
+}
+
+.hero-badge {
+    display: inline-block;
+    background: rgba(255,255,255,0.2);
+    backdrop-filter: blur(10px);
+    padding: 6px 16px;
+    border-radius: 40px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: white;
+    margin-bottom: 24px;
+}
+
+.hero-title {
+    font-size: 3rem;
+    font-weight: 800;
+    color: white;
+    margin-bottom: 20px;
+    line-height: 1.2;
+}
+
+.hero-title span {
+    color: #FFD700;
+}
+
+.hero-description {
+    font-size: 1.1rem;
+    color: rgba(255,255,255,0.9);
+    margin-bottom: 32px;
+    line-height: 1.6;
+}
+
+/* Dual CTA - Like A.S Painting Contractors */
+.dual-cta {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 32px;
+}
+
+.btn-cta-primary {
+    background: var(--primary-green);
+    color: white;
+    padding: 14px 32px;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 1rem;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-cta-primary:hover {
+    background: #3D8A5E;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+    color: white;
+}
+
+.btn-cta-secondary {
+    background: transparent;
+    border: 2px solid white;
+    color: white;
+    padding: 14px 32px;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 1rem;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.btn-cta-secondary:hover {
+    background: white;
+    color: var(--primary-blue);
+    transform: translateY(-2px);
+}
+
+/* Trust Badges */
+.trust-badges {
+    display: flex;
+    gap: 24px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.trust-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: rgba(255,255,255,0.85);
+    font-size: 0.85rem;
+}
+
+.trust-item i {
+    font-size: 1.1rem;
+}
+
+.hero-visual {
+    flex: 1;
+    text-align: center;
+    min-width: 280px;
+}
+
+.hero-visual img {
+    max-width: 100%;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+}
+
+/* Stats Section */
+.stats-section {
+    background: var(--bg-white);
+    padding: 60px 0;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.stats-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    gap: 40px;
+}
+
+.stat-item-large {
+    text-align: center;
+}
+
+.stat-number-large {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--primary-blue);
+    display: block;
+}
+
+.stat-label-large {
+    font-size: 0.9rem;
+    color: var(--text-gray);
+}
+
+/* How It Works - Modern Cards */
+.how-it-works {
+    padding: 80px 0;
+    background: var(--bg-light);
+}
+
+.section-header {
+    text-align: center;
+    max-width: 700px;
+    margin: 0 auto 48px;
+}
+
+.section-header h2 {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 16px;
+}
+
+.section-header p {
+    font-size: 1.1rem;
+    color: var(--text-gray);
+}
+
+.steps-grid {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 32px;
+}
+
+.step-card {
+    text-align: center;
+    padding: 32px 24px;
+    background: var(--bg-white);
+    border-radius: var(--radius-lg);
+    transition: all 0.3s ease;
+}
+
+.step-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-lg);
+}
+
+.step-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, var(--primary-blue), var(--primary-light));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 24px;
+}
+
+.step-icon i {
+    font-size: 2rem;
+    color: white;
+}
+
+.step-number {
+    width: 32px;
+    height: 32px;
+    background: var(--primary-green);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+    font-weight: 700;
+    font-size: 0.9rem;
+}
+
+.step-card h3 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 12px;
+}
+
+.step-card p {
+    color: var(--text-gray);
+    line-height: 1.5;
+}
+
+/* Featured Painters - Modern Grid */
+.featured-section {
+    padding: 80px 0;
+    background: var(--bg-white);
+}
+
+.section-header-with-link {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 40px;
+}
+
+.view-all-link {
+    color: var(--primary-green);
+    text-decoration: none;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+}
+
+.view-all-link:hover {
+    gap: 12px;
+    color: #3D8A5E;
+}
+
+.painters-grid-home {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 30px;
+}
+
+.painter-card-home {
+    background: var(--bg-white);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-light);
+    cursor: pointer;
+}
+
+.painter-card-home:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
+}
+
+.card-body-home {
+    padding: 24px;
+    text-align: center;
+}
+
+.avatar-home {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    margin: 0 auto 16px;
+    position: relative;
+    overflow: hidden;
+}
+
+.avatar-home img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.verified-badge-home {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    background: var(--primary-green);
+    border-radius: 50%;
+    width: 22px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid var(--bg-white);
+}
+
+.verified-badge-home i {
+    font-size: 0.65rem;
+    color: white;
+}
+
+.painter-name-home {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 4px;
+}
+
+.painter-location-home {
+    font-size: 0.8rem;
+    color: var(--text-gray);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    margin-bottom: 12px;
+}
+
+.stats-home {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    padding: 12px 0;
+    border-top: 1px solid var(--border-light);
+    border-bottom: 1px solid var(--border-light);
+    margin-bottom: 12px;
+}
+
+.stat-home {
+    text-align: center;
+}
+
+.stat-value-home {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--primary-blue);
+    display: block;
+}
+
+.stat-label-home {
+    font-size: 0.65rem;
+    color: var(--text-gray);
+}
+
+.rating-home {
+    display: flex;
+    justify-content: center;
+    gap: 4px;
+    margin-bottom: 12px;
+}
+
+.rating-home i {
+    font-size: 0.75rem;
+}
+
+.price-home {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--primary-green);
+    margin-bottom: 16px;
+}
+
+.btn-profile-home {
+    width: 100%;
+    padding: 10px;
+    background: transparent;
+    border: 1px solid var(--border-light);
+    border-radius: 40px;
+    font-weight: 500;
+    color: var(--text-dark);
+    transition: all 0.3s ease;
+}
+
+.btn-profile-home:hover {
+    border-color: var(--primary-green);
+    background: #F0FAF4;
+}
+
+/* Testimonials Section */
+.testimonials-section {
+    padding: 80px 0;
+    background: var(--bg-light);
+}
+
+.testimonials-grid {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+}
+
+.testimonial-card {
+    background: var(--bg-white);
+    border-radius: var(--radius-lg);
+    padding: 28px;
+    transition: all 0.3s ease;
+}
+
+.testimonial-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-md);
+}
+
+.testimonial-stars {
+    margin-bottom: 16px;
+}
+
+.testimonial-stars i {
+    color: #FBBF24;
+    font-size: 0.85rem;
+}
+
+.testimonial-text {
+    color: var(--text-dark);
+    line-height: 1.6;
+    margin-bottom: 20px;
+    font-style: italic;
+}
+
+.testimonial-author {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.testimonial-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--primary-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+.testimonial-name {
+    font-weight: 600;
+    color: var(--text-dark);
+}
+
+.testimonial-title {
+    font-size: 0.75rem;
+    color: var(--text-gray);
+}
+
+/* CTA Section - Modern */
+.cta-modern {
+    background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-light) 100%);
+    padding: 80px 0;
+    text-align: center;
+}
+
+.cta-container {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 0 24px;
+}
+
+.cta-modern h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 16px;
+}
+
+.cta-modern p {
+    font-size: 1.1rem;
+    color: rgba(255,255,255,0.9);
+    margin-bottom: 32px;
+}
+
+.cta-buttons {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.btn-cta-light {
+    background: white;
+    color: var(--primary-blue);
+    padding: 14px 32px;
+    border-radius: 50px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.btn-cta-light:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+.btn-cta-outline-light {
+    background: transparent;
+    border: 2px solid white;
+    color: white;
+    padding: 14px 32px;
+    border-radius: 50px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.btn-cta-outline-light:hover {
+    background: white;
+    color: var(--primary-blue);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .hero-title {
+        font-size: 2rem;
+    }
+    
+    .hero-description {
+        font-size: 1rem;
+    }
+    
+    .hero-grid {
+        gap: 40px;
+    }
+    
+    .section-header h2 {
+        font-size: 1.6rem;
+    }
+    
+    .steps-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .painters-grid-home {
+        grid-template-columns: 1fr;
+    }
+    
+    .dual-cta {
+        flex-direction: column;
+    }
+    
+    .btn-cta-primary, .btn-cta-secondary {
+        text-align: center;
+        justify-content: center;
+    }
+    
+    .stats-section {
+        padding: 40px 0;
+    }
+    
+    .stat-number-large {
+        font-size: 1.8rem;
+    }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+    .painters-grid-home {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+</style>
+
+<!-- Hero Section - Modern Split Layout -->
+<section class="hero-modern">
+    <div class="hero-container">
+        <div class="hero-grid">
+            <div class="hero-content">
+                <div class="hero-badge">
+                    <i class="fas fa-check-circle"></i> Algeria's #1 Painter Platform
+                </div>
+                <h1 class="hero-title">
+                    Find Professional Painters <span>in Your Area</span>
+                </h1>
+                <p class="hero-description">
+                    Connect with verified painters across Algeria. Quality service, fair prices, 
+                    and guaranteed satisfaction for all your painting projects.
+                </p>
+                
+                <!-- Dual CTA - Inspired by A.S Painting Contractors -->
+                <div class="dual-cta">
+                    <a href="/painters" class="btn-cta-primary">
+                        <i class="fas fa-search"></i> Find a Painter
                     </a>
-                    <a href="/auth/register-painter" class="btn btn-outline-light btn-lg">
-                        <i class="fas fa-brush me-2"></i>Join as Painter
+                    <a href="/auth/register-painter" class="btn-cta-secondary">
+                        <i class="fas fa-brush"></i> Join as Painter
                     </a>
                 </div>
+                
+                <!-- Trust Badges -->
+                <div class="trust-badges">
+                    <div class="trust-item">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>Verified Painters</span>
+                    </div>
+                    <div class="trust-item">
+                        <i class="fas fa-star"></i>
+                        <span>4.8+ Rating</span>
+                    </div>
+                    <div class="trust-item">
+                        <i class="fas fa-handshake"></i>
+                        <span>100% Satisfaction</span>
+                    </div>
+                </div>
             </div>
-            <div class="col-lg-6 text-center">
-                <img src="/images/hero-painter.png" alt="Professional Painter" class="img-fluid" style="max-height: 400px;">
+            <div class="hero-visual">
+                <img src="/images/hero-painter.png" alt="Professional Painter">
             </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section class="stats-section">
+    <div class="stats-container">
+        <div class="stat-item-large">
+            <span class="stat-number-large">500+</span>
+            <span class="stat-label-large">Verified Painters</span>
+        </div>
+        <div class="stat-item-large">
+            <span class="stat-number-large">2,000+</span>
+            <span class="stat-label-large">Happy Clients</span>
+        </div>
+        <div class="stat-item-large">
+            <span class="stat-number-large">58</span>
+            <span class="stat-label-large">Wilayas Covered</span>
+        </div>
+        <div class="stat-item-large">
+            <span class="stat-number-large">4.9★</span>
+            <span class="stat-label-large">Average Rating</span>
         </div>
     </div>
 </section>
 
 <!-- How It Works -->
-<section class="py-5 bg-light">
-    <div class="container">
-        <div class="text-center mb-5">
-            <h2 class="fw-bold">How Paintello Pro Works</h2>
-            <p class="text-muted lead">Simple steps to get your painting project done</p>
+<section class="how-it-works">
+    <div class="section-header">
+        <h2>How Paintello Pro Works</h2>
+        <p>Simple steps to get your painting project done with zero hassle</p>
+    </div>
+    <div class="steps-grid">
+        <div class="step-card">
+            <div class="step-number">1</div>
+            <div class="step-icon">
+                <i class="fas fa-search"></i>
+            </div>
+            <h3>Search & Compare</h3>
+            <p>Browse verified painters in your wilaya. Compare ratings, portfolios, and prices easily.</p>
         </div>
-        <div class="row">
-            <div class="col-lg-3 col-md-6 mb-4">
-                <div class="text-center">
-                    <div class="bg-primary rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center"
-                         style="width: 80px; height: 80px;">
-                        <i class="fas fa-search fa-2x text-white"></i>
-                    </div>
-                    <h5>Search Painters</h5>
-                    <p class="text-muted">Find verified painters in your wilaya with ratings and portfolios</p>
-                </div>
+        <div class="step-card">
+            <div class="step-number">2</div>
+            <div class="step-icon">
+                <i class="fas fa-clipboard-list"></i>
             </div>
-            <div class="col-lg-3 col-md-6 mb-4">
-                <div class="text-center">
-                    <div class="bg-success rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center"
-                         style="width: 80px; height: 80px;">
-                        <i class="fas fa-clipboard-list fa-2x text-white"></i>
-                    </div>
-                    <h5>Create Order</h5>
-                    <p class="text-muted">Describe your project, set budget, and choose your preferred painter</p>
-                </div>
+            <h3>Create Order</h3>
+            <p>Describe your project, set your budget, and choose your preferred painter.</p>
+        </div>
+        <div class="step-card">
+            <div class="step-number">3</div>
+            <div class="step-icon">
+                <i class="fas fa-paint-roller"></i>
             </div>
-            <div class="col-lg-3 col-md-6 mb-4">
-                <div class="text-center">
-                    <div class="bg-warning rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center"
-                         style="width: 80px; height: 80px;">
-                        <i class="fas fa-paint-roller fa-2x text-white"></i>
-                    </div>
-                    <h5>Get It Painted</h5>
-                    <p class="text-muted">Professional painters complete your project with quality materials</p>
-                </div>
+            <h3>Get It Painted</h3>
+            <p>Professional painters complete your project with quality materials and workmanship.</p>
+        </div>
+        <div class="step-card">
+            <div class="step-number">4</div>
+            <div class="step-icon">
+                <i class="fas fa-star"></i>
             </div>
-            <div class="col-lg-3 col-md-6 mb-4">
-                <div class="text-center">
-                    <div class="bg-info rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center"
-                         style="width: 80px; height: 80px;">
-                        <i class="fas fa-star fa-2x text-white"></i>
-                    </div>
-                    <h5>Rate & Review</h5>
-                    <p class="text-muted">Share your experience and help maintain quality standards</p>
-                </div>
-            </div>
+            <h3>Rate & Review</h3>
+            <p>Share your experience and help maintain quality standards for everyone.</p>
         </div>
     </div>
 </section>
 
 <!-- Featured Painters -->
-<section class="py-5">
-    <div class="container">
-        <div class="d-flex justify-content-between align-items-center mb-5">
-            <div>
-                <h2 class="fw-bold">Featured Painters</h2>
-                <p class="text-muted">Top-rated professionals in your area</p>
-            </div>
-            <a href="/painters" class="btn btn-outline-primary">View All Painters</a>
+<section class="featured-section">
+    <div class="section-header-with-link">
+        <div>
+            <h2 style="font-size: 1.8rem; font-weight: 700; color: var(--text-dark);">Featured Painters</h2>
+            <p style="color: var(--text-gray);">Top-rated professionals in your area</p>
         </div>
-        <div class="row">
-            <% featuredPainters.forEach(painter => { %>
-            <div class="col-lg-4 col-md-6 mb-4">
-                <div class="card card-hover shadow-sm">
-                    <div class="card-body">
-                        <div class="d-flex align-items-center mb-3">
-                            <div class="avatar-placeholder bg-primary rounded-circle me-3 d-flex align-items-center justify-content-center"
-                                 style="width: 50px; height: 50px;">
-                                <i class="fas fa-brush text-white"></i>
-                            </div>
-                            <div>
-                                <h6 class="mb-0"><%= painter.user.name %></h6>
-                                <small class="text-muted">
-                                    <i class="fas fa-map-marker-alt me-1"></i>
-                                    <%= painter.wilaya %>
-                                </small>
-                            </div>
+        <a href="/painters" class="view-all-link">
+            View All Painters <i class="fas fa-arrow-right"></i>
+        </a>
+    </div>
+    
+    <div class="painters-grid-home">
+        <% featuredPainters.forEach(painter => { %>
+        <div class="painter-card-home" onclick="window.location.href='/painters/<%= painter._id %>'">
+            <div class="card-body-home">
+                <div class="avatar-home">
+                    <% if (painter.profilePicture && painter.profilePicture.url) { %>
+                        <img src="<%= painter.profilePicture.url %>" alt="<%= painter.name %>">
+                    <% } else { %>
+                        <img src="https://placehold.co/200x200/2C5F8A/white?text=P" alt="<%= painter.name %>">
+                    <% } %>
+                    <% if (painter.verification?.status === 'verified') { %>
+                        <div class="verified-badge-home">
+                            <i class="fas fa-check"></i>
                         </div>
-                        <div class="mb-3">
-                            <div class="star-rating mb-2">
-                                <% for (let i = 1; i <= 5; i++) { %>
-                                <i class="fas fa-star <%= i <= painter.rating ? 'text-warning' : 'text-muted' %>"></i>
-                                <% } %>
-                                <span class="ms-1">(<%= painter.rating.toFixed(1) %>)</span>
-                            </div>
-                            <div class="d-flex justify-content-between text-muted small">
-                                <span><%= painter.experience %> years experience</span>
-                                <span><%= painter.totalJobs %> jobs</span>
-                            </div>
-                        </div>
-                        <div class="d-flex justify-content-between align-items-center">
-                            <span class="h5 text-primary mb-0"><%= painter.pricePerSqm %> DZD/m²</span>
-                            <a href="/painters/<%= painter._id %>" class="btn btn-primary btn-sm">View Profile</a>
-                        </div>
+                    <% } %>
+                </div>
+                <div class="painter-name-home"><%= painter.name %></div>
+                <div class="painter-location-home">
+                    <i class="fas fa-map-marker-alt"></i> <%= painter.location?.wilaya || 'Algeria' %>
+                </div>
+                <div class="stats-home">
+                    <div class="stat-home">
+                        <span class="stat-value-home"><%= painter.completedJobs || 0 %></span>
+                        <span class="stat-label-home">Jobs</span>
+                    </div>
+                    <div class="stat-home">
+                        <span class="stat-value-home"><%= painter.experience || 0 %></span>
+                        <span class="stat-label-home">Years</span>
                     </div>
                 </div>
+                <div class="rating-home">
+                    <% for (let i = 1; i <= 5; i++) { %>
+                        <i class="fas fa-star <%= i <= Math.round(painter.rating || 0) ? 'text-warning' : 'text-muted' %>" style="color: <%= i <= Math.round(painter.rating || 0) ? '#FBBF24' : '#E2E8F0' %>;"></i>
+                    <% } %>
+                    <span style="font-size: 0.75rem; color: var(--text-gray); margin-left: 4px;">(<%= (painter.rating || 0).toFixed(1) %>)</span>
+                </div>
+                <div class="price-home">
+                    <%= painter.pricePerSqm || 0 %> DA/m²
+                </div>
+                <button class="btn-profile-home" onclick="event.stopPropagation(); window.location.href='/painters/<%= painter._id %>'">
+                    View Profile
+                </button>
             </div>
-            <% }); %>
+        </div>
+        <% }); %>
+    </div>
+</section>
+
+<!-- Testimonials Section -->
+<section class="testimonials-section">
+    <div class="section-header">
+        <h2>What Our Clients Say</h2>
+        <p>Trusted by thousands of homeowners across Algeria</p>
+    </div>
+    <div class="testimonials-grid">
+        <div class="testimonial-card">
+            <div class="testimonial-stars">
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+            </div>
+            <p class="testimonial-text">
+                "Found an amazing painter through Paintello Pro! The quality of work exceeded my expectations. 
+                Will definitely use again for my next project."
+            </p>
+            <div class="testimonial-author">
+                <div class="testimonial-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div>
+                    <div class="testimonial-name">Mohamed Benali</div>
+                    <div class="testimonial-title">Algiers</div>
+                </div>
+            </div>
+        </div>
+        <div class="testimonial-card">
+            <div class="testimonial-stars">
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+            </div>
+            <p class="testimonial-text">
+                "Great platform! Easy to use, professional painters, and fair prices. 
+                The verification system gives me confidence in who I'm hiring."
+            </p>
+            <div class="testimonial-author">
+                <div class="testimonial-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div>
+                    <div class="testimonial-name">Sarah Kaddour</div>
+                    <div class="testimonial-title">Oran</div>
+                </div>
+            </div>
+        </div>
+        <div class="testimonial-card">
+            <div class="testimonial-stars">
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+            </div>
+            <p class="testimonial-text">
+                "As a painter, Paintello Pro helped me grow my business significantly. 
+                I've gotten quality leads and built lasting relationships with clients."
+            </p>
+            <div class="testimonial-author">
+                <div class="testimonial-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div>
+                    <div class="testimonial-name">Karim Boudiaf</div>
+                    <div class="testimonial-title">Professional Painter</div>
+                </div>
+            </div>
         </div>
     </div>
 </section>
 
 <!-- CTA Section -->
-<section class="py-5 bg-primary text-white">
-    <div class="container text-center">
-        <h2 class="fw-bold mb-3">Ready to Start Your Painting Project?</h2>
-        <p class="lead mb-4">Join thousands of satisfied customers who found their perfect painter through Paintello Pro</p>
-        <div class="d-flex justify-content-center gap-3 flex-wrap">
-            <a href="/auth/register" class="btn btn-light btn-lg">Get Started as Client</a>
-            <a href="/auth/register-painter" class="btn btn-outline-light btn-lg">Join as Professional Painter</a>
+<section class="cta-modern">
+    <div class="cta-container">
+        <h2>Ready to Start Your Painting Project?</h2>
+        <p>Join thousands of satisfied customers who found their perfect painter through Paintello Pro</p>
+        <div class="cta-buttons">
+            <a href="/auth/register" class="btn-cta-light">
+                <i class="fas fa-user-plus"></i> Get Started as Client
+            </a>
+            <a href="/auth/register-painter" class="btn-cta-outline-light">
+                <i class="fas fa-brush"></i> Join as Painter
+            </a>
         </div>
     </div>
 </section>
