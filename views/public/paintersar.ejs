@@ -1,0 +1,900 @@
+<%- include('../partials/header', { title: 'ابحث عن دهانين - بينتيلو برو' }) %>
+
+<style>
+/* ===== MODERN MUULA STYLE - ARABIC VERSION ===== */
+:root {
+    --primary-blue: #2C5F8A;
+    --primary-green: #4A9B6E;
+    --primary-light: #7AB2C8;
+    --text-dark: #2D3748;
+    --text-gray: #718096;
+    --bg-light: #F7FAFC;
+    --bg-white: #FFFFFF;
+    --border-light: #E2E8F0;
+    --shadow-sm: 0 2px 8px rgba(0,0,0,0.05);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+    --shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
+    --radius-lg: 20px;
+    --radius-md: 16px;
+    --radius-sm: 12px;
+}
+
+body {
+    background: var(--bg-light);
+    font-family: 'Tajawal', 'Cairo', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+[dir="rtl"] {
+    text-align: right;
+}
+
+[dir="rtl"] .search-bar-modern i {
+    left: auto;
+    right: 20px;
+}
+
+[dir="rtl"] .search-bar-modern input {
+    padding-left: 24px;
+    padding-right: 52px;
+}
+
+[dir="rtl"] .chip i,
+[dir="rtl"] .btn-modern i,
+[dir="rtl"] .view-all-link i {
+    margin-left: 4px;
+    margin-right: 0;
+}
+
+[dir="rtl"] .location-modern i,
+[dir="rtl"] .painter-location-home i {
+    margin-left: 6px;
+    margin-right: 0;
+}
+
+/* Hero Section */
+.painters-hero {
+    background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-light) 100%);
+    padding: 48px 0;
+    margin-bottom: 32px;
+    border-radius: 0 0 30px 30px;
+}
+
+.hero-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+    text-align: center;
+}
+
+.hero-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 12px;
+}
+
+.hero-subtitle {
+    font-size: 1.1rem;
+    color: rgba(255,255,255,0.9);
+    margin-bottom: 32px;
+}
+
+/* Search Bar */
+.search-bar-modern {
+    max-width: 600px;
+    margin: 0 auto;
+    position: relative;
+}
+
+.search-bar-modern input {
+    width: 100%;
+    padding: 16px 24px;
+    padding-left: 52px;
+    border: none;
+    border-radius: 50px;
+    font-size: 1rem;
+    box-shadow: var(--shadow-lg);
+    background: var(--bg-white);
+    transition: all 0.3s ease;
+}
+
+.search-bar-modern input:focus {
+    outline: none;
+    box-shadow: 0 8px 28px rgba(0,0,0,0.15);
+    transform: translateY(-2px);
+}
+
+.search-bar-modern i {
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-gray);
+    font-size: 1.1rem;
+}
+
+/* Filters */
+.filter-section {
+    max-width: 1200px;
+    margin: 0 auto 32px;
+    padding: 0 24px;
+}
+
+.filter-chips-modern {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 24px;
+    justify-content: center;
+}
+
+.chip {
+    padding: 10px 24px;
+    background: var(--bg-white);
+    border: 1px solid var(--border-light);
+    border-radius: 40px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-dark);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.chip i {
+    font-size: 0.9rem;
+    color: var(--text-gray);
+}
+
+.chip:hover {
+    border-color: var(--primary-green);
+    background: #F0FAF4;
+    transform: translateY(-2px);
+}
+
+.chip.active {
+    background: var(--primary-green);
+    border-color: var(--primary-green);
+    color: white;
+}
+
+.chip.active i {
+    color: white;
+}
+
+.filter-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    justify-content: center;
+    margin-top: 16px;
+}
+
+.filter-select {
+    padding: 10px 20px;
+    border: 1px solid var(--border-light);
+    border-radius: 40px;
+    background: var(--bg-white);
+    font-size: 0.9rem;
+    color: var(--text-dark);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: 150px;
+}
+
+.filter-select:hover {
+    border-color: var(--primary-green);
+}
+
+/* Results Header */
+.results-header {
+    max-width: 1200px;
+    margin: 0 auto 24px;
+    padding: 0 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.results-count h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 4px;
+}
+
+.results-count p {
+    color: var(--text-gray);
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+.sort-modern select {
+    padding: 10px 20px;
+    border: 1px solid var(--border-light);
+    border-radius: 40px;
+    background: var(--bg-white);
+    font-size: 0.9rem;
+    color: var(--text-dark);
+    cursor: pointer;
+}
+
+/* Painter Cards */
+.painters-grid {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px 48px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 28px;
+}
+
+.painter-card-modern {
+    background: var(--bg-white);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow-sm);
+    cursor: pointer;
+}
+
+.painter-card-modern:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-lg);
+}
+
+.card-body-modern {
+    padding: 30px 24px 24px;
+    text-align: center;
+}
+
+.avatar-modern-card {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    margin: 0 auto 16px;
+    position: relative;
+    overflow: hidden;
+    border: 4px solid var(--bg-white);
+    box-shadow: var(--shadow-md);
+    background: var(--bg-light);
+}
+
+.avatar-modern-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.verified-badge-modern {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    background: var(--primary-green);
+    border-radius: 50%;
+    width: 26px;
+    height: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid var(--bg-white);
+}
+
+.verified-badge-modern i {
+    font-size: 0.75rem;
+    color: white;
+}
+
+.painter-name-modern {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 6px;
+}
+
+.location-modern {
+    font-size: 0.85rem;
+    color: var(--text-gray);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin-bottom: 16px;
+}
+
+.stats-row-modern {
+    display: flex;
+    gap: 24px;
+    justify-content: center;
+    padding: 12px 0;
+    border-top: 1px solid var(--border-light);
+    border-bottom: 1px solid var(--border-light);
+    margin-bottom: 16px;
+}
+
+.stat-item-modern {
+    text-align: center;
+}
+
+.stat-value-modern {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--primary-blue);
+    display: block;
+}
+
+.stat-label-modern {
+    font-size: 0.7rem;
+    color: var(--text-gray);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.rating-modern {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.stars-modern {
+    display: flex;
+    gap: 3px;
+}
+
+.stars-modern i {
+    font-size: 0.85rem;
+}
+
+.rating-number-modern {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-dark);
+}
+
+.specialties-modern {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    margin-bottom: 16px;
+}
+
+.specialty-tag-modern {
+    font-size: 0.7rem;
+    padding: 4px 12px;
+    background: var(--bg-light);
+    border-radius: 20px;
+    color: var(--text-dark);
+}
+
+.price-section-modern {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 0 8px;
+}
+
+.price-modern {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--primary-green);
+}
+
+.price-modern small {
+    font-size: 0.7rem;
+    font-weight: 400;
+    color: var(--text-gray);
+}
+
+.availability-modern {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+.availability-modern.available {
+    background: #E6F7EC;
+    color: var(--primary-green);
+}
+
+.availability-modern.busy {
+    background: #FEF3E2;
+    color: #E67E22;
+}
+
+.actions-modern {
+    display: flex;
+    gap: 12px;
+}
+
+.btn-modern {
+    flex: 1;
+    padding: 10px;
+    border-radius: 40px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    border: none;
+    font-family: inherit;
+}
+
+.btn-modern-primary {
+    background: var(--primary-green);
+    color: white;
+}
+
+.btn-modern-primary:hover {
+    background: #3D8A5E;
+    transform: translateY(-2px);
+}
+
+.btn-modern-secondary {
+    background: transparent;
+    border: 1px solid var(--border-light);
+    color: var(--text-dark);
+}
+
+.btn-modern-secondary:hover {
+    border-color: var(--primary-green);
+    background: #F0FAF4;
+}
+
+.portfolio-preview-modern {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    margin-bottom: 16px;
+}
+
+.preview-img-modern {
+    width: 60px;
+    height: 60px;
+    border-radius: var(--radius-sm);
+    object-fit: cover;
+    background: var(--bg-light);
+    border: 1px solid var(--border-light);
+}
+
+.empty-state {
+    text-align: center;
+    padding: 80px 24px;
+    background: var(--bg-white);
+    border-radius: var(--radius-lg);
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.empty-state i {
+    font-size: 4rem;
+    color: var(--text-gray);
+    margin-bottom: 20px;
+}
+
+.empty-state h3 {
+    color: var(--text-dark);
+    margin-bottom: 12px;
+}
+
+.empty-state p {
+    color: var(--text-gray);
+    margin-bottom: 24px;
+}
+
+/* Mobile Filter Drawer */
+.filter-drawer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--bg-white);
+    border-radius: 24px 24px 0 0;
+    padding: 24px;
+    transform: translateY(100%);
+    transition: transform 0.3s ease;
+    z-index: 1000;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
+}
+
+.filter-drawer.active {
+    transform: translateY(0);
+}
+
+.filter-drawer-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 999;
+    display: none;
+}
+
+.filter-drawer-overlay.active {
+    display: block;
+}
+
+.filter-drawer-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.filter-group {
+    margin-bottom: 24px;
+}
+
+.filter-group label {
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 12px;
+    display: block;
+}
+
+.floating-filter-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--primary-green);
+    color: white;
+    border: none;
+    box-shadow: var(--shadow-lg);
+    cursor: pointer;
+    z-index: 100;
+    display: none;
+    transition: all 0.3s ease;
+}
+
+.floating-filter-btn:hover {
+    transform: scale(1.05);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .hero-title { font-size: 1.8rem; }
+    .hero-subtitle { font-size: 0.95rem; }
+    .painters-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+        padding: 0 16px 80px;
+    }
+    .filter-section { display: none; }
+    .floating-filter-btn { display: flex; align-items: center; justify-content: center; }
+    .results-header { flex-direction: column; align-items: flex-start; padding: 0 16px; }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+    .painters-grid { grid-template-columns: repeat(2, 1fr); gap: 20px; }
+}
+
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.painter-card-modern {
+    animation: fadeInUp 0.4s ease forwards;
+    opacity: 0;
+}
+</style>
+
+<!-- Hero Section -->
+<div class="painters-hero" dir="rtl">
+    <div class="hero-container">
+        <h1 class="hero-title">ابحث عن دهانك المثالي</h1>
+        <p class="hero-subtitle">اكتشف دهانين محترفين في جميع أنحاء الجزائر. جودة عالية وأسعار عادلة.</p>
+
+        <div class="search-bar-modern">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchInput" placeholder="ابحث باسم الدهان، المدينة، أو التخصص..." value="<%= query.search || '' %>">
+        </div>
+    </div>
+</div>
+
+<!-- Floating Filter Button (Mobile) -->
+<button class="floating-filter-btn" onclick="toggleFilterDrawer()">
+    <i class="fas fa-sliders-h"></i>
+</button>
+
+<!-- Filter Drawer (Mobile) -->
+<div class="filter-drawer-overlay" id="filterDrawerOverlay" onclick="toggleFilterDrawer()"></div>
+<div class="filter-drawer" id="filterDrawer" dir="rtl">
+    <div class="filter-drawer-header">
+        <h6 class="mb-0">تصفية الدهانين</h6>
+        <button class="btn-close" onclick="toggleFilterDrawer()"></button>
+    </div>
+    <form id="mobileFilterForm" action="/painters" method="GET">
+        <div class="filter-group">
+            <label>الولاية</label>
+            <select class="form-select" name="wilaya">
+                <option value="">كل الولايات</option>
+                <% wilayas.forEach(wilaya => { %>
+                <option value="<%= wilaya.name %>" <%= query.wilaya === wilaya.name ? 'selected' : '' %>>
+                    <%= wilaya.name %>
+                </option>
+                <% }); %>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label>التوفر</label>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="availability" value="true" 
+                       id="mobileAvailable" <%= query.availability === 'true' ? 'checked' : '' %>>
+                <label class="form-check-label" for="mobileAvailable">متاح الآن</label>
+            </div>
+        </div>
+        <div class="filter-group">
+            <label>الخبرة الدنيا</label>
+            <select class="form-select" name="minExperience">
+                <option value="">أي خبرة</option>
+                <option value="1" <%= query.minExperience === '1' ? 'selected' : '' %>>سنة فأكثر</option>
+                <option value="3" <%= query.minExperience === '3' ? 'selected' : '' %>>3+ سنوات</option>
+                <option value="5" <%= query.minExperience === '5' ? 'selected' : '' %>>5+ سنوات</option>
+                <option value="10" <%= query.minExperience === '10' ? 'selected' : '' %>>10+ سنوات</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label>أدنى تقييم</label>
+            <select class="form-select" name="minRating">
+                <option value="">أي تقييم</option>
+                <option value="4" <%= query.minRating === '4' ? 'selected' : '' %>>4★ فأعلى</option>
+                <option value="3" <%= query.minRating === '3' ? 'selected' : '' %>>3★ فأعلى</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label>السعر للمتر المربع</label>
+            <div class="row g-2">
+                <div class="col-6">
+                    <input type="number" class="form-control" placeholder="الحد الأدنى" name="minPrice" value="<%= query.minPrice || '' %>">
+                </div>
+                <div class="col-6">
+                    <input type="number" class="form-control" placeholder="الحد الأقصى" name="maxPrice" value="<%= query.maxPrice || '' %>">
+                </div>
+            </div>
+        </div>
+        <div class="d-grid gap-2">
+            <button type="submit" class="btn" style="background: var(--primary-green); color: white; padding: 12px; border-radius: 40px; border: none; font-weight: 600;">تطبيق الفلاتر</button>
+            <a href="/painters" class="btn" style="background: transparent; border: 1px solid var(--border-light); padding: 12px; border-radius: 40px; text-align: center; text-decoration: none; color: var(--text-dark);">إعادة تعيين</a>
+        </div>
+    </form>
+</div>
+
+<!-- Desktop Filter Section -->
+<div class="filter-section" dir="rtl">
+    <div class="filter-chips-modern">
+        <div class="chip <%= !query.wilaya && !query.availability && !query.minRating ? 'active' : '' %>" data-filter="all">
+            <i class="fas fa-th-large"></i><span>جميع الدهانين</span>
+        </div>
+        <div class="chip" data-filter="available" data-availability="true">
+            <i class="fas fa-check-circle"></i><span>متاح الآن</span>
+        </div>
+        <div class="chip" data-filter="top-rated" data-rating="4">
+            <i class="fas fa-star"></i><span>أعلى تقييماً</span>
+        </div>
+        <div class="chip" data-filter="experienced" data-experience="5">
+            <i class="fas fa-trophy"></i><span>خبرة 5+ سنوات</span>
+        </div>
+    </div>
+
+    <div class="filter-row">
+        <select class="filter-select" id="wilayaSelect" name="wilaya">
+            <option value="">كل الولايات</option>
+            <% wilayas.forEach(wilaya => { %>
+            <option value="<%= wilaya.name %>" <%= query.wilaya === wilaya.name ? 'selected' : '' %>><%= wilaya.name %></option>
+            <% }); %>
+        </select>
+        <select class="filter-select" id="experienceSelect" name="minExperience">
+            <option value="">أي خبرة</option>
+            <option value="1" <%= query.minExperience === '1' ? 'selected' : '' %>>سنة فأكثر</option>
+            <option value="3" <%= query.minExperience === '3' ? 'selected' : '' %>>3+ سنوات</option>
+            <option value="5" <%= query.minExperience === '5' ? 'selected' : '' %>>5+ سنوات</option>
+            <option value="10" <%= query.minExperience === '10' ? 'selected' : '' %>>10+ سنوات</option>
+        </select>
+        <select class="filter-select" id="ratingSelect" name="minRating">
+            <option value="">أي تقييم</option>
+            <option value="4" <%= query.minRating === '4' ? 'selected' : '' %>>4★ فأعلى</option>
+            <option value="3" <%= query.minRating === '3' ? 'selected' : '' %>>3★ فأعلى</option>
+        </select>
+        <select class="filter-select" id="priceSelect" name="priceRange">
+            <option value="">أي سعر</option>
+            <option value="0-500" <%= query.priceRange === '0-500' ? 'selected' : '' %>>0 - 500 دج/م²</option>
+            <option value="500-1000" <%= query.priceRange === '500-1000' ? 'selected' : '' %>>500 - 1000 دج/م²</option>
+            <option value="1000-1500" <%= query.priceRange === '1000-1500' ? 'selected' : '' %>>1000 - 1500 دج/م²</option>
+            <option value="1500+" <%= query.priceRange === '1500+' ? 'selected' : '' %>>1500+ دج/م²</option>
+        </select>
+        <button class="chip" id="resetFiltersBtn" style="background: transparent;"><i class="fas fa-redo"></i><span>إعادة تعيين</span></button>
+    </div>
+
+    <form id="desktopFilterForm" action="/painters" method="GET" style="display: none;">
+        <input type="hidden" name="wilaya" id="desktopWilaya" value="<%= query.wilaya || '' %>">
+        <input type="hidden" name="availability" id="desktopAvailability" value="<%= query.availability || '' %>">
+        <input type="hidden" name="minExperience" id="desktopExperience" value="<%= query.minExperience || '' %>">
+        <input type="hidden" name="minRating" id="desktopRating" value="<%= query.minRating || '' %>">
+        <input type="hidden" name="search" id="desktopSearch" value="<%= query.search || '' %>">
+        <input type="hidden" name="sort" id="desktopSort" value="<%= query.sort || '' %>">
+    </form>
+</div>
+
+<!-- Results Header -->
+<div class="results-header" dir="rtl">
+    <div class="results-count">
+        <h3><%= painters.length %> دهان<%= painters.length !== 1 ? 'اً' : '' %></h3>
+        <p>دهانين محترفين جاهزين لتحويل رؤيتك إلى واقع</p>
+    </div>
+    <div class="sort-modern">
+        <select id="sortSelect">
+            <option value="rating" <%= query.sort === 'rating' ? 'selected' : '' %>>الأعلى تقييماً</option>
+            <option value="experience" <%= query.sort === 'experience' ? 'selected' : '' %>>الأكثر خبرة</option>
+            <option value="price_low" <%= query.sort === 'price_low' ? 'selected' : '' %>>السعر: من الأقل إلى الأعلى</option>
+            <option value="price_high" <%= query.sort === 'price_high' ? 'selected' : '' %>>السعر: من الأعلى إلى الأقل</option>
+        </select>
+    </div>
+</div>
+
+<!-- Painters Grid -->
+<% if (painters.length === 0) { %>
+<div class="painters-grid" dir="rtl">
+    <div class="empty-state">
+        <i class="fas fa-search"></i>
+        <h3>لا يوجد دهانين</h3>
+        <p>حاول تعديل الفلاتر أو البحث في منطقة مختلفة</p>
+        <a href="/painters" class="btn-modern btn-modern-primary" style="display: inline-block; padding: 12px 28px;">مسح كل الفلاتر</a>
+    </div>
+</div>
+<% } else { %>
+<div class="painters-grid" dir="rtl">
+    <% painters.forEach((painter, cardIndex) => { 
+        const portfolioImages = [];
+        (painter.portfolio || []).forEach(project => {
+            if (project.images && project.images.length > 0 && project.images[0].url) {
+                portfolioImages.push(project.images[0].url);
+            }
+        });
+    %>
+    <div class="painter-card-modern" style="animation-delay: <%= cardIndex * 0.05 %>s" onclick="viewProfile('<%= painter._id %>')">
+        <div class="card-body-modern">
+            <div class="avatar-modern-card">
+                <% if (painter.profilePicture && painter.profilePicture.url) { %>
+                    <img src="<%= painter.profilePicture.url %>" alt="<%= painter.name %>" onerror="this.src='https://placehold.co/200x200/2C5F8A/white?text=P'">
+                <% } else { %>
+                    <img src="https://placehold.co/200x200/2C5F8A/white?text=P" alt="<%= painter.name %>">
+                <% } %>
+                <% if (painter.verification?.status === 'verified') { %>
+                    <div class="verified-badge-modern"><i class="fas fa-check"></i></div>
+                <% } %>
+            </div>
+            <div class="painter-name-modern"><%= painter.name %></div>
+            <div class="location-modern"><i class="fas fa-map-marker-alt"></i> <%= painter.location?.wilaya || 'الجزائر' %></div>
+            <div class="stats-row-modern">
+                <div class="stat-item-modern"><span class="stat-value-modern"><%= painter.completedJobs || 0 %></span><span class="stat-label-modern">مشاريع</span></div>
+                <div class="stat-item-modern"><span class="stat-value-modern"><%= painter.experience || 0 %></span><span class="stat-label-modern">سنوات</span></div>
+            </div>
+            <div class="rating-modern">
+                <div class="stars-modern">
+                    <% for (let i = 1; i <= 5; i++) { %>
+                        <i class="fas fa-star <%= i <= Math.round(painter.rating || 0) ? 'text-warning' : 'text-muted' %>" style="color: <%= i <= Math.round(painter.rating || 0) ? '#FBBF24' : '#E2E8F0' %>;"></i>
+                    <% } %>
+                </div>
+                <span class="rating-number-modern">(<%= (painter.rating || 0).toFixed(1) %>)</span>
+            </div>
+            <% const specialties = painter.specialization || []; %>
+            <% if (specialties.length > 0) { %>
+            <div class="specialties-modern">
+                <% specialties.slice(0, 2).forEach(spec => { %><span class="specialty-tag-modern"><%= spec %></span><% }) %>
+                <% if (specialties.length > 2) { %><span class="specialty-tag-modern">+<%= specialties.length - 2 %></span><% } %>
+            </div>
+            <% } %>
+            <% if (portfolioImages.length > 0) { %>
+            <div class="portfolio-preview-modern">
+                <% portfolioImages.slice(0, 3).forEach((img, idx) => { %>
+                    <img src="<%= img %>" class="preview-img-modern" alt="عمل سابق" onerror="this.style.display='none'">
+                <% }) %>
+            </div>
+            <% } %>
+            <div class="price-section-modern">
+                <div class="price-modern"><%= painter.pricePerSqm || 0 %><small> دج/م²</small></div>
+                <div class="availability-modern <%= painter.availability === 'available' ? 'available' : 'busy' %>">
+                    <%= painter.availability === 'available' ? 'متاح' : 'مشغول' %>
+                </div>
+            </div>
+            <div class="actions-modern" onclick="event.stopPropagation()">
+                <a href="/painters/<%= painter._id %>" class="btn-modern btn-modern-secondary">الملف الشخصي</a>
+                <a href="/painters/<%= painter._id %>/order" class="btn-modern btn-modern-primary">استأجر</a>
+            </div>
+        </div>
+    </div>
+    <% }); %>
+</div>
+<% } %>
+
+<script>
+function viewProfile(painterId) {
+    window.location.href = `/painters/${painterId}`;
+}
+
+function toggleFilterDrawer() {
+    const drawer = document.getElementById('filterDrawer');
+    const overlay = document.getElementById('filterDrawerOverlay');
+    drawer.classList.toggle('active');
+    overlay.classList.toggle('active');
+}
+
+document.getElementById('searchInput').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        const url = new URL(window.location);
+        url.searchParams.set('search', this.value);
+        window.location.href = url.toString();
+    }
+});
+
+document.getElementById('sortSelect').addEventListener('change', function() {
+    const url = new URL(window.location);
+    url.searchParams.set('sort', this.value);
+    window.location.href = url.toString();
+});
+
+const wilayaSelect = document.getElementById('wilayaSelect');
+const experienceSelect = document.getElementById('experienceSelect');
+const ratingSelect = document.getElementById('ratingSelect');
+const priceSelect = document.getElementById('priceSelect');
+
+function applyFilters() {
+    const url = new URL(window.location);
+    if (wilayaSelect.value) url.searchParams.set('wilaya', wilayaSelect.value);
+    else url.searchParams.delete('wilaya');
+    if (experienceSelect.value) url.searchParams.set('minExperience', experienceSelect.value);
+    else url.searchParams.delete('minExperience');
+    if (ratingSelect.value) url.searchParams.set('minRating', ratingSelect.value);
+    else url.searchParams.delete('minRating');
+    if (priceSelect.value) url.searchParams.set('priceRange', priceSelect.value);
+    else url.searchParams.delete('priceRange');
+    window.location.href = url.toString();
+}
+
+wilayaSelect.addEventListener('change', applyFilters);
+experienceSelect.addEventListener('change', applyFilters);
+ratingSelect.addEventListener('change', applyFilters);
+priceSelect.addEventListener('change', applyFilters);
+
+document.querySelectorAll('.chip[data-filter]').forEach(chip => {
+    chip.addEventListener('click', function() {
+        const filter = this.dataset.filter;
+        const url = new URL(window.location);
+        if (filter === 'all') window.location.href = '/painters';
+        else if (filter === 'available') { url.searchParams.set('availability', 'true'); window.location.href = url.toString(); }
+        else if (filter === 'top-rated') { url.searchParams.set('minRating', '4'); window.location.href = url.toString(); }
+        else if (filter === 'experienced') { url.searchParams.set('minExperience', '5'); window.location.href = url.toString(); }
+    });
+});
+
+document.getElementById('resetFiltersBtn').addEventListener('click', function() {
+    window.location.href = '/painters';
+});
+
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        const drawer = document.getElementById('filterDrawer');
+        if (drawer.classList.contains('active')) toggleFilterDrawer();
+    }
+});
+</script>
+
+<%- include('../partials/footer') %>
