@@ -132,11 +132,6 @@
             color: var(--primary-blue) !important;
         }
         
-        .nav-link-modern.active {
-            color: var(--primary-green) !important;
-            background: #F0FAF4;
-        }
-        
         /* Modern Dropdown */
         .dropdown-modern .dropdown-menu {
             border: none;
@@ -173,6 +168,7 @@
             border-radius: 40px;
             font-weight: 500;
             transition: all 0.2s ease;
+            text-decoration: none;
         }
         
         .btn-login-modern:hover {
@@ -189,11 +185,13 @@
             border-radius: 40px;
             font-weight: 600;
             transition: all 0.2s ease;
+            text-decoration: none;
         }
         
         .btn-signup-modern:hover {
             transform: translateY(-2px);
             box-shadow: var(--shadow-md);
+            color: white;
         }
         
         /* Avatar Dropdown */
@@ -241,15 +239,6 @@
             padding: 2px 6px;
             border-radius: 20px;
             margin-left: 6px;
-        }
-        
-        /* Hero Section Update */
-        .hero-section {
-            background: linear-gradient(135deg, var(--primary-blue), var(--primary-light));
-            color: white;
-            padding: 80px 0;
-            position: relative;
-            overflow: hidden;
         }
         
         /* Card Styles */
@@ -305,6 +294,7 @@
                 width: 100%;
                 text-align: center;
                 margin: 5px 0;
+                display: inline-block;
             }
             
             .avatar-dropdown {
@@ -347,12 +337,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav me-auto">
                 <li class="nav-item">
-                    <a class="nav-link nav-link-modern <%= currentPath === '/' ? 'active' : '' %>" href="/">
+                    <a class="nav-link nav-link-modern" href="/">
                         <i class="fas fa-home me-1"></i> Home
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link nav-link-modern <%= currentPath === '/painters' ? 'active' : '' %>" href="/painters">
+                    <a class="nav-link nav-link-modern" href="/painters">
                         <i class="fas fa-search me-1"></i> Find Painters
                     </a>
                 </li>
@@ -410,12 +400,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 <% } else { %>
                     <!-- Not logged in - Modern Buttons -->
                     <li class="nav-item me-2">
-                        <a class="btn btn-login-modern" href="/auth/login-painter">
+                        <a class="btn-login-modern" href="/auth/login-painter">
                             <i class="fas fa-sign-in-alt me-1"></i> Login
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="btn btn-signup-modern" href="/auth/register-painter">
+                        <a class="btn-signup-modern" href="/auth/register-painter">
                             <i class="fas fa-user-plus me-1"></i> Sign Up
                         </a>
                     </li>
@@ -438,11 +428,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     
     // Close mobile menu after click
     document.querySelectorAll('.nav-link-modern, .dropdown-item, .btn-login-modern, .btn-signup-modern').forEach(link => {
-        link.addEventListener('click', () => {
-            const navbarCollapse = document.querySelector('.navbar-collapse');
-            if (navbarCollapse.classList.contains('show')) {
-                navbarCollapse.classList.remove('show');
-            }
-        });
+        if (link) {
+            link.addEventListener('click', () => {
+                const navbarCollapse = document.querySelector('.navbar-collapse');
+                if (navbarCollapse && navbarCollapse.classList.contains('show')) {
+                    navbarCollapse.classList.remove('show');
+                }
+            });
+        }
     });
 </script>
