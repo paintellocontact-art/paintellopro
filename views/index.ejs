@@ -1,6 +1,173 @@
 <%- include('partials/header', { title: 'Paintello Pro' }) %>
 
 <style>
+/* Map Section Styles */
+.map-section-modern {
+    padding: 80px 0;
+    background: linear-gradient(135deg, #F7FAFC 0%, #FFFFFF 100%);
+    border-top: 1px solid var(--border-light);
+    border-bottom: 1px solid var(--border-light);
+}
+
+.map-container {
+    max-width: 900px;
+    margin: 0 auto 40px;
+    position: relative;
+    text-align: center;
+}
+
+.algeria-map {
+    width: 100%;
+    height: auto;
+    filter: drop-shadow(var(--shadow-md));
+    transition: all 0.3s ease;
+}
+
+.algeria-map:hover {
+    filter: drop-shadow(var(--shadow-lg));
+}
+
+.map-marker {
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    animation: fadeInScale 0.5s ease forwards;
+    opacity: 0;
+    transform: scale(0);
+}
+
+.map-marker:hover {
+    transform: scale(1.2);
+}
+
+.map-marker:nth-child(1) { animation-delay: 0.1s; }
+.map-marker:nth-child(2) { animation-delay: 0.2s; }
+.map-marker:nth-child(3) { animation-delay: 0.3s; }
+.map-marker:nth-child(4) { animation-delay: 0.4s; }
+.map-marker:nth-child(5) { animation-delay: 0.5s; }
+.map-marker:nth-child(6) { animation-delay: 0.6s; }
+
+@keyframes fadeInScale {
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.pulse-ring {
+    animation: pulse 2s infinite;
+}
+
+.pulse-ring:nth-child(1) { animation-delay: 0s; }
+.pulse-ring:nth-child(2) { animation-delay: 0.5s; }
+.pulse-ring:nth-child(3) { animation-delay: 1s; }
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        opacity: 0.8;
+    }
+    100% {
+        transform: scale(2);
+        opacity: 0;
+    }
+}
+
+.map-legend {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    margin-top: 24px;
+    flex-wrap: wrap;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem;
+    color: var(--text-gray);
+}
+
+.legend-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.legend-dot.active {
+    background: #2C5F8A;
+    box-shadow: 0 0 0 3px rgba(44, 95, 138, 0.2);
+}
+
+.legend-dot.moderate {
+    background: #7AB2C8;
+}
+
+.legend-dot.low {
+    background: #B8D4E3;
+}
+
+.map-stats-grid {
+    max-width: 800px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 24px;
+}
+
+.map-stat-card {
+    background: var(--bg-white);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.3s ease;
+    border: 1px solid var(--border-light);
+}
+
+.map-stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md);
+}
+
+.map-stat-card i {
+    font-size: 2rem;
+    color: var(--primary-green);
+}
+
+.map-stat-number {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--primary-blue);
+    display: block;
+    line-height: 1;
+}
+
+.map-stat-label {
+    font-size: 0.8rem;
+    color: var(--text-gray);
+}
+
+@media (max-width: 768px) {
+    .map-stats-grid {
+        grid-template-columns: 1fr;
+        padding: 0 20px;
+    }
+    
+    .map-legend {
+        gap: 16px;
+    }
+    
+    .algeria-map text {
+        font-size: 6px;
+    }
+    
+    .legend-item {
+        font-size: 0.7rem;
+    }
+}
 /* Modern Muula Style - Homepage */
 :root {
     --primary-blue: #2C5F8A;
@@ -886,6 +1053,129 @@
             </div>
         </div>
         <% }); %>
+    </div>
+</section>
+<!-- Map Section - Visual Painter Distribution -->
+<section class="map-section-modern" dir="ltr">
+    <div class="container">
+        <div class="section-header">
+            <h2>Painters Across Algeria</h2>
+            <p>Our network of professional painters covers all 58 wilayas</p>
+        </div>
+        
+        <div class="map-container">
+            <!-- SVG Map of Algeria with markers -->
+            <svg viewBox="0 0 800 600" class="algeria-map">
+                <!-- Map Background -->
+                <rect width="800" height="600" fill="#F0FAF4" rx="16"/>
+                
+                <!-- Simplified Algeria Map Shape -->
+                <path d="M200,100 L250,80 L320,90 L380,85 L420,95 L460,90 L500,100 
+                         L540,120 L570,150 L590,180 L600,220 L610,260 L615,300 
+                         L610,340 L600,380 L580,410 L550,440 L510,460 L470,475 
+                         L430,485 L390,490 L350,485 L310,475 L270,455 L240,430 
+                         L215,400 L195,360 L180,320 L170,280 L165,240 L170,200 
+                         L180,160 L190,130 L200,100Z" 
+                      fill="#E8F5E9" stroke="#4A9B6E" stroke-width="2"/>
+                
+                <!-- Wilaya Markers with painter counts -->
+                <!-- Algiers -->
+                <circle cx="380" cy="200" r="12" fill="#2C5F8A" class="map-marker" data-wilaya="Algiers"/>
+                <text x="380" y="195" text-anchor="middle" fill="white" font-size="8" font-weight="bold">128</text>
+                <text x="380" y="215" text-anchor="middle" fill="#2C5F8A" font-size="9" font-weight="600">Algiers</text>
+                
+                <!-- Oran -->
+                <circle cx="260" cy="280" r="10" fill="#2C5F8A" class="map-marker" data-wilaya="Oran"/>
+                <text x="260" y="275" text-anchor="middle" fill="white" font-size="7" font-weight="bold">86</text>
+                <text x="260" y="295" text-anchor="middle" fill="#2C5F8A" font-size="9" font-weight="600">Oran</text>
+                
+                <!-- Constantine -->
+                <circle cx="530" cy="220" r="9" fill="#2C5F8A" class="map-marker" data-wilaya="Constantine"/>
+                <text x="530" y="215" text-anchor="middle" fill="white" font-size="7" font-weight="bold">64</text>
+                <text x="530" y="235" text-anchor="middle" fill="#2C5F8A" font-size="9" font-weight="600">Constantine</text>
+                
+                <!-- Annaba -->
+                <circle cx="610" cy="250" r="8" fill="#2C5F8A" class="map-marker" data-wilaya="Annaba"/>
+                <text x="610" y="245" text-anchor="middle" fill="white" font-size="6" font-weight="bold">42</text>
+                <text x="610" y="265" text-anchor="middle" fill="#2C5F8A" font-size="9" font-weight="600">Annaba</text>
+                
+                <!-- Tizi Ouzou -->
+                <circle cx="440" cy="150" r="7" fill="#2C5F8A" class="map-marker" data-wilaya="Tizi Ouzou"/>
+                <text x="440" y="145" text-anchor="middle" fill="white" font-size="6" font-weight="bold">38</text>
+                <text x="440" y="165" text-anchor="middle" fill="#2C5F8A" font-size="8" font-weight="600">Tizi Ouzou</text>
+                
+                <!-- Bejaia -->
+                <circle cx="480" cy="180" r="7" fill="#2C5F8A" class="map-marker" data-wilaya="Bejaia"/>
+                <text x="480" y="175" text-anchor="middle" fill="white" font-size="6" font-weight="bold">35</text>
+                <text x="480" y="195" text-anchor="middle" fill="#2C5F8A" font-size="8" font-weight="600">Bejaia</text>
+                
+                <!-- Setif -->
+                <circle cx="490" cy="270" r="7" fill="#2C5F8A" class="map-marker" data-wilaya="Setif"/>
+                <text x="490" y="265" text-anchor="middle" fill="white" font-size="6" font-weight="bold">52</text>
+                <text x="490" y="285" text-anchor="middle" fill="#2C5F8A" font-size="8" font-weight="600">Setif</text>
+                
+                <!-- Blida -->
+                <circle cx="350" cy="240" r="6" fill="#2C5F8A" class="map-marker" data-wilaya="Blida"/>
+                <text x="350" y="235" text-anchor="middle" fill="white" font-size="5" font-weight="bold">29</text>
+                <text x="350" y="255" text-anchor="middle" fill="#2C5F8A" font-size="8" font-weight="600">Blida</text>
+                
+                <!-- Tlemcen -->
+                <circle cx="190" cy="310" r="6" fill="#2C5F8A" class="map-marker" data-wilaya="Tlemcen"/>
+                <text x="190" y="305" text-anchor="middle" fill="white" font-size="5" font-weight="bold">31</text>
+                <text x="190" y="325" text-anchor="middle" fill="#2C5F8A" font-size="8" font-weight="600">Tlemcen</text>
+                
+                <!-- Batna -->
+                <circle cx="510" cy="320" r="6" fill="#2C5F8A" class="map-marker" data-wilaya="Batna"/>
+                <text x="510" y="315" text-anchor="middle" fill="white" font-size="5" font-weight="bold">27</text>
+                <text x="510" y="335" text-anchor="middle" fill="#2C5F8A" font-size="8" font-weight="600">Batna</text>
+                
+                <!-- Pulsing animation circles -->
+                <circle cx="380" cy="200" r="18" fill="none" stroke="#4A9B6E" stroke-width="1.5" class="pulse-ring"/>
+                <circle cx="260" cy="280" r="15" fill="none" stroke="#4A9B6E" stroke-width="1.5" class="pulse-ring"/>
+                <circle cx="530" cy="220" r="14" fill="none" stroke="#4A9B6E" stroke-width="1.5" class="pulse-ring"/>
+            </svg>
+            
+            <!-- Map Legend -->
+            <div class="map-legend">
+                <div class="legend-item">
+                    <div class="legend-dot active"></div>
+                    <span>Active Painters (50+)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-dot moderate"></div>
+                    <span>Moderate (20-50)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-dot low"></div>
+                    <span>Growing (under 20)</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Stats Cards Below Map -->
+        <div class="map-stats-grid">
+            <div class="map-stat-card">
+                <i class="fas fa-city"></i>
+                <div>
+                    <span class="map-stat-number">58</span>
+                    <span class="map-stat-label">Wilayas Covered</span>
+                </div>
+            </div>
+            <div class="map-stat-card">
+                <i class="fas fa-users"></i>
+                <div>
+                    <span class="map-stat-number">500+</span>
+                    <span class="map-stat-label">Active Painters</span>
+                </div>
+            </div>
+            <div class="map-stat-card">
+                <i class="fas fa-chart-line"></i>
+                <div>
+                    <span class="map-stat-number">100%</span>
+                    <span class="map-stat-label">Nationwide Coverage</span>
+                </div>
+            </div>
+        </div>
     </div>
 </section>
 
