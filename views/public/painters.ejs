@@ -1,19 +1,25 @@
 <%- include('../partials/header', { title: 'Find Painters - Paintello Pro' }) %>
 
 <style>
-/* Modern Muula Style - Clean & Simple */
+/* ===== COLOR THEME FROM VISION ANALYSIS =====
+   Primary Blue: #295797
+   Accent Blue:   #1C84C1
+   Light BG:      #E8EEF6
+   White:         #FFFFFF
+*/
 :root {
-    --primary-blue: #2C5F8A;
-    --primary-green: #4A9B6E;
-    --primary-light: #7AB2C8;
+    --primary-blue: #295797;
+    --accent-blue:  #1C84C1;
+    --primary-dark: #1E3F5C;
+    --primary-light: #4A7FA8;
     --text-dark: #2D3748;
-    --text-gray: #718096;
-    --bg-light: #F7FAFC;
+    --text-gray: #4A5568;
+    --bg-light: #E8EEF6;
     --bg-white: #FFFFFF;
-    --border-light: #E2E8F0;
-    --shadow-sm: 0 2px 8px rgba(0,0,0,0.05);
-    --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
-    --shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
+    --border-light: #D1DCE6;
+    --shadow-sm: 0 2px 8px rgba(41, 87, 151, 0.08);
+    --shadow-md: 0 4px 12px rgba(41, 87, 151, 0.12);
+    --shadow-lg: 0 8px 24px rgba(41, 87, 151, 0.16);
     --radius-lg: 20px;
     --radius-md: 16px;
     --radius-sm: 12px;
@@ -24,9 +30,9 @@ body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
 
-/* Hero Section - Minimal */
+/* Hero Section - using blue gradient */
 .painters-hero {
-    background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-light) 100%);
+    background: linear-gradient(135deg, var(--primary-blue) 0%, var(--accent-blue) 100%);
     padding: 48px 0;
     margin-bottom: 32px;
     border-radius: 0 0 30px 30px;
@@ -86,7 +92,7 @@ body {
     font-size: 1.1rem;
 }
 
-/* Modern Filter Section - Same Structure, Modern Style */
+/* Modern Filter Section */
 .filter-section {
     max-width: 1200px;
     margin: 0 auto 32px;
@@ -122,14 +128,14 @@ body {
 }
 
 .chip:hover {
-    border-color: var(--primary-green);
-    background: #F0FAF4;
+    border-color: var(--accent-blue);
+    background: rgba(28, 132, 193, 0.06);
     transform: translateY(-2px);
 }
 
 .chip.active {
-    background: var(--primary-green);
-    border-color: var(--primary-green);
+    background: var(--primary-blue);
+    border-color: var(--primary-blue);
     color: white;
 }
 
@@ -137,7 +143,7 @@ body {
     color: white;
 }
 
-/* Filter Row with Selects - Clean Modern */
+/* Filter Row with Selects */
 .filter-row {
     display: flex;
     flex-wrap: wrap;
@@ -159,13 +165,13 @@ body {
 }
 
 .filter-select:hover {
-    border-color: var(--primary-green);
+    border-color: var(--accent-blue);
 }
 
 .filter-select:focus {
     outline: none;
-    border-color: var(--primary-green);
-    box-shadow: 0 0 0 3px rgba(74, 155, 110, 0.1);
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 0 3px rgba(28, 132, 193, 0.12);
 }
 
 /* Results Header */
@@ -205,10 +211,10 @@ body {
 }
 
 .sort-modern select:hover {
-    border-color: var(--primary-green);
+    border-color: var(--accent-blue);
 }
 
-/* Painter Cards - Only Profile Picture, No Cover */
+/* Painter Cards */
 .painters-grid {
     max-width: 1200px;
     margin: 0 auto;
@@ -233,13 +239,12 @@ body {
     box-shadow: var(--shadow-lg);
 }
 
-/* Card Body - No Cover, Avatar at Top */
 .card-body-modern {
     padding: 30px 24px 24px;
     text-align: center;
 }
 
-/* Avatar - Large and Centered */
+/* Avatar */
 .avatar-modern-card {
     width: 100px;
     height: 100px;
@@ -262,7 +267,7 @@ body {
     position: absolute;
     bottom: 0;
     right: 0;
-    background: var(--primary-green);
+    background: var(--accent-blue);
     border-radius: 50%;
     width: 26px;
     height: 26px;
@@ -323,7 +328,7 @@ body {
     letter-spacing: 0.5px;
 }
 
-/* Rating Stars */
+/* Rating */
 .rating-modern {
     display: flex;
     align-items: center;
@@ -364,7 +369,24 @@ body {
     color: var(--text-dark);
 }
 
-/* Price Section */
+/* Portfolio Preview */
+.portfolio-preview-modern {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    margin-bottom: 16px;
+}
+
+.preview-img-modern {
+    width: 60px;
+    height: 60px;
+    border-radius: var(--radius-sm);
+    object-fit: cover;
+    background: var(--bg-light);
+    border: 1px solid var(--border-light);
+}
+
+/* Price & Availability */
 .price-section-modern {
     display: flex;
     justify-content: space-between;
@@ -376,7 +398,7 @@ body {
 .price-modern {
     font-size: 1.3rem;
     font-weight: 700;
-    color: var(--primary-green);
+    color: var(--primary-blue);
 }
 
 .price-modern small {
@@ -393,8 +415,8 @@ body {
 }
 
 .availability-modern.available {
-    background: #E6F7EC;
-    color: var(--primary-green);
+    background: rgba(28, 132, 193, 0.10);
+    color: var(--accent-blue);
 }
 
 .availability-modern.busy {
@@ -423,12 +445,12 @@ body {
 }
 
 .btn-modern-primary {
-    background: var(--primary-green);
+    background: var(--primary-blue);
     color: white;
 }
 
 .btn-modern-primary:hover {
-    background: #3D8A5E;
+    background: var(--primary-dark);
     transform: translateY(-2px);
 }
 
@@ -439,25 +461,9 @@ body {
 }
 
 .btn-modern-secondary:hover {
-    border-color: var(--primary-green);
-    background: #F0FAF4;
-}
-
-/* Portfolio Preview - Small Gallery */
-.portfolio-preview-modern {
-    display: flex;
-    gap: 8px;
-    justify-content: center;
-    margin-bottom: 16px;
-}
-
-.preview-img-modern {
-    width: 60px;
-    height: 60px;
-    border-radius: var(--radius-sm);
-    object-fit: cover;
-    background: var(--bg-light);
-    border: 1px solid var(--border-light);
+    border-color: var(--accent-blue);
+    background: rgba(28, 132, 193, 0.05);
+    color: var(--accent-blue);
 }
 
 /* Empty State */
@@ -549,7 +555,7 @@ body {
     width: 56px;
     height: 56px;
     border-radius: 50%;
-    background: var(--primary-green);
+    background: var(--primary-blue);
     color: white;
     border: none;
     box-shadow: var(--shadow-lg);
@@ -561,6 +567,7 @@ body {
 
 .floating-filter-btn:hover {
     transform: scale(1.05);
+    background: var(--primary-dark);
 }
 
 /* Responsive */
@@ -568,33 +575,27 @@ body {
     .hero-title {
         font-size: 1.8rem;
     }
-    
     .hero-subtitle {
         font-size: 0.95rem;
     }
-    
     .painters-grid {
         grid-template-columns: 1fr;
         gap: 20px;
         padding: 0 16px 80px;
     }
-    
     .filter-section {
         display: none;
     }
-    
     .floating-filter-btn {
         display: flex;
         align-items: center;
         justify-content: center;
     }
-    
     .results-header {
         flex-direction: column;
         align-items: flex-start;
         padding: 0 16px;
     }
-    
     .painter-card-modern {
         max-width: 100%;
     }
@@ -609,14 +610,8 @@ body {
 
 /* Animation */
 @keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 .painter-card-modern {
@@ -701,7 +696,7 @@ body {
             </div>
         </div>
         <div class="d-grid gap-2">
-            <button type="submit" class="btn" style="background: var(--primary-green); color: white; padding: 12px; border-radius: 40px; border: none; font-weight: 600;">Apply Filters</button>
+            <button type="submit" class="btn" style="background: var(--primary-blue); color: white; padding: 12px; border-radius: 40px; border: none; font-weight: 600;">Apply Filters</button>
             <a href="/painters" class="btn" style="background: transparent; border: 1px solid var(--border-light); padding: 12px; border-radius: 40px; text-align: center; text-decoration: none; color: var(--text-dark);">Reset All</a>
         </div>
     </form>
@@ -787,7 +782,7 @@ body {
     </div>
 </div>
 
-<!-- Painters Grid - No Cover Image, Only Profile Picture -->
+<!-- Painters Grid -->
 <% if (painters.length === 0) { %>
 <div class="painters-grid">
     <div class="empty-state">
@@ -809,12 +804,12 @@ body {
     %>
     <div class="painter-card-modern" style="animation-delay: <%= cardIndex * 0.05 %>s" onclick="viewProfile('<%= painter._id %>')">
         <div class="card-body-modern">
-            <!-- Avatar - Large Centered -->
+            <!-- Avatar -->
             <div class="avatar-modern-card">
                 <% if (painter.profilePicture && painter.profilePicture.url) { %>
-                    <img src="<%= painter.profilePicture.url %>" alt="<%= painter.name %>" onerror="this.src='https://placehold.co/200x200/2C5F8A/white?text=P'">
+                    <img src="<%= painter.profilePicture.url %>" alt="<%= painter.name %>" onerror="this.src='https://placehold.co/200x200/295797/white?text=P'">
                 <% } else { %>
-                    <img src="https://placehold.co/200x200/2C5F8A/white?text=P" alt="<%= painter.name %>">
+                    <img src="https://placehold.co/200x200/295797/white?text=P" alt="<%= painter.name %>">
                 <% } %>
                 <% if (painter.verification?.status === 'verified') { %>
                     <div class="verified-badge-modern">
@@ -846,7 +841,7 @@ body {
             <div class="rating-modern">
                 <div class="stars-modern">
                     <% for (let i = 1; i <= 5; i++) { %>
-                        <i class="fas fa-star <%= i <= Math.round(painter.rating || 0) ? 'text-warning' : 'text-muted' %>" style="color: <%= i <= Math.round(painter.rating || 0) ? '#FBBF24' : '#E2E8F0' %>;"></i>
+                        <i class="fas fa-star <%= i <= Math.round(painter.rating || 0) ? 'text-warning' : 'text-muted' %>" style="color: <%= i <= Math.round(painter.rating || 0) ? '#FBBF24' : '#D1DCE6' %>;"></i>
                     <% } %>
                 </div>
                 <span class="rating-number-modern">(<%= (painter.rating || 0).toFixed(1) %>)</span>
@@ -865,7 +860,7 @@ body {
             </div>
             <% } %>
             
-            <!-- Portfolio Preview (Small Images) -->
+            <!-- Portfolio Preview -->
             <% if (portfolioImages.length > 0) { %>
             <div class="portfolio-preview-modern">
                 <% portfolioImages.slice(0, 3).forEach((img, idx) => { %>
