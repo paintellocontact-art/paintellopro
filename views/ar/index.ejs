@@ -5,29 +5,30 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <style>
-    /* ===== COLOR THEME FROM "Firefly_gpt-image.png" =====
-       Dark navy background + vibrant green accent for "Pro"
+    /* ===== COLOR THEME FROM VISION ANALYSIS =====
+       Primary Blue: #295797
+       Accent Blue:   #1C84C1
+       Light BG:      #E8EEF6
+       White:         #FFFFFF
     */
     :root {
-        --primary-dark: #0B1628;
-        --primary-blue: #132238;
-        --primary-green: #2ECC71;
-        --primary-green-dark: #1FAF5A;
-        --primary-light: #3D7DBF;
-        --primary-dark-bg: #0B1628;
-        --text-dark: #FFFFFF;
-        --text-gray: #9BB4D0;
-        --bg-light: #0B1628;
-        --bg-white: #132238;
-        --border-light: #1E3450;
-        --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.5);
-        --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.6);
-        --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.7);
+        --primary-blue: #295797;        /* Main brand colour */
+        --accent-blue:  #1C84C1;        /* Vibrant sky blue for accents */
+        --primary-dark: #1E3F5C;        /* Darker shade for depth */
+        --primary-light: #4A7FA8;       /* Lighter variant for gradients */
+        --text-dark: #2D3748;
+        --text-gray: #4A5568;
+        --bg-light: #E8EEF6;            /* Page background tint */
+        --bg-white: #FFFFFF;
+        --border-light: #D1DCE6;
+        --shadow-sm: 0 2px 8px rgba(41, 87, 151, 0.08);
+        --shadow-md: 0 4px 12px rgba(41, 87, 151, 0.12);
+        --shadow-lg: 0 8px 24px rgba(41, 87, 151, 0.16);
         --radius-lg: 24px;
         --radius-md: 16px;
         --radius-sm: 12px;
-        --hero-gradient-start: #0B1628;
-        --hero-gradient-end: #1A2F4A;
+        --hero-gradient-start: #295797;
+        --hero-gradient-end: #1C84C1;   /* Accent blue for gradient */
     }
 
     /* RTL specific */
@@ -104,16 +105,16 @@
         color: var(--text-gray);
     }
     .btn-lang.active {
-        background: var(--primary-green);
-        border-color: var(--primary-green);
-        color: #0B1628;
+        background: var(--primary-blue);
+        border-color: var(--primary-blue);
+        color: white;
     }
     .btn-lang:hover:not(.active) {
-        border-color: var(--primary-green);
-        color: var(--primary-green);
+        border-color: var(--accent-blue);
+        color: var(--accent-blue);
     }
 
-    /* ---- Hero Section (dark navy + green "Pro") ---- */
+    /* ---- Hero Section (blue gradient with white text) ---- */
     .hero-modern {
         background: linear-gradient(135deg, var(--hero-gradient-start) 0%, var(--hero-gradient-end) 100%);
         position: relative;
@@ -127,9 +128,9 @@
         left: 0;
         right: 0;
         bottom: 0;
-        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="rgba(46,204,113,0.04)" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,122.7C672,117,768,139,864,154.7C960,171,1056,181,1152,165.3C1248,149,1344,107,1392,85.3L1440,64L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>') no-repeat bottom;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="rgba(255,255,255,0.06)" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,122.7C672,117,768,139,864,154.7C960,171,1056,181,1152,165.3C1248,149,1344,107,1392,85.3L1440,64L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>') no-repeat bottom;
         background-size: cover;
-        opacity: 0.5;
+        opacity: 0.4;
     }
     .hero-container {
         max-width: 1200px;
@@ -153,14 +154,14 @@
     }
     .hero-badge {
         display: inline-block;
-        background: rgba(46, 204, 113, 0.15);
+        background: rgba(255, 255, 255, 0.15);
         backdrop-filter: blur(10px);
         padding: 6px 16px;
         border-radius: 40px;
         font-size: 0.85rem;
         font-weight: 500;
-        color: var(--primary-green);
-        border: 1px solid rgba(46, 204, 113, 0.2);
+        color: white;
+        border: 1px solid rgba(255, 255, 255, 0.2);
         margin-bottom: 24px;
     }
     .hero-title {
@@ -171,7 +172,7 @@
         line-height: 1.3;
     }
     .hero-title .highlight-pro {
-        color: var(--primary-green);
+        color: #FFD700;  /* Gold for "Pro" as in the image, keep it distinctive */
         position: relative;
     }
     .hero-title .highlight-pro::after {
@@ -181,13 +182,13 @@
         left: 0;
         right: 0;
         height: 3px;
-        background: var(--primary-green);
+        background: #FFD700;
         border-radius: 4px;
         opacity: 0.5;
     }
     .hero-description {
         font-size: 1.1rem;
-        color: rgba(255, 255, 255, 0.8);
+        color: rgba(255, 255, 255, 0.9);
         margin-bottom: 32px;
         line-height: 1.8;
     }
@@ -198,8 +199,8 @@
         margin-bottom: 32px;
     }
     .btn-hero-primary {
-        background: var(--primary-green);
-        color: #0B1628;
+        background: white;
+        color: var(--primary-blue);
         padding: 14px 32px;
         border-radius: 50px;
         font-weight: 600;
@@ -209,16 +210,17 @@
         display: inline-flex;
         align-items: center;
         gap: 10px;
+        box-shadow: var(--shadow-md);
     }
     .btn-hero-primary:hover {
-        background: var(--primary-green-dark);
+        background: #f0f4fa;
         transform: translateY(-2px);
-        box-shadow: 0 0 20px rgba(46, 204, 113, 0.3);
-        color: #0B1628;
+        box-shadow: var(--shadow-lg);
+        color: var(--primary-blue);
     }
     .btn-hero-secondary {
         background: transparent;
-        border: 2px solid rgba(255, 255, 255, 0.3);
+        border: 2px solid rgba(255, 255, 255, 0.4);
         color: white;
         padding: 14px 32px;
         border-radius: 50px;
@@ -231,9 +233,9 @@
         gap: 10px;
     }
     .btn-hero-secondary:hover {
-        background: rgba(255, 255, 255, 0.08);
-        border-color: var(--primary-green);
-        color: var(--primary-green);
+        background: rgba(255, 255, 255, 0.1);
+        border-color: white;
+        color: white;
         transform: translateY(-2px);
     }
     .trust-badges {
@@ -246,11 +248,11 @@
         display: flex;
         align-items: center;
         gap: 8px;
-        color: rgba(255, 255, 255, 0.7);
+        color: rgba(255, 255, 255, 0.85);
         font-size: 0.85rem;
     }
     .trust-item i {
-        color: var(--primary-green);
+        color: #FFD700;  /* gold stars */
     }
     [dir="rtl"] .trust-item i {
         margin-left: 6px;
@@ -264,11 +266,11 @@
     .hero-image img {
         max-width: 100%;
         max-height: 400px;
-        filter: drop-shadow(0 8px 32px rgba(0, 0, 0, 0.5));
+        filter: drop-shadow(0 8px 32px rgba(0, 0, 0, 0.2));
         border-radius: var(--radius-md);
     }
 
-    /* ---- Stats Section (dark) ---- */
+    /* ---- Stats Section (light) ---- */
     .stats-modern {
         background: var(--bg-white);
         padding: 50px 0;
@@ -289,7 +291,7 @@
     .stat-number {
         font-size: 2rem;
         font-weight: 800;
-        color: var(--primary-green);
+        color: var(--primary-blue);
         display: block;
     }
     .stat-label {
@@ -299,7 +301,7 @@
         letter-spacing: 0.5px;
     }
 
-    /* ---- Map Section (dark) ---- */
+    /* ---- Map Section (light) ---- */
     .map-section-modern {
         padding: 80px 0;
         background: var(--bg-light);
@@ -314,7 +316,7 @@
     .section-header h2 {
         font-size: 2rem;
         font-weight: 700;
-        color: white;
+        color: var(--text-dark);
         margin-bottom: 16px;
     }
     .section-header p {
@@ -328,7 +330,7 @@
         box-shadow: var(--shadow-md);
         margin-top: 20px;
         z-index: 1;
-        background: #0B1628;
+        background: #DDE6EF;  /* light map background */
         border: 1px solid var(--border-light);
     }
     .map-legend {
@@ -348,6 +350,7 @@
         padding: 6px 12px;
         border-radius: 40px;
         border: 1px solid var(--border-light);
+        box-shadow: var(--shadow-sm);
     }
     .legend-dot {
         width: 12px;
@@ -355,14 +358,15 @@
         border-radius: 50%;
     }
     .legend-dot.high {
-        background: var(--primary-green);
-        box-shadow: 0 0 0 3px rgba(46, 204, 113, 0.25);
+        background: var(--primary-blue);
+        box-shadow: 0 0 0 3px rgba(41, 87, 151, 0.2);
     }
     .legend-dot.medium {
-        background: #4A90D9;
+        background: var(--accent-blue);
+        box-shadow: 0 0 0 3px rgba(28, 132, 193, 0.2);
     }
     .legend-dot.low {
-        background: #2D4A6B;
+        background: #A0C4D9;  /* lighter blue */
     }
     .map-stats-grid {
         max-width: 800px;
@@ -380,20 +384,21 @@
         gap: 16px;
         border: 1px solid var(--border-light);
         transition: all 0.3s ease;
+        box-shadow: var(--shadow-sm);
     }
     .map-stat-card:hover {
         transform: translateY(-3px);
-        border-color: var(--primary-green);
-        box-shadow: 0 0 20px rgba(46, 204, 113, 0.08);
+        border-color: var(--accent-blue);
+        box-shadow: var(--shadow-md);
     }
     .map-stat-card i {
         font-size: 2rem;
-        color: var(--primary-green);
+        color: var(--primary-blue);
     }
     .map-stat-number {
         font-size: 1.5rem;
         font-weight: 800;
-        color: white;
+        color: var(--primary-blue);
         display: block;
         line-height: 1;
     }
@@ -402,10 +407,10 @@
         color: var(--text-gray);
     }
 
-    /* ---- How It Works (dark) ---- */
+    /* ---- How It Works (light) ---- */
     .how-it-works-modern {
         padding: 80px 0;
-        background: var(--bg-light);
+        background: var(--bg-white);
     }
     .steps-grid {
         max-width: 1200px;
@@ -418,20 +423,20 @@
     .step-card-modern {
         text-align: center;
         padding: 32px 24px;
-        background: var(--bg-white);
+        background: var(--bg-light);
         border-radius: var(--radius-lg);
         transition: all 0.3s ease;
         border: 1px solid var(--border-light);
     }
     .step-card-modern:hover {
         transform: translateY(-8px);
-        border-color: var(--primary-green);
-        box-shadow: 0 0 30px rgba(46, 204, 113, 0.06);
+        border-color: var(--primary-blue);
+        box-shadow: var(--shadow-md);
     }
     .step-icon-wrapper {
         width: 80px;
         height: 80px;
-        background: linear-gradient(135deg, var(--primary-green), var(--primary-green-dark));
+        background: linear-gradient(135deg, var(--primary-blue), var(--accent-blue));
         border-radius: 50%;
         display: flex;
         align-items: center;
@@ -440,13 +445,13 @@
     }
     .step-icon-wrapper i {
         font-size: 2rem;
-        color: #0B1628;
+        color: white;
     }
     .step-number-modern {
         width: 32px;
         height: 32px;
-        background: var(--primary-green);
-        color: #0B1628;
+        background: var(--accent-blue);
+        color: white;
         border-radius: 50%;
         display: flex;
         align-items: center;
@@ -458,7 +463,7 @@
     .step-card-modern h3 {
         font-size: 1.25rem;
         font-weight: 600;
-        color: white;
+        color: var(--text-dark);
         margin-bottom: 12px;
     }
     .step-card-modern p {
@@ -467,7 +472,7 @@
         font-size: 0.9rem;
     }
 
-    /* ---- Featured Painters (dark) ---- */
+    /* ---- Featured Painters (light) ---- */
     .featured-modern {
         padding: 80px 0;
         background: var(--bg-light);
@@ -489,7 +494,7 @@
     .section-header-with-link h2 {
         font-size: 1.8rem;
         font-weight: 700;
-        color: white;
+        color: var(--text-dark);
         margin-bottom: 8px;
     }
     .section-header-with-link p {
@@ -497,7 +502,7 @@
         margin: 0;
     }
     .view-all-link {
-        color: var(--primary-green);
+        color: var(--primary-blue);
         text-decoration: none;
         font-weight: 500;
         display: inline-flex;
@@ -506,13 +511,13 @@
         transition: all 0.3s ease;
         padding: 8px 16px;
         border-radius: 40px;
-        background: rgba(46, 204, 113, 0.08);
-        border: 1px solid rgba(46, 204, 113, 0.15);
+        background: rgba(41, 87, 151, 0.06);
+        border: 1px solid rgba(41, 87, 151, 0.1);
     }
     .view-all-link:hover {
         gap: 12px;
-        background: var(--primary-green);
-        color: #0B1628;
+        background: var(--primary-blue);
+        color: white;
     }
     .painters-grid-home {
         max-width: 1200px;
@@ -529,11 +534,12 @@
         transition: all 0.3s ease;
         border: 1px solid var(--border-light);
         cursor: pointer;
+        box-shadow: var(--shadow-sm);
     }
     .painter-card-home:hover {
         transform: translateY(-5px);
-        border-color: var(--primary-green);
-        box-shadow: 0 0 30px rgba(46, 204, 113, 0.06);
+        border-color: var(--primary-blue);
+        box-shadow: var(--shadow-md);
     }
     .card-body-home {
         padding: 24px;
@@ -546,7 +552,7 @@
         margin: 0 auto 16px;
         position: relative;
         overflow: hidden;
-        background: linear-gradient(135deg, var(--primary-green), var(--primary-green-dark));
+        background: linear-gradient(135deg, var(--primary-blue), var(--accent-blue));
         display: flex;
         align-items: center;
         justify-content: center;
@@ -558,13 +564,13 @@
     }
     .avatar-home i {
         font-size: 2rem;
-        color: #0B1628;
+        color: white;
     }
     .verified-badge-home {
         position: absolute;
         bottom: 0;
         right: 0;
-        background: var(--primary-green);
+        background: var(--accent-blue);
         border-radius: 50%;
         width: 22px;
         height: 22px;
@@ -575,12 +581,12 @@
     }
     .verified-badge-home i {
         font-size: 0.65rem;
-        color: #0B1628;
+        color: white;
     }
     .painter-name-home {
         font-size: 1.15rem;
         font-weight: 700;
-        color: white;
+        color: var(--text-dark);
         margin-bottom: 4px;
     }
     .painter-location-home {
@@ -611,7 +617,7 @@
     .stat-value-home {
         font-size: 0.9rem;
         font-weight: 700;
-        color: var(--primary-green);
+        color: var(--primary-blue);
         display: block;
     }
     .stat-label-home {
@@ -632,12 +638,12 @@
         color: #FBBF24 !important;
     }
     .rating-home .text-muted {
-        color: #2D4A6B !important;
+        color: #CBD5E0 !important;
     }
     .price-home {
         font-size: 1.2rem;
         font-weight: 700;
-        color: var(--primary-green);
+        color: var(--primary-blue);
         margin-bottom: 16px;
     }
     .btn-profile-home {
@@ -652,12 +658,12 @@
         cursor: pointer;
     }
     .btn-profile-home:hover {
-        border-color: var(--primary-green);
-        background: rgba(46, 204, 113, 0.08);
-        color: var(--primary-green);
+        border-color: var(--accent-blue);
+        background: rgba(28, 132, 193, 0.05);
+        color: var(--accent-blue);
     }
 
-    /* ---- CTA Section (dark + green) ---- */
+    /* ---- CTA Section (blue gradient) ---- */
     .cta-modern {
         background: linear-gradient(135deg, var(--hero-gradient-start) 0%, var(--hero-gradient-end) 100%);
         padding: 80px 0;
@@ -673,7 +679,7 @@
         left: 0;
         right: 0;
         bottom: 0;
-        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="rgba(46,204,113,0.03)" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,122.7C672,117,768,139,864,154.7C960,171,1056,181,1152,165.3C1248,149,1344,107,1392,85.3L1440,64L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>') no-repeat top;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="rgba(255,255,255,0.05)" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,122.7C672,117,768,139,864,154.7C960,171,1056,181,1152,165.3C1248,149,1344,107,1392,85.3L1440,64L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>') no-repeat top;
         background-size: cover;
     }
     .cta-container {
@@ -691,7 +697,7 @@
     }
     .cta-modern p {
         font-size: 1.1rem;
-        color: rgba(255, 255, 255, 0.7);
+        color: rgba(255, 255, 255, 0.85);
         margin-bottom: 32px;
         line-height: 1.8;
     }
@@ -702,8 +708,8 @@
         flex-wrap: wrap;
     }
     .btn-cta-light {
-        background: var(--primary-green);
-        color: #0B1628;
+        background: white;
+        color: var(--primary-blue);
         padding: 14px 32px;
         border-radius: 50px;
         font-weight: 600;
@@ -712,20 +718,21 @@
         display: inline-flex;
         align-items: center;
         gap: 10px;
+        box-shadow: var(--shadow-md);
     }
     [dir="rtl"] .btn-cta-light i {
         margin-left: 8px;
         margin-right: 0;
     }
     .btn-cta-light:hover {
-        background: var(--primary-green-dark);
+        background: #f0f4fa;
         transform: translateY(-2px);
-        box-shadow: 0 0 20px rgba(46, 204, 113, 0.3);
-        color: #0B1628;
+        box-shadow: var(--shadow-lg);
+        color: var(--primary-blue);
     }
     .btn-cta-outline {
         background: transparent;
-        border: 2px solid rgba(255, 255, 255, 0.25);
+        border: 2px solid rgba(255, 255, 255, 0.4);
         color: white;
         padding: 14px 32px;
         border-radius: 50px;
@@ -741,10 +748,10 @@
         margin-right: 0;
     }
     .btn-cta-outline:hover {
-        border-color: var(--primary-green);
-        color: var(--primary-green);
+        background: rgba(255, 255, 255, 0.1);
+        border-color: white;
+        color: white;
         transform: translateY(-2px);
-        background: rgba(46, 204, 113, 0.06);
     }
 
     /* ---- Responsive ---- */
@@ -834,19 +841,6 @@
     }
     .step-card-modern:nth-child(4) {
         animation-delay: 0.4s;
-    }
-
-    /* ---- Scrollbar (dark) ---- */
-    ::-webkit-scrollbar {
-        width: 8px;
-        background: #0B1628;
-    }
-    ::-webkit-scrollbar-thumb {
-        background: var(--primary-green);
-        border-radius: 8px;
-    }
-    ::-webkit-scrollbar-track {
-        background: #132238;
     }
 </style>
 
@@ -1005,10 +999,10 @@
 </section>
 
 <script>
-    // Same map initialization as English version (works with RTL layout)
+    // Same map initialization with updated marker colors to match new palette
     var map = L.map('algeriaMap').setView([28.0, 2.0], 6);
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" style="color:#2ECC71;">OSM</a> &copy; CartoDB',
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" style="color:#295797;">OSM</a> &copy; CartoDB',
         subdomains: 'abcd',
         maxZoom: 19,
         minZoom: 5
@@ -1032,21 +1026,21 @@
         { name: "تمنراست", lat: 22.785, lng: 5.522778, painters: 8, activity: "low" }
     ];
 
-    const markerColors = { high: '#2ECC71', medium: '#4A90D9', low: '#2D4A6B' };
+    const markerColors = { high: '#295797', medium: '#1C84C1', low: '#A0C4D9' };
 
     wilayas.forEach(w => {
         const color = markerColors[w.activity];
         const customIcon = L.divIcon({
-            html: `<div style="background-color: ${color}; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #0B1628; font-weight: bold; font-size: 12px; border: 2px solid rgba(255,255,255,0.15); box-shadow: 0 2px 12px rgba(0,0,0,0.6);">${w.painters}</div>`,
+            html: `<div style="background-color: ${color}; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 12px; border: 2px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.15);">${w.painters}</div>`,
             iconSize: [32, 32],
             className: 'custom-marker'
         });
         const marker = L.marker([w.lat, w.lng], { icon: customIcon }).addTo(map);
         marker.bindPopup(`
-                <div style="direction:rtl;font-family:'Tajawal','Cairo',sans-serif;background:#0B1628;color:white;border-radius:12px;padding:8px 12px;border:1px solid #1E3450;">
-                    <b style="color:#2ECC71;">${w.name}</b><br>
-                    <span style="color:#9BB4D0;">${w.painters} دهاناً</span><br>
-                    <small style="color:#4A90D9;">محترفون جاهزون للعمل</small>
+                <div style="direction:rtl;font-family:'Tajawal','Cairo',sans-serif;background:white;color:#2D3748;border-radius:12px;padding:8px 12px;border:1px solid #D1DCE6;">
+                    <b style="color:#295797;">${w.name}</b><br>
+                    <span style="color:#4A5568;">${w.painters} دهاناً</span><br>
+                    <small style="color:#1C84C1;">محترفون جاهزون للعمل</small>
                 </div>
             `);
     });
