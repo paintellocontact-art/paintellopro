@@ -2,14 +2,14 @@
 
 <style>
 /* Modern Instagram/Muula Style */
-:root {
-    --primary: #007bff;
-    --primary-dark: #0056b3;
-    --background: #fafafa;
-    --card-bg: #ffffff;
-    --text-dark: #262626;
-    --text-gray: #8e8e8e;
-    --border-color: #dbdbdb;
+:root{
+    --primary:#1E4EA8;
+    --primary-dark:#153A80;
+    --background:#F4F7FB;
+    --card-bg:#FFFFFF;
+    --text-dark:#1B1B1B;
+    --text-gray:#6B7280;
+    --border-color:#DCE5F2;
 }
 
 body {
@@ -520,6 +520,28 @@ body {
         font-size: 0.8rem;
     }
 }
+
+.paintello-premium-banner{
+background:linear-gradient(135deg,#F4C430,#FFD84D);
+padding:15px;text-align:center;font-weight:700;color:#000;
+}
+.paintello-whatsapp{
+position:fixed;right:25px;bottom:25px;width:65px;height:65px;
+background:#25D366;border-radius:50%;display:flex;
+align-items:center;justify-content:center;color:#fff;
+font-size:30px;z-index:99999;text-decoration:none;
+box-shadow:0 10px 25px rgba(0,0,0,.2);
+}
+.profile-header-modern{
+background:linear-gradient(135deg,#1E4EA8,#153A80)!important;
+color:white;
+}
+.avatar-modern img{
+border-radius:24px!important;
+border:5px solid #fff!important;
+width:180px!important;height:180px!important;
+}
+
 </style>
 
 <!-- Modern Profile Header -->
@@ -530,7 +552,7 @@ body {
             <div class="avatar-modern">
                 <% if (painter.profilePicture && painter.profilePicture.url) { %>
                     <img src="<%= painter.profilePicture.url %>" alt="<%= painter.name %>" 
-                         onclick="openLightboxAt(0)">
+                         onclick="if(allImageUrls.length){openLightboxAt(0)}">
                 <% } else { %>
                     <img src="https://via.placeholder.com/300x300?text=Painter" alt="No profile">
                 <% } %>
@@ -599,6 +621,8 @@ body {
         </div>
     </div>
 </div>
+
+<div class="paintello-premium-banner"><i class="fas fa-paint-roller"></i> Paintello Certified Professional</div>
 
 <!-- Tabs -->
 <div class="tabs-modern">
@@ -990,4 +1014,5 @@ function followPainter() {
 }
 </script>
 
+<a href="https://wa.me/<%= painter.phone || '' %>" class="paintello-whatsapp" target="_blank"><i class="fab fa-whatsapp"></i></a>
 <%- include('../partials/footer') %>
