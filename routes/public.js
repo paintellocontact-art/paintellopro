@@ -8,6 +8,7 @@ const Painter = require('../models/Painter');
 const Order = require('../models/Order');
 const wilayas = require('../utils/wilayas');
 // Temporary home route in public.js (remove later)
+
 router.get('/', async (req, res) => {
   try {
     const featuredPainters = await Painter.find({
@@ -17,22 +18,25 @@ router.get('/', async (req, res) => {
     .sort({ rating: -1, completedJobs: -1 })
     .limit(6)
     .select('name experience pricePerSqm specialization rating completedJobs profilePicture location');
-// ---- CAPI PageView ----
-    const userData = getCleanUserData(req);
+const userData = getCleanUserData(req);
+    const pageViewId = generateEventId();
+
     if (userData) {
-      const eventId = generateEventId(); // your helper
       await sendMetaCAPIEvent({
         eventName: 'PageView',
-        eventId,
+        eventId: pageViewId,
         userData,
         eventSourceUrl: `${req.protocol}://${req.get('host')}${req.originalUrl}`,
         testEventCode: req.query.test_event_code || process.env.FB_TEST_EVENT_CODE,
       });
     }
+
     res.render('index', {
       title: 'Paintello Pro - Find Professional Painters in Algeria',
-      featuredPainters: featuredPainters,
-      user: req.session.user || null
+      featuredPainters,
+      user: req.session.user || null,
+      painter: req.session.painter || null,
+      metaEventIdPageView: pageViewId,
     });
   } catch (error) {
     console.error('Home page error:', error);
@@ -102,24 +106,42 @@ router.get('/painters', async (req, res) => {
     const painters = await Painter.find(query)
       .select('name experience pricePerSqm specialization rating completedJobs profilePicture location portfolio verification availability')
       .sort(sortOptions);
-// ---- CAPI PageView ----
-    const userData = getCleanUserData(req);
+ const userData = getCleanUserData(req);
+    const pageViewId = generateEventId();
     if (userData) {
-      const eventId = generateEventId(); // your helper
       await sendMetaCAPIEvent({
         eventName: 'PageView',
-        eventId,
+        eventId: pageViewId,
         userData,
         eventSourceUrl: `${req.protocol}://${req.get('host')}${req.originalUrl}`,
         testEventCode: req.query.test_event_code || process.env.FB_TEST_EVENT_CODE,
       });
+
+      // If any filter is present, send Search
+      if (wilaya || specialization || minRating || maxPrice || minExperience) {
+        const searchString = [wilaya, specialization, minRating].filter(Boolean).join(' ');
+        await sendMetaCAPIEvent({
+          eventName: 'Search',
+          eventId: generateEventId(), // separate ID
+          userData,
+          customData: {
+            search_string: searchString,
+            content_category: 'painter_search',
+          },
+          eventSourceUrl: `${req.protocol}://${req.get('host')}${req.originalUrl}`,
+          testEventCode: req.query.test_event_code || process.env.FB_TEST_EVENT_CODE,
+        });
+      }
     }
+
     res.render('public/painters', {
-      title: 'Find Professional Painters - Paintello Pro',
-      painters: painters,
-      wilayas: wilayas,
+      title: 'Find Painters',
+      painters,
+      wilayas,
       query: req.query,
-      user: req.session.user || null // Pass user if logged in
+      user: req.session.user || null,
+      painter: req.session.painter || null,
+      metaEventIdPageView: pageViewId,
     });
   } catch (error) {
     console.error('Public painters search error:', error);
@@ -184,13 +206,25 @@ router.get('/painters/:id', async (req, res) => {
     .populate('client', 'name');
 
     console.log('🎨 Rendering painter profile for:', painter.name);
+    
  // ---- CAPI ViewContent ----
+  // ... existing checks ...
+
     const userData = getCleanUserData(req);
+    const pageViewId = generateEventId();
+    const viewContentId = generateEventId();
+
     if (userData) {
-      const eventId = generateEventId();
+      await sendMetaCAPIEvent({
+        eventName: 'PageView',
+        eventId: pageViewId,
+        userData,
+        eventSourceUrl: `${req.protocol}://${req.get('host')}${req.originalUrl}`,
+        testEventCode: req.query.test_event_code || process.env.FB_TEST_EVENT_CODE,
+      });
       await sendMetaCAPIEvent({
         eventName: 'ViewContent',
-        eventId,
+        eventId: viewContentId,
         userData,
         customData: {
           content_name: painter.name,
@@ -198,9 +232,8 @@ router.get('/painters/:id', async (req, res) => {
           content_type: 'painter_profile',
           value: painter.pricePerSqm || 0,
           currency: 'DZD',
-          // extra fields:
-          specialization: painter.specialization.join(', '),
-          wilaya: painter.location?.wilaya,
+          specialization: painter.specialization?.join(', ') || '',
+          wilaya: painter.location?.wilaya || '',
         },
         eventSourceUrl: `${req.protocol}://${req.get('host')}${req.originalUrl}`,
         testEventCode: req.query.test_event_code || process.env.FB_TEST_EVENT_CODE,
@@ -208,12 +241,12 @@ router.get('/painters/:id', async (req, res) => {
     }
 
     res.render('public/painter-profile', {
-      title: `${painter.name} - Professional Painter - Paintello Pro`,
-      painter: painter,
-      recentJobs: recentJobs,
+      title: `${painter.name} - Painter`,
+      painter,
       user: req.session.user || null,
-      isVerified: painter.verification.status === 'verified',
-      isActive: painter.isActive
+      painter: req.session.painter || null,
+      metaEventIdPageView: pageViewId,
+      metaEventIdView: viewContentId,
     });
 
   } catch (error) {
@@ -267,12 +300,45 @@ router.get('/painters/:id/order', async (req, res) => {
     }
 
     console.log('✅ Loading guest order form for:', painter.name);
+// ... availability checks ...
+
+    const userData = getCleanUserData(req);
+    const pageViewId = generateEventId();
+    const initiateCheckoutId = generateEventId();
+
+    if (userData) {
+      await sendMetaCAPIEvent({
+        eventName: 'PageView',
+        eventId: pageViewId,
+        userData,
+        eventSourceUrl: `${req.protocol}://${req.get('host')}${req.originalUrl}`,
+        testEventCode: req.query.test_event_code || process.env.FB_TEST_EVENT_CODE,
+      });
+      await sendMetaCAPIEvent({
+        eventName: 'InitiateCheckout',
+        eventId: initiateCheckoutId,
+        userData,
+        customData: {
+          content_name: `Hire ${painter.name}`,
+          content_ids: [painter._id.toString()],
+          content_type: 'painter_hire',
+          value: painter.pricePerSqm || 0,
+          currency: 'DZD',
+          wilaya: painter.location?.wilaya || '',
+        },
+        eventSourceUrl: `${req.protocol}://${req.get('host')}${req.originalUrl}`,
+        testEventCode: req.query.test_event_code || process.env.FB_TEST_EVENT_CODE,
+      });
+    }
 
     res.render('public/guest-order', {
       title: `Hire ${painter.name} - Paintello Pro`,
-      painter: painter,
-      wilayas: wilayas,
-      user: req.session.user || null
+      painter,
+      wilayas,
+      user: req.session.user || null,
+      painter: req.session.painter || null,
+      metaEventIdPageView: pageViewId,
+      metaEventIdInitiateCheckout: initiateCheckoutId,
     });
   } catch (error) {
     console.error('❌ Guest order page error:', error);
@@ -358,12 +424,11 @@ router.post('/painters/:id/order', async (req, res) => {
 
     await newOrder.save();
  // ---- CAPI event ----
-    const userData = getCleanUserData(req); // extracts clientName, clientEmail, clientPhone, etc.
+    const userData = getCleanUserData(req);
     if (userData) {
-      const eventId = generateEventId();
       await sendMetaCAPIEvent({
-        eventName: 'Lead',          // or 'InitiateCheckout' if you have a multi-step process
-        eventId,
+        eventName: 'Lead',
+        eventId: generateEventId(),
         userData,
         customData: {
           content_name: `Order for ${painter.name}`,
