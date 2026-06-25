@@ -7,46 +7,7 @@ function generateEventId() { return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.repla
 const Painter = require('../models/Painter');
 const Order = require('../models/Order');
 const wilayas = require('../utils/wilayas');
-// Temporary home route in public.js (remove later)
 
-router.get('/', async (req, res) => {
-  try {
-    const featuredPainters = await Painter.find({
-      'verification.status': 'verified',
-      'isActive': true
-    })
-    .sort({ rating: -1, completedJobs: -1 })
-    .limit(6)
-    .select('name experience pricePerSqm specialization rating completedJobs profilePicture location');
-const userData = getCleanUserData(req);
-    const pageViewId = generateEventId();
-
-    if (userData) {
-      await sendMetaCAPIEvent({
-        eventName: 'PageView',
-        eventId: pageViewId,
-        userData,
-        eventSourceUrl: `${req.protocol}://${req.get('host')}${req.originalUrl}`,
-        testEventCode: req.query.test_event_code || process.env.FB_TEST_EVENT_CODE,
-      });
-    }
-
-    res.render('index', {
-      title: 'Paintello Pro - Find Professional Painters in Algeria',
-      featuredPainters,
-      user: req.session.user || null,
-      painter: req.session.painter || null,
-      metaEventIdPageView: pageViewId,
-    });
-  } catch (error) {
-    console.error('Home page error:', error);
-    res.render('index', {
-      title: 'Paintello Pro - Find Professional Painters in Algeria',
-      featuredPainters: [],
-      user: req.session.user || null
-    });
-  }
-});
 
 // Public painter search page
 router.get('/painters', async (req, res) => {
@@ -157,58 +118,31 @@ router.get('/painters', async (req, res) => {
 
 // Public painter profile page
 // Public painter profile page - UPDATED VERSION
+// ---------- PAINTER PROFILE ----------
 router.get('/painters/:id', async (req, res) => {
   try {
-    console.log('🔍 Loading painter profile for ID:', req.params.id);
-    
-    // First, check if the ID is valid
     if (!req.params.id || req.params.id.length !== 24) {
-      console.log('❌ Invalid painter ID format');
       return res.status(404).render('error', {
         title: 'Painter Not Found',
-        message: 'Invalid painter ID format.'
+        message: 'Invalid painter ID format.',
+        user: req.session.user || null,
+        sessionPainter: req.session.painter || null,
+        painter: null,
       });
     }
 
-    // Find the painter without verification check first
     const painter = await Painter.findById(req.params.id)
       .select('name experience pricePerSqm specialization rating completedJobs profilePicture location portfolio bio verification availability teamSize businessName');
 
-    console.log('✅ Database query result:', painter ? `Found: ${painter.name}` : 'Not found');
-
     if (!painter) {
-      console.log('❌ Painter not found in database');
       return res.status(404).render('error', {
         title: 'Painter Not Found',
-        message: 'The painter you are looking for does not exist.'
+        message: 'The painter you are looking for does not exist.',
+        user: req.session.user || null,
+        sessionPainter: req.session.painter || null,
+        painter: null,
       });
     }
-
-    // Check verification status but don't block access
-    if (painter.verification.status !== 'verified') {
-      console.log('⚠️ Painter not verified:', painter.verification.status);
-      // Still show the profile but with a warning
-    }
-
-    if (!painter.isActive) {
-      console.log('⚠️ Painter not active');
-      // Still show the profile but with a warning
-    }
-
-    // Get painter's recent completed jobs
-    const recentJobs = await Order.find({
-      'painter.id': painter._id,
-      status: 'completed'
-    })
-    .sort({ completedAt: -1 })
-    .limit(5)
-    .select('serviceType budget completedAt')
-    .populate('client', 'name');
-
-    console.log('🎨 Rendering painter profile for:', painter.name);
-    
- // ---- CAPI ViewContent ----
-  // ... existing checks ...
 
     const userData = getCleanUserData(req);
     const pageViewId = generateEventId();
@@ -240,67 +174,64 @@ router.get('/painters/:id', async (req, res) => {
       });
     }
 
+    // recent jobs
+    const recentJobs = await Order.find({
+      'painter.id': painter._id,
+      status: 'completed'
+    })
+    .sort({ completedAt: -1 })
+    .limit(5)
+    .select('serviceType budget completedAt')
+    .populate('client', 'name');
+
     res.render('public/painter-profile', {
-      title: `${painter.name} - Painter`,
-      painter,
+      title: `${painter.name} - Professional Painter - Paintello Pro`,
+      painter: painter,                          // database painter
+      recentJobs,
       user: req.session.user || null,
-      painter: req.session.painter || null,
+      sessionPainter: req.session.painter || null,
       metaEventIdPageView: pageViewId,
       metaEventIdView: viewContentId,
+      isVerified: painter.verification.status === 'verified',
+      isActive: painter.isActive,
     });
-
   } catch (error) {
-    console.error('❌ Public painter profile error:', error);
-    
-    // Check if it's a CastError (invalid ID format)
+    console.error('Profile error:', error);
     if (error.name === 'CastError') {
       return res.status(404).render('error', {
         title: 'Invalid Painter ID',
-        message: 'The painter ID format is invalid.'
+        message: 'The painter ID format is invalid.',
+        user: req.session.user || null,
+        sessionPainter: req.session.painter || null,
+        painter: null,
       });
     }
-    
     res.status(500).render('error', {
       title: 'Error',
-      message: 'An error occurred while loading the painter profile.'
+      message: 'An error occurred while loading the painter profile.',
+      user: req.session.user || null,
+      sessionPainter: req.session.painter || null,
+      painter: null,
     });
   }
 });
-// Guest order creation page - UPDATED VERSION
+
+// ---------- GUEST ORDER FORM (GET) ----------
 router.get('/painters/:id/order', async (req, res) => {
   try {
-    console.log('🔍 Loading guest order page for painter:', req.params.id);
-    
     const painter = await Painter.findById(req.params.id)
       .select('name pricePerSqm specialization location profilePicture experience rating verification isActive availability');
 
     if (!painter) {
-      console.log('❌ Painter not found');
       req.flash('error', 'Painter not found');
       return res.redirect('/painters');
     }
 
-    // Check if painter can accept orders
-    if (painter.verification.status !== 'verified') {
-      console.log('❌ Painter not verified:', painter.verification.status);
-      req.flash('error', 'This painter is not yet verified and cannot accept orders.');
+    // Check availability
+    if (painter.verification.status !== 'verified' || !painter.isActive) {
+      req.flash('warning', 'This painter cannot accept orders right now.');
       return res.redirect(`/painters/${painter._id}`);
     }
-
-    if (!painter.isActive) {
-      console.log('❌ Painter not active');
-      req.flash('error', 'This painter account is currently inactive and cannot accept orders.');
-      return res.redirect(`/painters/${painter._id}`);
-    }
-
-    if (painter.availability !== 'available') {
-      console.log('❌ Painter not available:', painter.availability);
-      req.flash('warning', 'This painter is currently not available for new projects.');
-      // Still allow ordering but show warning
-    }
-
-    console.log('✅ Loading guest order form for:', painter.name);
-// ... availability checks ...
 
     const userData = getCleanUserData(req);
     const pageViewId = generateEventId();
@@ -333,51 +264,38 @@ router.get('/painters/:id/order', async (req, res) => {
 
     res.render('public/guest-order', {
       title: `Hire ${painter.name} - Paintello Pro`,
-      painter,
+      painter: painter,                          // database painter
       wilayas,
       user: req.session.user || null,
-      painter: req.session.painter || null,
+      sessionPainter: req.session.painter || null,
       metaEventIdPageView: pageViewId,
       metaEventIdInitiateCheckout: initiateCheckoutId,
     });
   } catch (error) {
-    console.error('❌ Guest order page error:', error);
+    console.error('Guest order page error:', error);
     req.flash('error', 'Error loading order page');
     res.redirect('/painters');
   }
 });
 
-
-// Handle guest order submission - UPDATED FOR FIXED SCHEMA
+// ---------- GUEST ORDER SUBMISSION (POST) ----------
 router.post('/painters/:id/order', async (req, res) => {
   try {
-    const { 
-      clientName, 
-      clientEmail, 
-      clientPhone, 
-      wilaya, 
-      address, 
-      serviceType, 
-      roomSize, 
-      budget, 
-      description, 
-      preferredDate 
+    const {
+      clientName, clientEmail, clientPhone, wilaya, address,
+      serviceType, roomSize, budget, description, preferredDate
     } = req.body;
 
-    // Enhanced validation
+    // ---- validation ----
     if (!clientName || !clientEmail || !clientPhone || !serviceType || !roomSize || !wilaya || !address || !description) {
       req.flash('error', 'Please fill all required fields');
       return res.redirect(`/painters/${req.params.id}/order`);
     }
-
-    // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(clientEmail)) {
       req.flash('error', 'Please enter a valid email address');
       return res.redirect(`/painters/${req.params.id}/order`);
     }
-
-    // Validate room size is a number
     const area = parseInt(roomSize);
     if (isNaN(area) || area < 1) {
       req.flash('error', 'Please enter a valid room size');
@@ -390,40 +308,27 @@ router.post('/painters/:id/order', async (req, res) => {
       return res.redirect('/painters');
     }
 
-    // Calculate financials
     const totalAmount = parseInt(budget) || painter.pricePerSqm * area;
-    const commission = Math.round(totalAmount * 0.10); // 10% commission
+    const commission = Math.round(totalAmount * 0.10);
 
-    // Create guest order with proper structure
     const newOrder = new Order({
-      // Guest client information
-      guestClient: {
-        name: clientName,
-        email: clientEmail,
-        phone: clientPhone
-      },
-      // Painter reference (just the ID)
+      guestClient: { name: clientName, email: clientEmail, phone: clientPhone },
       painter: painter._id,
-      // Service details
-      serviceType: serviceType,
-      // Location details
-      wilaya: wilaya,
-      address: address,
-      area: area,
-      // Order description
-      description: description,
-      // Financials
+      serviceType,
+      wilaya,
+      address,
+      area,
+      description,
       budget: totalAmount,
-      totalAmount: totalAmount,
-      commission: commission,
-      // Dates
+      totalAmount,
+      commission,
       preferredDate: preferredDate ? new Date(preferredDate) : undefined,
-      // Mark as guest order
       source: 'guest'
     });
 
     await newOrder.save();
- // ---- CAPI event ----
+
+    // ---- CAPI Lead ----
     const userData = getCleanUserData(req);
     if (userData) {
       await sendMetaCAPIEvent({
@@ -445,15 +350,16 @@ router.post('/painters/:id/order', async (req, res) => {
     }
 
     console.log(`✅ Guest order created for painter ${painter.name} by ${clientName}`);
-    
     req.flash('success', `Your order has been submitted successfully! ${painter.name} will contact you soon.`);
     res.redirect('/painters');
-    
+
   } catch (error) {
-    console.error('❌ Guest order creation error:', error);
+    console.error('Guest order creation error:', error);
     req.flash('error', 'Error creating order: ' + error.message);
     res.redirect(`/painters/${req.params.id}/order`);
   }
 });
+
+
 
 module.exports = router;
