@@ -163,7 +163,6 @@ router.get('/ar/painters/:id', async (req, res) => {
 // Home page route
 router.get('/', async (req, res) => {
   try {
-    // Get featured painters for the home page
     const featuredPainters = await Painter.find({
       'verification.status': 'verified',
       'isActive': true
@@ -171,29 +170,35 @@ router.get('/', async (req, res) => {
     .sort({ rating: -1, completedJobs: -1 })
     .limit(6)
     .select('name experience pricePerSqm specialization rating completedJobs profilePicture location');
- // ---- CAPI PageView ----
+
     const userData = getCleanUserData(req);
+    const pageViewId = generateEventId();
+
     if (userData) {
-      const eventId = generateEventId(); // your helper
       await sendMetaCAPIEvent({
         eventName: 'PageView',
-        eventId,
+        eventId: pageViewId,
         userData,
         eventSourceUrl: `${req.protocol}://${req.get('host')}${req.originalUrl}`,
         testEventCode: req.query.test_event_code || process.env.FB_TEST_EVENT_CODE,
       });
     }
+
     res.render('index', {
       title: 'Paintello Pro - Find Professional Painters in Algeria',
-      featuredPainters: featuredPainters,
-      user: req.session.user || null
+      featuredPainters,
+      user: req.session.user || null,
+      painter: null,  // always pass painter (even if null)
+      metaEventIdPageView: pageViewId,
     });
   } catch (error) {
     console.error('Home page error:', error);
     res.render('index', {
       title: 'Paintello Pro - Find Professional Painters in Algeria',
       featuredPainters: [],
-      user: req.session.user || null
+      user: req.session.user || null,
+      painter: null,
+      metaEventIdPageView: '', // fallback
     });
   }
 });
@@ -201,7 +206,6 @@ router.get('/', async (req, res) => {
 // Arabic home page route
 router.get('/ar', async (req, res) => {
   try {
-    // Get featured painters for the home page
     const featuredPainters = await Painter.find({
       'verification.status': 'verified',
       'isActive': true
@@ -209,29 +213,35 @@ router.get('/ar', async (req, res) => {
     .sort({ rating: -1, completedJobs: -1 })
     .limit(6)
     .select('name experience pricePerSqm specialization rating completedJobs profilePicture location');
- // ---- CAPI PageView ----
+
     const userData = getCleanUserData(req);
+    const pageViewId = generateEventId();
+
     if (userData) {
-      const eventId = generateEventId(); // your helper
       await sendMetaCAPIEvent({
         eventName: 'PageView',
-        eventId,
+        eventId: pageViewId,
         userData,
         eventSourceUrl: `${req.protocol}://${req.get('host')}${req.originalUrl}`,
         testEventCode: req.query.test_event_code || process.env.FB_TEST_EVENT_CODE,
       });
     }
+
     res.render('ar/index', {
-      title: 'بينتيلو برو - Find Professional Painters in Algeria',
-      featuredPainters: featuredPainters,
-      user: req.session.user || null
+      title: 'بينتيلو برو - منصة الدهانين المحترفين في الجزائر',
+      featuredPainters,
+      user: req.session.user || null,
+      painter: null,
+      metaEventIdPageView: pageViewId,
     });
   } catch (error) {
     console.error('Arabic home page error:', error);
     res.render('ar/index', {
-      title: 'بينتيلو برو - Find Professional Painters in Algeria',
+      title: 'بينتيلو برو - منصة الدهانين المحترفين في الجزائر',
       featuredPainters: [],
-      user: req.session.user || null
+      user: req.session.user || null,
+      painter: null,
+      metaEventIdPageView: '',
     });
   }
 });
