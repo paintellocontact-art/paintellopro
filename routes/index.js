@@ -297,12 +297,21 @@ router.get('/auth/login', (req, res) => {
 });
 // Painter Registration Routes
 router.get('/auth/register-painter', (req, res) => {
+  const completeRegistrationId = generateEventId();
+  req.session.pendingEvents = req.session.pendingEvents || {};
+  req.session.pendingEvents.completeRegistration = completeRegistrationId;
+
   res.render('auth/register-painter', {
-    title: 'Join as Painter - Paintello Pro',
-    wilayas, // all wilayas list
+    title: 'انضم كدهان - بينتيلو برو',
+    wilayas,
+    oldInput: req.flash('oldInput')[0] || {},
+    error: req.flash('error'),
+    success: req.flash('success'),
+    warning: req.flash('warning'),
+    info: req.flash('info'),
+    metaEventIdCompleteRegistration: completeRegistrationId,
   });
 });
-
 // 🎨 Painter Registration (with flash messages)
 router.post('/auth/register-painter', uploadIdCard.single('idCard'), async (req, res) => {
   try {
@@ -381,23 +390,29 @@ router.post('/auth/register-painter', uploadIdCard.single('idCard'), async (req,
 
     await painter.save();
  // ---- CAPI event ----
-    const userData = getCleanUserData(req); // this extracts from req.body (email, phone, name, etc.)
-    if (userData) {
-      const eventId = generateEventId();
-      await sendMetaCAPIEvent({
-        eventName: 'CompleteRegistration', // or 'Lead'
-        eventId,
-        userData,
-        customData: {
-          registration_method: 'painter_signup',
-          experience: req.body.experience,
-          specialization: req.body.specialization,
-          wilaya: req.body.wilaya,
-        },
-        eventSourceUrl: `${req.protocol}://${req.get('host')}${req.originalUrl}`,
-        testEventCode: req.query.test_event_code || process.env.FB_TEST_EVENT_CODE,
-      });
-    }
+   // --- CAPI CompleteRegistration ---
+const userData = getCleanUserData(req);
+let completeRegistrationId = req.session.pendingEvents?.completeRegistration;
+if (!completeRegistrationId) {
+  completeRegistrationId = generateEventId(); // fallback
+}
+if (userData) {
+  await sendMetaCAPIEvent({
+    eventName: 'CompleteRegistration',
+    eventId: completeRegistrationId,
+    userData,
+    customData: {
+      registration_method: 'painter_signup',
+      experience: req.body.experience,
+      specialization: Array.isArray(req.body.specialization) ? req.body.specialization.join(', ') : req.body.specialization,
+      wilaya: req.body.wilaya,
+    },
+    eventSourceUrl: `${req.protocol}://${req.get('host')}${req.originalUrl}`,
+    testEventCode: req.query.test_event_code || process.env.FB_TEST_EVENT_CODE,
+  });
+}
+delete req.session.pendingEvents?.completeRegistration;
+// ... continue with flash/redirect ...
     // ✅ 6. Registration success
     console.log(`🆕 New painter registered: ${name} (${email})`);
     req.flash('success', '🎉 Registration successful! Your account is pending verification. We will contact you soon.');
