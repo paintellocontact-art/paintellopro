@@ -174,9 +174,10 @@ function getCleanUserData(req) {
     }
     
     // Location
-    if (req.body.city) {
-      userData.city = cleanString(req.body.city);
-    }
+   // Map wilaya to city (Meta's ct parameter)
+if (req.body.wilaya) {
+  userData.city = cleanString(req.body.wilaya);
+}
     
     // Country - Check multiple field names
     if (req.body.country) {
