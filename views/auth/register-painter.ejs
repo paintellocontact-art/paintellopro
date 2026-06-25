@@ -208,76 +208,7 @@
         </div>
     </div>
 </div>
-<script>
-// Phone number formatting function
-function formatPhoneForMeta(phone) {
-    // Remove all non-digit characters
-    let cleaned = phone.replace(/\D/g, '');
-    
-    // Convert Algerian number to international format
-    if (cleaned.startsWith('0') && cleaned.length === 10) {
-        return '+213' + cleaned.substring(1);
-    } else if (cleaned.startsWith('213') && cleaned.length === 12) {
-        return '+' + cleaned;
-    } else if (cleaned.startsWith('+213') && cleaned.length === 13) {
-        return cleaned;
-    } else {
-        return cleaned.startsWith('+') ? cleaned : '+' + cleaned;
-    }
-}
 
-// Track form submission for Meta Pixel
-document.getElementById('painterRegistrationForm').addEventListener('submit', function(e) {
-    // Get and format phone number
-    const rawPhone = document.getElementById('phone').value;
-    const internationalPhone = formatPhoneForMeta(rawPhone);
-    
-    // Get other form data - ensure lowercase for email
-    const nameParts = document.getElementById('name').value.trim().split(' ');
-    const firstName = nameParts[0] || '';
-    const lastName = nameParts.slice(1).join(' ') || '';
-    
-    const formData = {
-        // ✅ All lowercase for Meta parameters
-        em: document.getElementById('email').value.toLowerCase().trim(), // lowercase email
-        fn: firstName.toLowerCase(), // lowercase first name
-        ln: lastName.toLowerCase(), // lowercase last name
-        ph: internationalPhone, // phone is already in correct format
-        ct: document.getElementById('wilaya').value.toLowerCase(), // lowercase city
-        st: document.getElementById('wilaya').value.toLowerCase(), // lowercase state
-        zp: document.getElementById('wilayaNumber').value, // zip code stays as is
-        country: 'dz' // ✅ lowercase country code
-    };
-
-    console.log('Form data for Meta (lowercase):', formData);
-
-   
-
-    // ✅ Track CompleteRegistration with lowercase advanced matching
-    fbq('track', 'CompleteRegistration', {
-        content_name: 'Painter Professional Registration',
-        status: 'pending_verification',
-        value: 0,
-        currency: 'DZD'
-    }, {
-        em: formData.em, // ✅ lowercase
-        fn: formData.fn, // ✅ lowercase  
-        ln: formData.ln, // ✅ lowercase
-        ph: formData.ph,
-        ct: formData.ct, // ✅ lowercase
-        st: formData.st, // ✅ lowercase
-        zp: formData.zp,
-        country: formData.country // ✅ lowercase
- // ✅ Use the same ID as the server will send
-        eventID: '<%= metaEventIdCompleteRegistration %>'
-    });
-
-    // Small delay to ensure tracking is sent
-    setTimeout(() => {
-        // Form continues normal submission
-    }, 300);
-});
-</script>
 <script>
 window.dataLayer = window.dataLayer || [];
 
