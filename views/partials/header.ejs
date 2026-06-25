@@ -4,74 +4,73 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-   <% if (process.env.FB_PIXEL_ID) { %>
-<!-- Facebook Pixel Code -->
-<script>
-  !function(f,b,e,v,n,t,s)
-  {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-  n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-  if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-  n.queue=[];t=b.createElement(e);t.async=!0;
-  t.src=v;s=b.getElementsByTagName(e)[0];
-  s.parentNode.insertBefore(t,s)}(window, document,'script',
-  'https://connect.facebook.net/en_US/fbevents.js');
+    <% if (process.env.FB_PIXEL_ID) { %>
+    <!-- Meta Pixel Code -->
+    <script>
+      !function(f,b,e,v,n,t,s)
+      {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+      n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+      if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+      n.queue=[];t=b.createElement(e);t.async=!0;
+      t.src=v;s=b.getElementsByTagName(e)[0];
+      s.parentNode.insertBefore(t,s)}(window, document,'script',
+      'https://connect.facebook.net/en_US/fbevents.js');
 
-  // Initialise with advanced matching if user/painter is logged in
-  fbq('init', '<%= process.env.FB_PIXEL_ID %>', {
-    <% if (user && user.email) { %>em: '<%= user.email %>',<% } %>
-    <% if (user && user.firstName) { %>fn: '<%= user.firstName %>',<% } %>
-    <% if (user && user.lastName) { %>ln: '<%= user.lastName %>',<% } %>
-    <% if (user && user.numero) { %>ph: '<%= user.numero %>',<% } %>
-    <% if (painter && painter.email) { %>em: '<%= painter.email %>',<% } %>
-    <% if (painter && painter.name) { %>fn: '<%= painter.name %>',<% } %>
-    <% if (painter && painter.phone) { %>ph: '<%= painter.phone %>',<% } %>
-  });
+      // Initialise with advanced matching if user/painter is logged in
+      fbq('init', '<%= process.env.FB_PIXEL_ID %>', {
+        <% if (user && user.email) { %>em: '<%= user.email %>',<% } %>
+        <% if (user && user.firstName) { %>fn: '<%= user.firstName %>',<% } %>
+        <% if (user && user.lastName) { %>ln: '<%= user.lastName %>',<% } %>
+        <% if (user && user.numero) { %>ph: '<%= user.numero %>',<% } %>
+        <% if (painter && painter.email) { %>em: '<%= painter.email %>',<% } %>
+        <% if (painter && painter.name) { %>fn: '<%= painter.name %>',<% } %>
+        <% if (painter && painter.phone) { %>ph: '<%= painter.phone %>',<% } %>
+      });
 
-  // ---- PageView with server‑side event ID (deduplication) ----
-  fbq('track', 'PageView', {}, {
-    eventID: '<%= metaEventIdPageView %>' || undefined
-  });
+      // ---- PageView with server‑side event ID (deduplication) ----
+      fbq('track', 'PageView', {}, {
+        eventID: '<%= metaEventIdPageView %>' || undefined
+      });
 
-  // ---- ViewContent (if metaEventIdView is passed) ----
-  <% if (typeof metaEventIdView !== 'undefined' && metaEventIdView) { %>
-    setTimeout(function() {
-      if (typeof fbq !== 'undefined') {
-        fbq('track', 'ViewContent', {
-          content_name: '<%= painter ? painter.name.replace(/'/g, "\\'") : "" %>',
-          content_ids: ['<%= painter ? painter._id : "" %>'],
-          content_type: 'painter_profile',
-          value: <%= painter ? painter.pricePerSqm : 0 %>,
-          currency: 'DZD'
-        }, {
-          eventID: '<%= metaEventIdView %>'
-        });
-      }
-    }, 1000);
-  <% } %>
+      // ---- ViewContent (if metaEventIdView is passed) ----
+      <% if (typeof metaEventIdView !== 'undefined' && metaEventIdView) { %>
+        setTimeout(function() {
+          if (typeof fbq !== 'undefined') {
+            fbq('track', 'ViewContent', {
+              content_name: '<%= painter ? painter.name.replace(/'/g, "\\'") : "" %>',
+              content_ids: ['<%= painter ? painter._id : "" %>'],
+              content_type: 'painter_profile',
+              value: <%= painter ? painter.pricePerSqm : 0 %>,
+              currency: 'DZD'
+            }, {
+              eventID: '<%= metaEventIdView %>'
+            });
+          }
+        }, 1000);
+      <% } %>
 
-  // ---- InitiateCheckout (if metaEventIdInitiateCheckout is passed) ----
-  <% if (typeof metaEventIdInitiateCheckout !== 'undefined' && metaEventIdInitiateCheckout) { %>
-    setTimeout(function() {
-      if (typeof fbq !== 'undefined') {
-        fbq('track', 'InitiateCheckout', {
-          content_name: 'Hire <%= painter ? painter.name.replace(/'/g, "\\'") : "" %>',
-          content_ids: ['<%= painter ? painter._id : "" %>'],
-          content_type: 'painter_hire',
-          value: <%= painter ? painter.pricePerSqm : 0 %>,
-          currency: 'DZD'
-        }, {
-          eventID: '<%= metaEventIdInitiateCheckout %>'
-        });
-      }
-    }, 1200);
-  <% } %>
-
-</script>
+      // ---- InitiateCheckout (if metaEventIdInitiateCheckout is passed) ----
+      <% if (typeof metaEventIdInitiateCheckout !== 'undefined' && metaEventIdInitiateCheckout) { %>
+        setTimeout(function() {
+          if (typeof fbq !== 'undefined') {
+            fbq('track', 'InitiateCheckout', {
+              content_name: 'Hire <%= painter ? painter.name.replace(/'/g, "\\'") : "" %>',
+              content_ids: ['<%= painter ? painter._id : "" %>'],
+              content_type: 'painter_hire',
+              value: <%= painter ? painter.pricePerSqm : 0 %>,
+              currency: 'DZD'
+            }, {
+              eventID: '<%= metaEventIdInitiateCheckout %>'
+            });
+          }
+        }, 1200);
+      <% } %>
+    </script>
     <noscript><img height="1" width="1" style="display:none"
-    src="https://www.facebook.com/tr?id=1079041583677854&ev=PageView&noscript=1"
+    src="https://www.facebook.com/tr?id=<%= process.env.FB_PIXEL_ID %>&ev=PageView&noscript=1"
     /></noscript>
-    <!-- End Meta Pixel Code -->
-    
+    <% } %>
+
     <!-- Google Tag Manager -->
     <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
     new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
@@ -413,7 +412,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             
             <ul class="navbar-nav">
                 <% if (typeof painter !== 'undefined' && painter) { %>
-                    <!-- Painter is logged in - Modern Avatar Dropdown -->
+                    <!-- Painter is logged in -->
                     <li class="nav-item dropdown dropdown-modern">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
                             <div class="avatar-dropdown">
@@ -454,7 +453,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                         </ul>
                     </li>
                 <% } else { %>
-                    <!-- Not logged in - Modern Buttons -->
+                    <!-- Not logged in -->
                     <li class="nav-item me-2">
                         <a class="btn-login-modern" href="/auth/login-painter">
                             <i class="fas fa-sign-in-alt me-1"></i> Login
