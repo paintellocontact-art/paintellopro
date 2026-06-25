@@ -1,5 +1,8 @@
 const express = require('express');
 const router = express.Router();
+const sendMetaCAPIEvent = require('../services/metaCapi');
+const getCleanUserData = require('../utils/userData');
+function generateEventId() { return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) { const r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8); return v.toString(16); }); }
 const wilayas = require('../utils/wilayas');
 const Painter = require('../models/Painter');
 const bcrypt = require('bcrypt');
@@ -168,7 +171,18 @@ router.get('/', async (req, res) => {
     .sort({ rating: -1, completedJobs: -1 })
     .limit(6)
     .select('name experience pricePerSqm specialization rating completedJobs profilePicture location');
-
+ // ---- CAPI PageView ----
+    const userData = getCleanUserData(req);
+    if (userData) {
+      const eventId = generateEventId(); // your helper
+      await sendMetaCAPIEvent({
+        eventName: 'PageView',
+        eventId,
+        userData,
+        eventSourceUrl: `${req.protocol}://${req.get('host')}${req.originalUrl}`,
+        testEventCode: req.query.test_event_code || process.env.FB_TEST_EVENT_CODE,
+      });
+    }
     res.render('index', {
       title: 'Paintello Pro - Find Professional Painters in Algeria',
       featuredPainters: featuredPainters,
@@ -195,7 +209,18 @@ router.get('/ar', async (req, res) => {
     .sort({ rating: -1, completedJobs: -1 })
     .limit(6)
     .select('name experience pricePerSqm specialization rating completedJobs profilePicture location');
-
+ // ---- CAPI PageView ----
+    const userData = getCleanUserData(req);
+    if (userData) {
+      const eventId = generateEventId(); // your helper
+      await sendMetaCAPIEvent({
+        eventName: 'PageView',
+        eventId,
+        userData,
+        eventSourceUrl: `${req.protocol}://${req.get('host')}${req.originalUrl}`,
+        testEventCode: req.query.test_event_code || process.env.FB_TEST_EVENT_CODE,
+      });
+    }
     res.render('ar/index', {
       title: 'بينتيلو برو - Find Professional Painters in Algeria',
       featuredPainters: featuredPainters,
@@ -355,7 +380,24 @@ router.post('/auth/register-painter', uploadIdCard.single('idCard'), async (req,
     });
 
     await painter.save();
-
+ // ---- CAPI event ----
+    const userData = getCleanUserData(req); // this extracts from req.body (email, phone, name, etc.)
+    if (userData) {
+      const eventId = generateEventId();
+      await sendMetaCAPIEvent({
+        eventName: 'CompleteRegistration', // or 'Lead'
+        eventId,
+        userData,
+        customData: {
+          registration_method: 'painter_signup',
+          experience: req.body.experience,
+          specialization: req.body.specialization,
+          wilaya: req.body.wilaya,
+        },
+        eventSourceUrl: `${req.protocol}://${req.get('host')}${req.originalUrl}`,
+        testEventCode: req.query.test_event_code || process.env.FB_TEST_EVENT_CODE,
+      });
+    }
     // ✅ 6. Registration success
     console.log(`🆕 New painter registered: ${name} (${email})`);
     req.flash('success', '🎉 Registration successful! Your account is pending verification. We will contact you soon.');
