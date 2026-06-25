@@ -102,6 +102,13 @@ app.set('views', path.join(__dirname, 'views'));
 // Static files
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.get('/healty', (req, res) => {
+  res.status(200).json({
+    status: 'online',
+    uptime: process.uptime()
+  });
+});
+
 // Routes
 const indexRoutes = require('./routes/index');
 app.use('/', indexRoutes);
@@ -200,13 +207,6 @@ app.use((req, res) => {
 // Server startup
 const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`🎨 Paintello Pro Server started successfully!`);
-  console.log(`🚀 Server running on port ${PORT}`);
-  console.log(`🌍 Environment: ${process.env.NODE_ENV}`);
-  console.log(`🗄️ Database: PAINTELLO-PRO`);
-  console.log(`☁️ Cloudinary: ${process.env.CLOUDINARY_CLOUD_NAME ? 'Ready for ID uploads' : 'Not configured'}`);
-  console.log(`🔗 Health check: http://localhost:${PORT}/health`);
-});
+
 
 module.exports = app;
