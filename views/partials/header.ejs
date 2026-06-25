@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <% if (process.env.FB_PIXEL_ID) { %>
+   <% if (process.env.FB_PIXEL_ID) { %>
 <!-- Facebook Pixel Code -->
 <script>
   !function(f,b,e,v,n,t,s)
@@ -16,7 +16,7 @@
   s.parentNode.insertBefore(t,s)}(window, document,'script',
   'https://connect.facebook.net/en_US/fbevents.js');
 
-  // Initialize pixel with advanced matching data (if user is logged in)
+  // Initialise with advanced matching if user/painter is logged in
   fbq('init', '<%= process.env.FB_PIXEL_ID %>', {
     <% if (user && user.email) { %>em: '<%= user.email %>',<% } %>
     <% if (user && user.firstName) { %>fn: '<%= user.firstName %>',<% } %>
@@ -27,28 +27,46 @@
     <% if (painter && painter.phone) { %>ph: '<%= painter.phone %>',<% } %>
   });
 
-  // ----- PageView with server‑side event ID (if provided) -----
+  // ---- PageView with server‑side event ID (deduplication) ----
   fbq('track', 'PageView', {}, {
     eventID: '<%= metaEventIdPageView %>' || undefined
   });
 
-  // ----- ViewContent (if the page is a product/profile page) -----
+  // ---- ViewContent (if metaEventIdView is passed) ----
   <% if (typeof metaEventIdView !== 'undefined' && metaEventIdView) { %>
-  setTimeout(function() {
-    if (typeof fbq !== 'undefined') {
-      fbq('track', 'ViewContent', {
-        content_name: '<%= painter ? painter.name.replace(/'/g, "\\'") : "" %>',
-        content_ids: ['<%= painter ? painter._id : "" %>'],
-        content_type: 'painter_profile',
-        value: <%= painter ? painter.pricePerSqm : 0 %>,
-        currency: 'DZD'
-      }, {
-        eventID: '<%= metaEventIdView %>'
-      });
-    }
-  }, 1000);
+    setTimeout(function() {
+      if (typeof fbq !== 'undefined') {
+        fbq('track', 'ViewContent', {
+          content_name: '<%= painter ? painter.name.replace(/'/g, "\\'") : "" %>',
+          content_ids: ['<%= painter ? painter._id : "" %>'],
+          content_type: 'painter_profile',
+          value: <%= painter ? painter.pricePerSqm : 0 %>,
+          currency: 'DZD'
+        }, {
+          eventID: '<%= metaEventIdView %>'
+        });
+      }
+    }, 1000);
   <% } %>
-    </script>
+
+  // ---- InitiateCheckout (if metaEventIdInitiateCheckout is passed) ----
+  <% if (typeof metaEventIdInitiateCheckout !== 'undefined' && metaEventIdInitiateCheckout) { %>
+    setTimeout(function() {
+      if (typeof fbq !== 'undefined') {
+        fbq('track', 'InitiateCheckout', {
+          content_name: 'Hire <%= painter ? painter.name.replace(/'/g, "\\'") : "" %>',
+          content_ids: ['<%= painter ? painter._id : "" %>'],
+          content_type: 'painter_hire',
+          value: <%= painter ? painter.pricePerSqm : 0 %>,
+          currency: 'DZD'
+        }, {
+          eventID: '<%= metaEventIdInitiateCheckout %>'
+        });
+      }
+    }, 1200);
+  <% } %>
+
+</script>
     <noscript><img height="1" width="1" style="display:none"
     src="https://www.facebook.com/tr?id=1079041583677854&ev=PageView&noscript=1"
     /></noscript>
