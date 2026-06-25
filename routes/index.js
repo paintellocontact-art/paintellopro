@@ -285,19 +285,19 @@ router.get('/validate-profile-picture', async (req, res) => {
 });
 // Painter Login Page - FIXED VERSION
 
-// Painter Login Page - FIXED VERSION
 router.get('/auth/login-painter', (req, res) => {
-  // Prevent logged-in users from seeing login page again
   if (req.session.painter && req.session.painter.role === 'painter') {
     return res.redirect('/painter/dashboard');
   }
-
+  const pageViewId = generateEventId(); // optional but recommended
   res.render('auth/login-painter', {
-    title: 'Painter Login - Paintello Pro'
+    title: 'Painter Login - Paintello Pro',
+    user: req.session.user || null,
+    sessionPainter: req.session.painter || null,
+    painter: null,
+    metaEventIdPageView: pageViewId,
   });
 });
-
-
 
 // Painter Registration Routes
 // ---------- PAINTER REGISTRATION PAGE ----------
