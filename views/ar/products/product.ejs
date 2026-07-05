@@ -1,0 +1,612 @@
+<%- include('../partials/header', { 
+  title: product.name + ' - Paintello Pro',
+  metaEventIdPageView: typeof metaEventIdPageView !== 'undefined' ? metaEventIdPageView : '',
+  metaEventIdView: typeof metaEventIdView !== 'undefined' ? metaEventIdView : '',
+  metaEventIdCart: typeof metaEventIdCart !== 'undefined' ? metaEventIdCart : '',
+  user: typeof user !== 'undefined' ? user : null,
+  sessionPainter: typeof sessionPainter !== 'undefined' ? sessionPainter : null,
+  whatsappPhone: typeof whatsappPhone !== 'undefined' ? whatsappPhone : '213555555555'
+}) %>
+
+<!-- ===== PRODUCT HERO / DETAIL SECTION ===== -->
+<section class="product-detail-section" dir="rtl">
+  <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 0 24px;">
+    <div class="row g-5">
+      
+      <!-- Left Column: Product Image -->
+      <div class="col-lg-7">
+        <div class="product-image-wrapper">
+          <% if (product.image) { %>
+            <img src="<%= product.image %>" 
+                 alt="<%= product.name %>" 
+                 class="main-product-image" />
+          <% } else { %>
+            <div class="no-image-placeholder">
+              <i class="fas fa-image fa-4x" style="color: var(--accent-blue); opacity: 0.5;"></i>
+              <p class="mt-3 text-muted">صورة المنتج غير متوفرة</p>
+            </div>
+          <% } %>
+        </div>
+      </div>
+      
+      <!-- Right Column: Product Info -->
+      <div class="col-lg-5">
+        <div class="product-info-card">
+          
+          <!-- Category Badge -->
+          <span class="category-badge">
+            <%= product.category === 'paint' ? 'دهان' : product.category === 'tools' ? 'أدوات' : 'إكسسوارات' %>
+          </span>
+          
+          <!-- Title -->
+          <h1 class="product-title"><%= product.name %></h1>
+          
+          <!-- Price -->
+          <div class="price-block">
+            <span class="current-price"><%= product.price.toLocaleString('ar-DZ') %> دج</span>
+          </div>
+          
+          <!-- Stock & Delivery Info -->
+          <div class="delivery-info">
+            <div class="flex-item">
+              <span class="green-dot"></span>
+              <span>متوفر في المخزون – يُشحن في نفس اليوم</span>
+            </div>
+            <div class="flex-item">
+              <i class="fas fa-truck-fast" style="color: var(--accent-blue); margin-left: 8px;"></i>
+              <span>توصيل مجاني لكل الولايات ابتداءً من 5000 دج</span>
+            </div>
+          </div>
+          
+          <!-- Buy Now Button (Blue Theme) -->
+          <button id="buyNowBtn" class="btn-buy-now">
+            <i class="fas fa-bolt me-2"></i> اشتري الآن
+          </button>
+          
+          <!-- WhatsApp Bulk Order Button -->
+          <button id="whatsappBulkBtn" class="btn-whatsapp-bulk">
+            <i class="fab fa-whatsapp me-2"></i> طلب بالجملة عبر واتساب
+          </button>
+          
+          <!-- Tabs: Description / Delivery / Guarantee -->
+          <div class="product-tabs mt-4">
+            <ul class="nav nav-tabs" role="tablist">
+              <li class="nav-item">
+                <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#desc" type="button">الوصف</button>
+              </li>
+              <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#delivery" type="button">التوصيل</button>
+              </li>
+              <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#guarantee" type="button">الضمان</button>
+              </li>
+            </ul>
+            <div class="tab-content mt-3">
+              <div class="tab-pane fade show active" id="desc">
+                <p><%= product.description %></p>
+              </div>
+              <div class="tab-pane fade" id="delivery">
+                <ul>
+                  <li>🚚 توصيل سريع إلى جميع الولايات</li>
+                  <li>⏱️ الشحن في نفس اليوم للطلبات قبل 14:00</li>
+                  <li>📦 تغليف آمن ومضمون</li>
+                  <li>📞 تتبع شحنتك عبر واتساب</li>
+                </ul>
+              </div>
+              <div class="tab-pane fade" id="guarantee">
+                <ul>
+                  <li>🛡️ ضمان الجودة لمدة 6 أشهر</li>
+                  <li>🔄 سياسة إرجاع خلال 14 يومًا</li>
+                  <li>✅ فحص المنتج قبل الشحن</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== RELATED PRODUCTS (optional – can be added later) ===== -->
+
+<%- include('../partials/footer') %>
+
+<!-- ===== WHATSAPP CHAT WIDGET (reuse from your provided code) ===== -->
+<div id="whatsappWidget" class="whatsapp-widget">
+  <!-- Floating Button -->
+  <button id="whatsappToggle" class="whatsapp-float" aria-label="Contact via WhatsApp">
+    <svg viewBox="0 0 24 24" width="32" height="32" fill="white">
+      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+    </svg>
+  </button>
+
+  <!-- Chat Modal -->
+  <div id="whatsappModal" class="whatsapp-modal">
+    <div class="whatsapp-modal-content">
+      <!-- Header -->
+      <div class="whatsapp-modal-header">
+        <div class="whatsapp-header-left">
+          <img src="/img/logo.png" alt="Paintello" class="whatsapp-header-logo">
+          <span class="whatsapp-header-title">راسلنا عبر واتساب</span>
+        </div>
+        <button id="whatsappClose" class="whatsapp-close-btn">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Body -->
+      <div class="whatsapp-modal-body">
+        <!-- Product Summary -->
+        <div class="whatsapp-product-summary">
+          <div class="whatsapp-product-image">
+            <% if (product.image) { %>
+              <img src="<%= product.image %>" alt="<%= product.name %>">
+            <% } else { %>
+              <i class="fas fa-box fa-2x" style="color: var(--primary-blue);"></i>
+            <% } %>
+          </div>
+          <div class="whatsapp-product-info">
+            <h4><%= product.name %></h4>
+            <p class="whatsapp-product-price"><%= product.price.toLocaleString('ar-DZ') %> دج</p>
+          </div>
+        </div>
+
+        <!-- Message input -->
+        <div class="whatsapp-message-area">
+          <label for="whatsappMessage" class="whatsapp-input-label">رسالتك</label>
+          <textarea id="whatsappMessage" class="whatsapp-textarea" rows="3" placeholder="مرحباً، أنا مهتم بهذا المنتج..."></textarea>
+        </div>
+
+        <!-- Send button -->
+        <button id="whatsappSend" class="whatsapp-send-btn">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+            <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+          </svg>
+          إرسال عبر واتساب
+        </button>
+
+        <p class="whatsapp-footer-note">
+          🔒 سيتم إرسال رسالتك عبر واتساب. سنرد عليك في أقرب وقت.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== STYLES ===== -->
+<style>
+  :root {
+    --primary-blue: #295797;
+    --accent-blue: #1C84C1;
+    --primary-dark: #1E3F5C;
+    --primary-light: #4A7FA8;
+    --text-dark: #2D3748;
+    --text-gray: #4A5568;
+    --bg-light: #E8EEF6;
+    --bg-white: #FFFFFF;
+    --border-light: #D1DCE6;
+    --shadow-sm: 0 2px 8px rgba(41, 87, 151, 0.08);
+    --shadow-md: 0 4px 12px rgba(41, 87, 151, 0.12);
+    --shadow-lg: 0 8px 24px rgba(41, 87, 151, 0.16);
+  }
+
+  body {
+    font-family: 'Tajawal', 'Cairo', sans-serif;
+    background-color: var(--bg-light);
+  }
+
+  /* ---- Product Detail Section ---- */
+  .product-detail-section {
+    padding: 60px 0;
+  }
+
+  .product-image-wrapper {
+    background: var(--bg-white);
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--border-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 450px;
+    padding: 20px;
+  }
+
+  .main-product-image {
+    max-width: 100%;
+    max-height: 500px;
+    object-fit: contain;
+  }
+
+  .no-image-placeholder {
+    text-align: center;
+    color: var(--text-gray);
+  }
+
+  .product-info-card {
+    background: var(--bg-white);
+    border-radius: 24px;
+    padding: 32px;
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--border-light);
+    height: 100%;
+  }
+
+  .category-badge {
+    display: inline-block;
+    background: rgba(41, 87, 151, 0.1);
+    color: var(--primary-blue);
+    padding: 4px 14px;
+    border-radius: 40px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-bottom: 12px;
+  }
+
+  .product-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 16px;
+    line-height: 1.3;
+  }
+
+  .price-block {
+    margin-bottom: 20px;
+  }
+
+  .current-price {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: var(--primary-blue);
+  }
+
+  .delivery-info {
+    background: #f0f9ff;
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 24px;
+    border: 1px solid #d0e7ff;
+  }
+
+  .flex-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    color: #1E3F5C;
+    font-size: 0.9rem;
+  }
+
+  .green-dot {
+    width: 10px;
+    height: 10px;
+    background: #2c9814;
+    border-radius: 50%;
+    display: inline-block;
+  }
+
+  /* Buy Now Button */
+  .btn-buy-now {
+    width: 100%;
+    background: var(--primary-blue);
+    color: white;
+    border: none;
+    padding: 16px 24px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    border-radius: 50px;
+    margin-bottom: 12px;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .btn-buy-now:hover {
+    background: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+
+  /* WhatsApp Bulk Button */
+  .btn-whatsapp-bulk {
+    width: 100%;
+    background: #25D366;
+    color: white;
+    border: none;
+    padding: 14px 24px;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 50px;
+    margin-bottom: 20px;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .btn-whatsapp-bulk:hover {
+    background: #1ebe5c;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+
+  /* Tabs */
+  .nav-tabs {
+    border-bottom: 2px solid var(--border-light);
+  }
+
+  .nav-tabs .nav-link {
+    border: none;
+    color: var(--text-gray);
+    font-weight: 500;
+    padding: 8px 16px;
+  }
+
+  .nav-tabs .nav-link.active {
+    color: var(--primary-blue);
+    border-bottom: 2px solid var(--primary-blue);
+    background: transparent;
+    font-weight: 600;
+  }
+
+  .tab-content {
+    color: var(--text-dark);
+    line-height: 1.8;
+  }
+
+  /* ---- WhatsApp Widget Styles (adapted from your code) ---- */
+  .whatsapp-widget {
+    position: fixed;
+    bottom: 30px;
+    left: 30px;   /* Changed to left for RTL */
+    z-index: 9999;
+  }
+
+  .whatsapp-float {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: #25D366;
+    border: none;
+    box-shadow: 0 4px 20px rgba(37, 211, 102, 0.4);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+  }
+
+  .whatsapp-float:hover {
+    transform: scale(1.1);
+  }
+
+  .whatsapp-modal {
+    position: fixed;
+    bottom: 100px;
+    left: 30px;
+    width: 380px;
+    max-width: calc(100vw - 30px);
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(20px) scale(0.95);
+    transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+    z-index: 10000;
+    overflow: hidden;
+  }
+
+  .whatsapp-modal.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0) scale(1);
+  }
+
+  .whatsapp-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    background: #075E54;
+    color: white;
+  }
+
+  .whatsapp-header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .whatsapp-header-logo {
+    height: 32px;
+    border-radius: 50%;
+  }
+
+  .whatsapp-close-btn {
+    background: transparent;
+    border: none;
+    color: white;
+    cursor: pointer;
+    padding: 4px;
+    opacity: 0.8;
+  }
+
+  .whatsapp-modal-body {
+    padding: 20px;
+  }
+
+  .whatsapp-product-summary {
+    display: flex;
+    gap: 16px;
+    padding: 16px;
+    background: #f8f9fa;
+    border-radius: 12px;
+    margin-bottom: 20px;
+  }
+
+  .whatsapp-product-image {
+    width: 64px;
+    height: 64px;
+    background: white;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .whatsapp-product-image img {
+    max-width: 100%;
+    max-height: 100%;
+  }
+
+  .whatsapp-product-info h4 {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+
+  .whatsapp-product-price {
+    font-size: 14px;
+    color: #075E54;
+    font-weight: 500;
+  }
+
+  .whatsapp-textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-family: inherit;
+    resize: vertical;
+  }
+
+  .whatsapp-send-btn {
+    width: 100%;
+    padding: 12px;
+    background: #25D366;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+
+  .whatsapp-send-btn:hover {
+    background: #1ebe5c;
+  }
+
+  .whatsapp-footer-note {
+    font-size: 12px;
+    color: #6b7280;
+    text-align: center;
+    margin-top: 12px;
+  }
+
+  @media (max-width: 768px) {
+    .whatsapp-widget {
+      bottom: 20px;
+      left: 20px;
+    }
+    .whatsapp-modal {
+      bottom: 80px;
+      left: 10px;
+    }
+    .product-title {
+      font-size: 1.5rem;
+    }
+    .current-price {
+      font-size: 1.8rem;
+    }
+  }
+</style>
+
+<!-- ===== JAVASCRIPT ===== -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // ----- Buy Now button -----
+    const buyNowBtn = document.getElementById('buyNowBtn');
+    if (buyNowBtn) {
+      buyNowBtn.addEventListener('click', function() {
+        // Meta Pixel AddToCart event
+        try {
+          if (typeof fbq !== 'undefined') {
+            fbq('track', 'AddToCart', {
+              content_name: '<%= product.name.replace(/'/g, "\\'") %>',
+              content_ids: ['<%= product._id %>'],
+              content_type: 'product',
+              value: <%= product.price %>,
+              currency: 'DZD',
+              contents: [{ id: '<%= product._id %>', quantity: 1, item_price: <%= product.price %> }]
+            }, {
+              eventID: '<%= metaEventIdCart %>'
+            });
+          }
+        } catch (err) { console.warn('Pixel error', err); }
+
+        // Redirect to checkout (you'll need a checkout route)
+        // For now, simulate by sending to WhatsApp with product info
+        const phone = '<%= whatsappPhone %>';
+        const text = encodeURIComponent(`أريد شراء "${product.name}" بسعر ${product.price} دج. الرجاء تأكيد الطلب.`);
+        window.open(`https://wa.me/${phone}?text=${text}`, '_blank');
+        
+        // Alternatively, redirect to your own checkout page:
+        // window.location.href = '/checkout?product=<%= product._id %>';
+      });
+    }
+
+    // ----- WhatsApp Chat Widget (bulk orders) -----
+    const toggleBtn = document.getElementById('whatsappToggle');
+    const modal = document.getElementById('whatsappModal');
+    const closeBtn = document.getElementById('whatsappClose');
+    const sendBtn = document.getElementById('whatsappSend');
+    const msgInput = document.getElementById('whatsappMessage');
+
+    toggleBtn?.addEventListener('click', () => modal.classList.toggle('active'));
+    closeBtn?.addEventListener('click', () => modal.classList.remove('active'));
+    document.addEventListener('click', (e) => {
+      if (modal.classList.contains('active') && !modal.contains(e.target) && e.target !== toggleBtn) {
+        modal.classList.remove('active');
+      }
+    });
+
+    sendBtn?.addEventListener('click', () => {
+      const productName = '<%= product.name.replace(/'/g, "\\'") %>';
+      const productPrice = '<%= product.price %>';
+      let userMsg = msgInput.value.trim();
+      let text = `مرحباً، أنا مهتم بمنتج "${productName}" بسعر ${productPrice} دج.`;
+      if (userMsg) text += `\n\n${userMsg}`;
+      text += '\n\n--\nأرسلت من Paintello Pro';
+
+      const phone = '<%= whatsappPhone %>';
+      window.open(`https://wa.me/${phone}?text=${encodeURIComponent(text)}`, '_blank');
+      modal.classList.remove('active');
+    });
+
+    // Trigger WhatsApp bulk button (the green button in product info)
+    const bulkBtn = document.getElementById('whatsappBulkBtn');
+    bulkBtn?.addEventListener('click', () => {
+      // Open the WhatsApp modal or directly send pre-filled message
+      const productName = '<%= product.name.replace(/'/g, "\\'") %>';
+      const productPrice = '<%= product.price %>';
+      const text = encodeURIComponent(`أرغب في طلب كمية كبيرة من "${productName}" بسعر ${productPrice} دج. أرجو تزويدي بسعر الجملة.`);
+      const phone = '<%= whatsappPhone %>';
+      window.open(`https://wa.me/${phone}?text=${text}`, '_blank');
+    });
+  });
+</script>
