@@ -5,6 +5,142 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <style>
+/* ---- Products Carousel ---- */
+.products-section {
+  background: var(--bg-white);
+}
+
+.carousel-container {
+  position: relative;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 60px;
+}
+
+.carousel-track {
+  display: flex;
+  gap: 24px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  padding: 20px 0;
+  scrollbar-width: none;          /* Firefox */
+  -ms-overflow-style: none;       /* IE/Edge */
+}
+.carousel-track::-webkit-scrollbar {
+  display: none;
+}
+
+.carousel-card {
+  flex: 0 0 220px;
+  background: var(--bg-white);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-light);
+  overflow: hidden;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+}
+.carousel-card:hover {
+  transform: translateY(-5px);
+  border-color: var(--primary-blue);
+  box-shadow: var(--shadow-md);
+}
+
+.carousel-image {
+  width: 100%;
+  height: 160px;
+  background: var(--bg-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.carousel-image img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  padding: 8px;
+}
+
+.carousel-body {
+  padding: 16px;
+  text-align: center;
+}
+
+.carousel-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-dark);
+  margin-bottom: 8px;
+  line-height: 1.4;
+  height: 2.8em;
+  overflow: hidden;
+}
+
+.carousel-price {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--primary-blue);
+  margin-bottom: 12px;
+}
+
+.btn-carousel-detail {
+  width: 100%;
+  padding: 8px;
+  background: transparent;
+  border: 1px solid var(--border-light);
+  border-radius: 40px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-gray);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+.btn-carousel-detail:hover {
+  border-color: var(--accent-blue);
+  background: rgba(28,132,193,0.05);
+  color: var(--accent-blue);
+}
+
+.carousel-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--bg-white);
+  border: 1px solid var(--border-light);
+  border-radius: 50%;
+  width: 42px;
+  height: 42px;
+  font-size: 1.5rem;
+  color: var(--primary-blue);
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.3s;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.carousel-btn:hover {
+  background: var(--primary-blue);
+  color: white;
+  border-color: var(--primary-blue);
+}
+.carousel-btn.prev {
+  left: 5px;
+}
+.carousel-btn.next {
+  right: 5px;
+}
+
+@media (max-width: 768px) {
+  .carousel-container {
+    padding: 0 40px;
+  }
+  .carousel-card {
+    flex: 0 0 180px;
+  }
+}
     /* ===== COLOR THEME FROM VISION ANALYSIS =====
        Primary Blue: #295797
        Accent Blue:   #1C84C1
@@ -911,6 +1047,39 @@
         </div>
     </div>
 </section>
+<!-- ===== FEATURED PRODUCTS CAROUSEL (ARABIC) ===== -->
+<section class="featured-modern products-section" dir="rtl">
+  <div class="section-header-with-link">
+    <div>
+      <h2>منتجات مميزة</h2>
+      <p>أفضل الدهانات والأدوات للمحترفين</p>
+    </div>
+    <a href="/products" class="view-all-link">عرض جميع المنتجات <i class="fas fa-arrow-left"></i></a>
+  </div>
+
+  <% if (featuredProducts && featuredProducts.length > 0) { %>
+  <div class="carousel-container">
+    <button class="carousel-btn prev" onclick="scrollCarousel(-1)">&#8249;</button>
+    <div class="carousel-track" id="productCarousel">
+      <% featuredProducts.forEach(product => { %>
+      <div class="carousel-card" onclick="window.location.href='/products/<%= product._id %>'">
+        <div class="carousel-image">
+          <img src="<%= product.image %>" alt="<%= product.name %>" />
+        </div>
+        <div class="carousel-body">
+          <h4 class="carousel-title"><%= product.name %></h4>
+          <p class="carousel-price"><%= product.price %> دج</p>
+          <button class="btn-carousel-detail">عرض التفاصيل</button>
+        </div>
+      </div>
+      <% }); %>
+    </div>
+    <button class="carousel-btn next" onclick="scrollCarousel(1)">&#8250;</button>
+  </div>
+  <% } else { %>
+  <p class="text-center" style="color: var(--text-gray);">قريباً – منتجات احترافية للدهانين</p>
+  <% } %>
+</section>
 
 <!-- ===== HOW IT WORKS (ARABIC) ===== -->
 <section class="how-it-works-modern" dir="rtl">
@@ -1050,4 +1219,12 @@
     map.fitBounds(group.getBounds().pad(0.2));
 </script>
 
+function scrollCarousel(direction) {
+  const track = document.getElementById('productCarousel');
+  const scrollAmount = 250; // approx card width + gap
+  track.scrollBy({
+    left: direction * scrollAmount,
+    behavior: 'smooth'
+  });
+}
 <%- include('../partials/footer') %>
