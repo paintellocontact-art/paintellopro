@@ -3,41 +3,34 @@ const mongoose = require('mongoose');
 const productSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: true
+    required: true,
+    trim: true
   },
   description: {
     type: String,
     required: true
   },
-  category: {
-    type: String,
-    enum: ['paint', 'tools', 'equipment', 'accessories'],
-    required: true
-  },
-  subcategory: String,
   price: {
     type: Number,
     required: true
   },
-  discount: {
-    type: Number,
-    default: 0
+  image: {
+    type: String,   // URL or file path
+    default: '/images/default-product.png'
   },
-  images: [String],
-  stock: {
-    type: Number,
-    required: true
+  category: {
+    type: String,
+    enum: ['paint', 'tools', 'accessories', 'other'],
+    default: 'paint'
   },
-  points: {
-    type: Number,
-    default: 0 // Points earned when purchasing
-  },
-  isActive: {
+  featured: {
     type: Boolean,
-    default: true
+    default: false   // for controlling which products appear on the home carousel
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now
   }
-}, {
-  timestamps: true
 });
 
 module.exports = mongoose.model('Product', productSchema);
