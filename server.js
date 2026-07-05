@@ -26,32 +26,13 @@ mongoose.connect(MONGODB_URI, {
 .then(() => {
   console.log('✅ MongoDB connected successfully to PAINTELLO-PRO database');
   console.log('   Database:', mongoose.connection.db.databaseName);
-  
- // --- SEED A FEATURED PRODUCT IF NONE EXISTS ---
-  try {
-    const existingFeatured = await Product.countDocuments({ featured: true });
-    if (existingFeatured === 0) {
-      await Product.create({
-        name: 'دهان بريميوم أبيض',
-        description: 'دهان داخلي عالي الجودة، سهل التطبيق، يجف بسرعة ويعطي لمسة نهائية ناعمة. مثالي لجميع الغرف.',
-        price: 1200,
-        image: 'https://live.staticflickr.com/65535/55343397132_1ae9c890e0_b.jpg',
-        category: 'paint',
-        featured: true
-      });
-      console.log('🌱 Default featured product seeded');
-    } else {
-      console.log('✅ Featured products already exist');
-    }
-  } catch (seedErr) {
-    console.error('⚠️ Seeding warning:', seedErr.message);
-  }
 })
 .catch(err => {
   console.error('❌ MongoDB connection error:', err.message);
   console.log('   Please check your MONGODB_URI in environment variables');
   process.exit(1);
 });
+
 // ---------------- FIX: Handle both ESM and CommonJS exports of connect-mongo ----------------
 let MongoStoreModule = require('connect-mongo');
 // Support ESM default export (v4+ when required via CommonJS)
@@ -227,4 +208,4 @@ const PORT = process.env.PORT || 3000;
 
 
 
-module.exports = app; send mze full server
+module.exports = app;
