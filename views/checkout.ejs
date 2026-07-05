@@ -1,0 +1,597 @@
+<%- include('../partials/header', {
+  title: 'إتمام الطلب - Paintello Pro',
+  metaEventIdPageView: typeof metaEventIdPageView !== 'undefined' ? metaEventIdPageView : '',
+  user: typeof user !== 'undefined' ? user : null,
+  sessionPainter: typeof sessionPainter !== 'undefined' ? sessionPainter : null
+}) %>
+
+<!-- Checkout Content -->
+<div dir="rtl" class="checkout-container">
+  <div class="container" style="max-width:1200px; margin:0 auto; padding:0 24px;">
+    
+    <div class="checkout-header">
+      <h1>إتمام الطلب</h1>
+      <p>أكمل معلوماتك وسيتم احتساب رسوم التوصيل تلقائياً</p>
+    </div>
+
+    <div class="row g-5">
+      <!-- Left: Form -->
+      <div class="col-lg-8">
+        <div class="checkout-card">
+          <form id="checkoutForm" action="/checkout" method="POST">
+            
+            <!-- Personal Info -->
+            <div class="form-section">
+              <h3>المعلومات الشخصية</h3>
+              <input type="hidden" name="country" value="Algeria">
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label for="firstName">الاسم</label>
+                  <input type="text" id="firstName" name="firstName" value="<%= user && user.firstName ? user.firstName : '' %>" required>
+                </div>
+                <div class="col-md-6">
+                  <label for="lastName">اللقب</label>
+                  <input type="text" id="lastName" name="lastName" value="<%= user && user.lastName ? user.lastName : '' %>" required>
+                </div>
+                <div class="col-md-6">
+                  <label for="numero">الهاتف</label>
+                  <input type="tel" id="numero" name="numero" pattern="0[5-7][0-9]{8}" placeholder="مثال: 0551234567" value="<%= user && user.numero ? user.numero : '' %>" required>
+                </div>
+              </div>
+            </div>
+
+            <!-- Address -->
+            <div class="form-section">
+              <h3>عنوان التوصيل</h3>
+              <div class="mb-3">
+                <label for="address">العنوان الكامل</label>
+                <input type="text" id="address" name="address" placeholder="الشارع، الرقم، العمارة..." value="<%= typeof address !== 'undefined' ? address : '' %>" required>
+              </div>
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label for="city">الولاية</label>
+                    <select id="city" name="city" required class="input">
+                      <option value="">Sélectionnez votre wilaya</option>
+                      <!-- wilaya options remain the same -->
+<option value="adrar">Adrar</option>
+  <option value="chlef">Chlef</option>
+  <option value="laghouat">Laghouat</option>
+  <option value="oum el bouaghi">Oum El Bouaghi</option>
+  <option value="batna">Batna</option>
+  <option value="bejaia">Bejaia</option>
+  <option value="biskra">Biskra</option>
+  <option value="bechar">Bechar</option>
+  <option value="bordj badji mokhtar">Bordj Badji Mokhtar</option> <!-- AJOUTÉ -->
+  <option value="blida">Blida</option>
+  <option value="bouira">Bouira</option>
+  <option value="tamanrasset">Tamanrasset</option>
+  <option value="tebessa">Tebessa</option>
+  <option value="tlemcen">Tlemcen</option>
+  <option value="tiaret">Tiaret</option>
+  <option value="tizi ouzou">Tizi Ouzou</option>
+  <option value="Algiers">Algiers</option>
+  <option value="djelfa">Djelfa</option>
+  <option value="jijel">Jijel</option>
+  <option value="setif">Setif</option>
+  <option value="saida">Saida</option>
+  <option value="skikda">Skikda</option>
+  <option value="sidi belabbes">Sidi Belabbes</option>
+  <option value="annaba">Annaba</option> <!-- AJOUTÉ -->
+  <option value="guelma">Guelma</option>
+  <option value="constantine">Constantine</option>
+  <option value="medea">Médéa</option> <!-- AJOUTÉ -->
+  <option value="mostaganem">Mostaganem</option>
+  <option value="msila">M'sila</option>
+  <option value="mascara">Mascara</option>
+  <option value="ouargla">Ouargla</option>
+  <option value="oran">Oran</option>
+  <option value="el bayadh">El Bayadh</option>
+  <option value="illizi">Illizi</option> <!-- AJOUTÉ -->
+  <option value="bordj bou arreridj">Bordj Bou Arreridj</option>
+  <option value="boumerdes">Boumerdes</option>
+  <option value="el taref">El Taref</option>
+  <option value="tindouf">Tindouf</option>
+  <option value="tissemsilt">Tissemsilt</option>
+  <option value="el oued">El Oued</option>
+  <option value="khenchela">Khenchela</option>
+  <option value="souk ahras">Souk Ahras</option>
+  <option value="tipaza">Tipaza</option>
+  <option value="mila">Mila</option>
+  <option value="ain defla">Ain Defla</option>
+  <option value="naama">Naama</option>
+  <option value="ain temouchent">Ain Temouchent</option>
+  <option value="ghardaia">Ghardaia</option>
+  <option value="relizane">Relizane</option>
+  <option value="el mghair">El M'ghair</option>
+  <option value="el menia">El Menia</option>
+  <option value="ouled djellal">Ouled Djellal</option>
+  <option value="beni abbes">Beni Abbes</option>
+  <option value="timimoun">Timimoun</option>
+  <option value="touggourt">Touggourt</option>
+  <option value="djanet">Djanet</option>
+  <option value="in salah">In Salah</option>
+  <option value="in guezzam">In Guezzam</option>
+</select>
+                </div>
+                <div class="col-md-6">
+                  <label for="commune">البلدية</label>
+                  <select id="commune" name="commune" required>
+                    <option value="">اختر الولاية أولاً</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- Payment Method -->
+            <div class="form-section">
+              <h3>طريقة الدفع</h3>
+              <div class="payment-options">
+                <label class="payment-option active" for="payCOD">
+                  <input type="radio" id="payCOD" name="paymentMethod" value="cod" checked>
+                  <span>الدفع عند الاستلام</span>
+                  <p>ادفع نقداً عند استلام الطلب</p>
+                </label>
+                <label class="payment-option" for="payCIB">
+                  <input type="radio" id="payCIB" name="paymentMethod" value="chargily" data-card="cib">
+                  <img src="/favicon/cib.png" alt="CIB">
+                  <span>بطاقة CIB</span>
+                  <p>دفع آمن عبر الإنترنت</p>
+                </label>
+                <label class="payment-option" for="payEdahabia">
+                  <input type="radio" id="payEdahabia" name="paymentMethod" value="chargily" data-card="edahabia">
+                  <img src="/favicon/eddahabia.png" alt="Edahabia">
+                  <span>بطاقة الذهبية</span>
+                  <p>دفع آمن عبر الإنترنت</p>
+                </label>
+              </div>
+            </div>
+
+            <!-- Hidden fields -->
+            <input type="hidden" id="shippingFee" name="shippingFee" value="0">
+            <input type="hidden" id="deliveryDelay" name="deliveryDelay" value="">
+            <input type="hidden" id="totalPriceFinal" name="totalPriceFinal" value="<%= cart.totalPrice %>">
+          </form>
+        </div>
+      </div>
+
+      <!-- Right: Order Summary -->
+      <div class="col-lg-4">
+        <div class="summary-card">
+          <h3>ملخص الطلب</h3>
+          <div class="summary-item">
+            <span>إجمالي المنتجات</span>
+            <span id="baseTotal"><%= cart.totalPrice.toLocaleString('ar-DZ') %> دج</span>
+          </div>
+          <div class="summary-item">
+            <span>رسوم التوصيل</span>
+            <span id="shippingDisplay">—</span>
+          </div>
+          <div class="summary-item">
+            <span>مدة التوصيل</span>
+            <span id="delayDisplay">—</span>
+          </div>
+          <hr>
+          <div class="summary-total">
+            <span>المبلغ الإجمالي</span>
+            <span id="totalDisplay"><%= cart.totalPrice.toLocaleString('ar-DZ') %> دج</span>
+          </div>
+
+          <button id="placeOrderBtn" type="submit" form="checkoutForm" class="btn-checkout">
+            <i class="fas fa-box"></i> تأكيد الطلب (الدفع عند الاستلام) — <span id="btn-total"><%= cart.totalPrice.toLocaleString('ar-DZ') %> دج</span>
+          </button>
+
+          <div class="support-link">
+            <a href="tel:0791679611"><i class="fas fa-phone"></i> اتصل بالدعم</a>
+          </div>
+          <div class="security-note">
+            <span><i class="fas fa-lock"></i> دفع آمن</span>
+            <span><i class="fas fa-truck"></i> توصيل مضمون</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Styles (inline to keep everything together) -->
+<style>
+  :root {
+    --primary-blue: #295797;
+    --accent-blue: #1C84C1;
+    --primary-dark: #1E3F5C;
+    --bg-light: #E8EEF6;
+    --bg-white: #FFFFFF;
+    --border-light: #D1DCE6;
+    --shadow-sm: 0 2px 8px rgba(41,87,151,0.08);
+    --shadow-md: 0 4px 12px rgba(41,87,151,0.12);
+  }
+
+  body { font-family: 'Tajawal','Cairo',sans-serif; background: var(--bg-light); }
+
+  .checkout-container { padding: 60px 0; }
+  .checkout-header { text-align: center; margin-bottom: 40px; }
+  .checkout-header h1 { font-size: 2rem; font-weight: 700; color: var(--primary-blue); }
+  .checkout-header p { color: #666; }
+
+  .checkout-card, .summary-card {
+    background: var(--bg-white);
+    border-radius: 24px;
+    padding: 32px;
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--border-light);
+  }
+
+  .form-section { margin-bottom: 30px; }
+  .form-section h3 {
+    font-size: 1.1rem; font-weight: 700; color: var(--primary-blue);
+    border-bottom: 1px solid var(--border-light); padding-bottom: 8px; margin-bottom: 16px;
+  }
+
+  label { display: block; font-weight: 600; margin-bottom: 4px; color: var(--primary-dark); }
+  input, select {
+    width: 100%; padding: 12px; border: 1px solid var(--border-light);
+    border-radius: 12px; font-size: 0.95rem; transition: border 0.2s;
+    background: var(--bg-white);
+  }
+  input:focus, select:focus { border-color: var(--accent-blue); outline: none; box-shadow: 0 0 0 3px rgba(28,132,193,0.1); }
+
+  .payment-options { display: flex; gap: 15px; flex-wrap: wrap; }
+  .payment-option {
+    flex: 1; min-width: 150px; background: #fff; border: 2px solid var(--border-light);
+    border-radius: 16px; padding: 16px; text-align: center; cursor: pointer;
+    transition: border-color 0.3s, background 0.3s; position: relative;
+  }
+  .payment-option input { display: none; }
+  .payment-option.active { border-color: var(--primary-blue); background: rgba(41,87,151,0.04); }
+  .payment-option span { display: block; font-weight: 700; color: var(--text-dark); margin-top: 8px; }
+  .payment-option p { color: #666; margin: 4px 0 0; font-size: 0.8rem; }
+  .payment-option img { height: 36px; margin-bottom: 8px; }
+
+  .summary-item { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 0.95rem; }
+  .summary-total { font-size: 1.2rem; font-weight: 700; color: var(--primary-blue); display: flex; justify-content: space-between; margin-top: 15px; }
+
+  .btn-checkout {
+    width: 100%; background: var(--primary-blue); color: white; border: none;
+    padding: 14px; border-radius: 50px; font-size: 1rem; font-weight: 700;
+    margin-top: 20px; transition: all 0.3s; box-shadow: var(--shadow-sm);
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .btn-checkout:hover { background: var(--primary-dark); transform: translateY(-2px); box-shadow: var(--shadow-md); }
+
+  .support-link { text-align: center; margin-top: 12px; }
+  .support-link a { color: var(--primary-blue); text-decoration: none; font-weight: 600; }
+  .security-note { display: flex; justify-content: center; gap: 20px; margin-top: 16px; color: #666; font-size: 0.8rem; }
+
+  @media (max-width: 768px) {
+    .payment-options { flex-direction: column; }
+  }
+</style>
+
+<!-- Wilaya & commune logic (same as example but adapted to Arabic) -->
+<script>
+  // shippingData object (full Algerian wilayas with fees, delays, communes)
+const shippingData = {
+   "adrar": { fee: 800, delay: "4–6 jours", communes: ["Adrar","Reggane","Aoulef","Timimoun","Zaouiet Kounta","Fenoughil","Bouda","Tamentit","Sali","Tsabit","In Zghmir","Ouled Ahmed Timmi", "Akabli", "Bordj Badji Mokhtar", "Charouine", "Deldoul", "Metarfa", "Ouled Aissa", "Sebaa", "Talmin", "Tamest", "Tamantit", "Tinerkouk", "Zaouiet el Arab"] },
+   "chlef": { fee: 500, delay: "2–4 jours", communes: ["Chlef","Ténès","Oued Fodda","El Karimia","Sidi Akkacha","Ouled Fares","Sendjas","El Marsa","Oued Goussine","Taougrit","Zeboudja","Benairia","Herenfa","Beni Haoua","Beni Rached","Sobha","Labiod Medjadja", "Abou El Hassane", "Aïn Merane", "Beni Bouateb", "Bougouffa", "Breira", "Chettia", "Dahra", "El Hadjadj", "Harchoun", "Moussadek", "Oued Sly", "Ouled Abbes", "Ouled Ben Abdelkader", "Sidi Abderrahmane", "Tadjena", "Talassa", "Tenes", "Zeghaia"] },
+  "laghouat": { fee: 650, delay: "3–5 jours", communes: ["Laghouat","Aflou","Brida","Sidi Makhlouf","Ksar El Hirane","Gueltat Sidi Saad","El Assafia","Oued Morra","Tadjmout","El Ghicha","Hassi R'Mel","Sebgag","Ain Madhi", "Benacer Ben Chohra", "El Houaita", "Hadj Mechri", "Kheneg", "Oued M'Zi", "Sidi Bouzid", "Tadjemout", "Taouiala", "Touggourt", "Zelfana"] },
+  "oum el bouaghi": { fee: 550, delay: "2–4 jours", communes: ["Oum El Bouaghi","Ain Beida","Ain M'Lila","Sigus","Ain Babouche","Behir Chergui","Fkirina","Ksar Sbahi","El Fedjoudj","Souk Naamane","El Belala","Ain Kercha", "Ain Diss", "Ain Fakroun", "Ain Zitoun", "Berriche", "Bir Chouhada", "Dhalaa", "El Amiria", "El Djazia", "El Harmilia", "Fkirina", "Hanchir Toumghani", "Meskiana", "Oued Nini", "Ouled Gacem", "Ouled Hamla", "Ouled Zouai", "Rahia", "Souk Naamane", "Zorg"] },
+  "batna": { fee: 550, delay: "2–4 jours", communes: ["Batna","Timgad","Barika","Merouana","N Gaous","Arris","Ain Touta","Seriana","Chemora","Djerma","Fesdis","Ouled Fadel","Oued Chaaba","El Madher","Tazoult", "Ain Djasser", "Ain Yagout", "Arris", "Azil Abderrahmane", "Boulhilat", "Boumaguer", "Bouzina", "Chir", "Djezzar", "El Hassi", "Foum Toub", "Ghassira", "Gosbat", "Guigba", "Hidoussa", "Ichemoul", "Inoughissen", "Kimmel", "Lazrou", "M'doukel", "Menaa", "Oued El Ma", "Ouled Ammar", "Ouled Aouf", "Ouled Sellem", "Ouled Si Slimane", "Rahbat", "Ras El Aioun", "Sefiane", "Seggana", "Talkhamt", "Taxlent", "Teniet El Abed", "Tighanimine", "Tilatou", "Timgad", "Tkout", "Zanet El Beida"] },
+  "bejaia": {
+  fee: 500,
+  delay: "2–3 jours",
+  communes: [
+    "Sidi Aïch","Aït-Smail","Akbou","Akfadou","Amalou", "Amizour","Barbacha","Chellata","Darguina","Draâ El-Kaïd","Leflaye","Feraoun","Ighram","Kendira","Kherrata","Melbou","Ouzellaguen","Seddouk","Souk Oufella","Sidi Ayad","Tamokra","Tamridjet","Taskriout","Tazmalt","Tibane","Tichy","Tifra","Toudja","Tizi N'Berber","Bouhamza","Boukhelifa","Aït Mellikeche","Beni Djellil","Beni Ksila","Beni Maouche","Ighil Ali","Fenaïa Ilmaten","Oued Ghir","Souk El Ténine","Taourirt Ighil","Tinebdar","Timezrit","Tala Hamza","Adekar","Boudjellil","Chemini","Aït R'zine","Aokas","Bejaia","El Kseur"
+  ]
+},
+  "biskra": { fee: 600, delay: "3–5 jours", communes: ["Biskra","El Kantara","Sidi Okba","Tolga","Ouled Djellal","Mekhadma","Zeribet El Oued","Ourlal","Chetma","El Haouch","Doucen","Foughala","Branis", "Ain Naga", "Ain Zaatout", "Bordj Ben Azzouz", "Bouchagroune", "Chaiba", "Djemorah", "El Feidh", "El Hadjab", "El Outaya", "Khenguet Sidi Nadji", "Lioua", "M'Chouneche", "M'Lili", "Oumache", "Oum Laadham", "Sidi Khaled", "Tolga", "Zeribet el Oued"] },
+  "bechar": { fee: 750, delay: "4–6 jours", communes: ["Bechar","Kenadsa","Beni Ounif","Taghit","Abadla","Ouled Khoudir","Erg Ferradj","Beni Abbes","Timoudi","Tamtert","Igli", "Boukais", "El Ouata", "Meridja", "Mogheul", "Tabelbala"] },
+  "blida": { fee: 300, delay: "1–2 jours", communes: ["Blida","Boufarik","Bouinan","Ouled Yaich","Beni Mered","Chebli","Mouzaïa","Meftah","Oued El Alleug","Larbaa","Chréa","Soumaa","El Affroun", "Ain Romana", "Ben Khlil", "Beni Tamou", "Bouarfa", "Bougara", "Bouinan", "Chemini", "Djebabra", "El Hamdania", "Guerrouaou", "Hammam Melouane", "Mouzaia", "Oued Djer", "Ouled Selama", "Souhane", "Tamesguida"] },
+  "bouira": { fee: 450, delay: "2–3 jours", communes: ["Bouira","Ain Turk","El Asnam","Sour El Ghozlane","Lakhdaria","Bechloul","Haizer","Bir Ghbalou","Taghzout","El Hachimia","Dirah","El Khabouzia","Maamora", "Aghbalou", "Ahl El Ksar", "Ain Bessam", "Ain El Hadjar", "Ait Laaziz", "Aomar", "Bordj Okhriss", "Bouderbala", "Boukram", "Chorfa", "Dechmia", "Djebahia", "El Adjiba", "El Hakimia", "El Ksour", "Guerrouma", "Hadjera Zerga", "Hanif", "Kadiria", "Lakhdaria", "M'Chedellah", "Mezdour", "Oued El Berdi", "Ouled Rached", "Raouraoua", "Ridane", "Saharidj", "Souk El Khemis", "Taguedit", "Z'barbar"] },
+  "tamanrasset": { fee: 900, delay: "5–8 jours", communes: ["Tamanrasset","In Guezzam","In Salah","Tin Zaouatine","Abalessa", "Ain Guezzam", "Ain Salah", "Foggaret Ezzoua", "Idles", "Tazrouk"] },
+  "tebessa": { fee: 600, delay: "3–5 jours", communes: ["Tebessa","Bir El Ater","Cheria","El Aouinet","El Kouif","Negrine","Bir Mokadem","El Malabiod","Boukhadra","Morsott", "Ain Zerga", "Bedjene", "Bekkaria", "Bir Dheheb", "Boulhaf Dyr", "El Meridj", "El Ogla", "Ferkane", "Guorriguer", "Hammamet", "Maafa", "Mechroha", "Ouenza", "Oum Ali", "Saf Saf El Ouesra", "Stah Guentis", "Telidjen", "Youkous Les"] },
+  "tlemcen": { fee: 500, delay: "2–4 jours", communes: ["Tlemcen","Maghnia","Remchi","Hennaya","Sabra","Chetouane","Ghazaouet","Nedroma","Ain Fezza","Ain Tallout","Bensekrane", "Ain Fetah", "Ain Ghoraba", "Ain Kebira", "Ain Nehala", "Ain Tellout", "Ain Youcef", "Amieur", "Azails", "Bab El Assa", "Beni Bahdel", "Beni Boussaid", "Beni Mester", "Beni Ouarsous", "Beni Semiel", "Beni Snous", "Bouhlou", "Chetouane", "Dar Yaghmouracene", "Djebala", "El Aricha", "El Bouihi", "El Gor", "Fellaoucene", "Hammam Boughrara", "Hennaya", "Honaïne", "Marsa Ben M'Hidi", "Msirda", "Nador", "Oued Lakhdar", "Ouled Mimoun", "Ouled Riyah", "Sebbaa Chioukh", "Sebdou", "Sidi Abdelli", "Sidi Djillali", "Sidi Medjahed", "Souani", "Souahlia", "Terni", "Zenet"] },
+  "tiaret": {
+    fee: 500,
+    delay: "2–4 jours",
+    communes: ["Tiaret", "Sougueur", "Meghila", "Mahdia", "Aïn Bouchekif", "Rahouia", "Medroussa", "Frenda", "Sidi Ali Mellal", "Oued Lilli", "Aïn Deheb", "Aïn Kermes", "Dahmouni", "Djebilet Rosfa", "Faidja", "Guertoufa", "Hamadia", "Ksar Chellala", "Madna", "Mechraa Sfa", "Medrissa", "Mellakou", "Nadorah", "Naima", "Oued Lilli", "Rechaiga", "Sebaine", "Sebt", "Serghine", "Si Abdelghani", "Sidi Abderrahmane", "Sidi Bakhti", "Sidi Hosni", "Takhemaret", "Tidda", "Tousnina", "Zmalet El Emir Abdelkader"]
+  },
+  "tizi ouzou": {
+    fee: 400,
+    delay: "2–3 jours",
+    communes: ["Tizi Ouzou", "Azazga", "Aït Yahia", "Larbaâ Nath Irathen", "Ouaguenoun", "Draâ El Mizan", "Makouda", "Freha", "Illoula Oumalou", "Iferhounène", "Tigzirt", "Azeffoun", "Abi Youcef", "Aghrib", "Aïn El Hammam", "Aït Aggouacha", "Aït Bouaddou", "Aït Chafâa", "Aït Khelili", "Aït Mahmoud", "Aït Oumalou", "Aït Toudert", "Aït Yahia Moussa", "Akbil", "Akerrou", "Assi Youcef", "Beni Aïssi", "Beni Douala", "Beni Yenni", "Boghni", "Boudjima", "Bounouh", "Bouzeguène", "Draâ Ben Khedda", "Frikat", "Iboudrarene", "Idjeur", "Iflissen", "Mechtras", "Mizrana", "Ouacif", "Ouadhia", "Oued Aïssi", "Sidi Naâmane", "Souk El Thenine", "Tadmaït", "Timizart", "Tirmitine", "Yakouren", "Zekri"]
+  },
+  "algiers": {
+    fee: 300,
+    delay: "1–2 jours",
+    communes: ["Alger-Centre", "Sidi M'Hamed", "El Madania", "Belouizdad", "Bab El Oued", "Bologhine", "Casbah", "Oued Koriche", "Bir Mourad Raïs", "El Biar", "Bouzareah", "Birkhadem", "El Harrach", "Baraki", "Oued Smar", "Bachdjerrah", "Hussein Dey", "Kouba", "Bourouba", "Dar El Beïda", "Bab Ezzouar", "Ben Aknoun", "Dely Ibrahim", "Hammamet", "Raïs Hamidou", "Djasr Kasentina", "El Mouradia", "Hydra", "Mohammadia", "Bordj El Kiffan", "El Magharia", "Beni Messous", "Les Eucalyptus", "Birtouta", "Tessala El Merdja", "Ouled Chebel", "Sidi Moussa", "Aïn Taya", "Bordj El Bahri", "El Marsa", "H'Raoua", "Rouïba", "Reghaïa", "Aïn Benian", "Staoueli", "Zeralda", "Mahelma", "Rahmania", "Souidania", "Cheraga", "Ouled Fayet", "El Achour", "Draria", "Douera", "Baba Hassen", "Khraicia", "Saoula"]
+  },
+  "djelfa": {
+    fee: 600,
+    delay: "3–5 jours",
+    communes: ["Djelfa", "Hassi Bahbah", "Aïn Oussera", "Dar Chioukh", "El Idrissia", "Charef", "Messaad", "Zaâfrane", "El Khemis", "Guernini", "Aïn Chouhada", "Aïn El Ibel", "Aïn Fekka", "Aïn Maabed", "Aïn Oussera", "Amourah", "Ben Haroun", "Beni Yagoub", "Birine", "Bouira Lahdab", "Douis", "El Guedid", "Faidh El Botma", "Guettara", "Had Sahary", "Hassi Fedoul", "Hassi Lazreg", "Moudjebara", "Oum Laadham", "Sed Rahal", "Selmana", "Sidi Baïzid", "Sidi Ladjel", "Tadmit", "Zaccar"]
+  },
+  "jijel": {
+    fee: 500,
+    delay: "2–4 jours",
+    communes: ["Jijel", "Taher", "El Aouana", "Texenna", "Chekfa", "Ziama Mansouriah", "El Milia", "Settara", "Aïn El Kebira", "Aïn Errich", "Bordj T'har", "Boudria Ben Yadjis", "Bouraoui Belhadef", "Boussif Ouled Askeur", "Chahna", "Djimla", "El Ancer", "El Kennar Nouchfi", "Emir Abdelkader", "Erraguene", "Ghebala", "Kaous", "Kheïri Oued Adjoul", "Oudjana", "Ouled Rabah", "Ouled Yahia Khadrouche", "Selma Benziada", "Sidi Abdelaziz", "Sidi Marouf", "Sidi Maârouf"]
+  },
+  "setif": {
+    fee: 550,
+    delay: "2–4 jours",
+    communes: ["Sétif", "El Eulma", "Aïn Arnat", "Beni Ourtilane", "Babor", "Guenzet", "Bougaâ", "Aïn Oulmene", "Guidjel", "Beni Aziz", "Aïn Abessa", "Aïn Azel", "Aïn El Kebira", "Aïn Lahdjar", "Aïn Legraj", "Aïn Roua", "Aïn Sebt", "Amoucha", "Bazer Sakhra", "Beidha Bordj", "Belaa", "Bellaa", "Beni Chebana", "Beni Fouda", "Beni Hocine", "Beni Mouhli", "Bir El Arch", "Bir Haddada", "Bouandas", "Bousselam", "Dehamcha", "Djemila", "Draâ Kebila", "El Ouricia", "Guelal", "Hammam Guergour", "Hammam Souhna", "Maâouia", "Maâkla", "Mechta Ouled Bourenane", "Mezloug", "Ouled Addouane", "Ouled Sabor", "Ouled Si Ahmed", "Ouled Tebben", "Rasfa", "Salah Bey", "Serdj El Ghoul", "Tachouda", "Talaifacene", "Taya", "Tella"]
+  },
+  "saida": {
+    fee: 500,
+    delay: "2–4 jours",
+    communes: ["Saïda", "Moulay Larbi", "Tircine", "Aïn El Hadjar", "Ouled Khaled", "Doui Thabet", "Hounet", "Aïn Sekhouna", "Aïn Soltane", "El Hassasna", "Maâmora", "Ouled Brahim", "Ouled Brahim", "Sidi Ahmed", "Sidi Amar", "Sidi Boubekeur", "Youb"]
+  },
+  "skikda": {
+    fee: 550,
+    delay: "2–4 jours",
+    communes: ["Skikda", "Collo", "El Hadaik", "El Harrouch", "Azzaba", "Ben Azzouz", "Filfila", "Ramdane Djamel", "Oum Toub", "Aïn Bouziane", "Aïn Charchar", "Aïn Kechra", "Aïn Zouit", "Beni Bechir", "Beni Oulbane", "Beni Zid", "Bin El Ouiden", "Bouchetata", "Cheraia", "Djendel Saadi Mohamed", "Emdjez Edchich", "Es Sebt", "Grarem", "Hamadi Krouma", "Kanoua", "Kerkera", "Oued Zehour", "Ouled Attia", "Ouled Habbaba", "Ouled Hbaba", "Salah Bouchaour", "Sidi Mezghiche", "Tamalous", "Zerdazas", "Zitouna"]
+  },
+  "sidi bel abbes": {
+    fee: 500,
+    delay: "2–4 jours",
+    communes: ["Sidi Bel Abbès", "Sfisef", "Mostefa Ben Brahim", "Aïn El Berd", "Tessala", "Ben Badis", "Telagh", "Merine", "Tenira", "Makedra", "Aïn Adden", "Aïn El Berd", "Aïn Kada", "Aïn Thrid", "Amarnas", "Bedrabine El Mokrani", "Belarbi", "Benachiba Chelia", "Bir El Hammam", "Boudjebaa El Bordj", "Boukhanefis", "Chetouane Belaila", "Dhaya", "El Hacaiba", "Hassi Dahou", "Hassi Zahana", "Lamtar", "M'Cid", "Marhoum", "Merdja Sidi Abed", "Mezaourou", "Moulay Slissen", "Oued Sebaa", "Oued Sefioun", "Oued Taourira", "Ras El Ma", "Redjem Demouche", "Sehala Thaoura", "Sidi Ali Benyoub", "Sidi Ali Boussidi", "Sidi Chaib", "Sidi Dahou Dehiles", "Sidi Hamadouche", "Sidi Khaled", "Sidi Lahcene", "Sidi Yacoub", "Tabia", "Tafissour", "Taoudmout", "Teghalimet", "Telagh", "Tenezara", "Zerouala"]
+  },
+  "guelma": {
+    fee: 550,
+    delay: "2–4 jours",
+    communes: ["Guelma", "Bouchegouf", "Aïn Larbi", "Nechmaya", "Oued Zenati", "Bouati Mahmoud", "Belkheir", "Aïn Makhlouf", "Hammam Debagh", "Aïn Ben Beida", "Aïn Reggada", "Aïn Sandel", "Bendaoud", "Beni Mezline", "Bordj Sabat", "Dahouara", "Djeballah Khemissi", "El Fedjoudj", "Guelaat Bou Sbaa", "Hammam Maskhoutine", "Hammam N'bails", "Heliopolis", "Houari Boumediene", "Khezaras", "Medjez Amar", "Medjez Sfa", "Nadorah", "Oued Cheham", "Oued Ferragha", "Ras El Agba", "Roknia", "Sellaoua Announa", "Tamlouka"]
+  },
+  "constantine": {
+    fee: 500,
+    delay: "2–3 jours",
+    communes: ["Constantine", "El Khroub", "Zighout Youcef", "Aïn Smara", "Didouche Mourad", "Ibn Ziad", "Hamma Bouziane", "Aïn Abid", "Ben Badis", "El Haria", "El Koura", "Ibn Ziad", "Messaoud Boudjeriou", "Ouled Rahmoune"]
+  },
+  "mostaganem": {
+    fee: 450,
+    delay: "2–3 jours",
+    communes: ["Mostaganem", "Aïn Tedles", "Bouguirat", "Hassi Mameche", "Mesra", "Sirat", "Achaacha", "Sidi Ali", "Fornaka", "Kheïr Eddine", "Aïn Boudinar", "Aïn Nouissy", "Benabdelmalek Ramdane", "Bir El Djir", "Bouguirat", "Dar Yaghmoracene", "Fornaka", "Hadjadj", "Hassi Maameche", "Khadra", "Mansourah", "Mazagran", "Nekmaria", "Oued El Kheïr", "Ouled Boughalem", "Ouled Maallah", "Safsaf", "Sayada", "Sidi Bellater", "Sidi Lakhdar", "Souaflia", "Sour", "Stidia", "Tazgait", "Touahria"]
+  },
+  "msila": {
+    fee: 500,
+    delay: "2–4 jours",
+    communes: ["M'sila", "Ouled Derradj", "Sidi Aïssa", "Aïn El Hadjel", "Bou Saâda", "Ben Srour", "Maadid", "Hammam Dhalaâ", "Magra", "Aïn El Melh", "Aïn Fares", "Aïn Khadra", "Belaïba", "Beni Ilmane", "Benzouh", "Berhoum", "Bir Foda", "Bouti Sayah", "Chellal", "Dehahna", "Djebel Messaad", "El Hamel", "El Houamed", "Khettouti Sed El Jouli", "Khoubana", "M'Tarfa", "Menaa", "Mohamed Boudiaf", "Ouanougha", "Ouled Addi Guebala", "Ouled Atia", "Ouled Madhi", "Ouled Mansour", "Ouled Sidi Brahim", "Oultem", "Sidi Ameur", "Sidi Hadjeres", "Slim", "Souamaa", "Tamsa", "Tarmount", "Zarzour"]
+  },
+  "mascara": {
+    fee: 500,
+    delay: "2–4 jours",
+    communes: ["Mascara", "Sig", "Ghriss", "Bouhanifia", "Oued Taria", "Froha", "Tizi", "El Bordj", "Zahana", "Aïn Fekan", "Aïn Ferah", "Aïn Fras", "Aïn Fekan", "Alaimia", "Aouf", "Benian", "Bou Henni", "Chorfa", "El Gaada", "El Ghomri", "El Gueitena", "El Keurt", "Ferraguig", "Gharrous", "Guerdjoum", "Hacine", "Khalouia", "Makhda", "Maoussa", "Moha Ou Ali", "Nesmoth", "Oggaz", "Oued El Abtal", "Ras El Ain Amirouche", "Sedjerara", "Sehailia", "Sidi Abdeldjebar", "Sidi Abdelmoumene", "Sidi Boussaid", "Sidi Kada", "Tighennif", "Zahana", "Zelamta"]
+  },
+ "ouargla": {
+    fee: 700,
+    delay: "4–6 jours",
+    communes: ["Ouargla", "Hassi Messaoud", "Rouissat", "N'Goussa", "Sidi Khouiled", "Aïn Beida", "Touggourt", "El Hadjira", "Benaceur", "Blidet Amor", "El Alia", "El Borma", "El Haoud", "Hassi Ben Abdellah", "M'Naguer", "Nezla", "Sidi Slimane", "Taïbet"]
+  },
+  "oran": {
+    fee: 400,
+    delay: "2–3 jours",
+    communes: ["Oran", "Es Senia", "Arzew", "Gdyel", "Bir El Djir", "Hassi Bounif", "Mers El Kebir", "Aïn El Turk", "Bethioua", "Sidi Chami", "Aïn Biya", "Ben Freha", "Boufatis", "Bousfer", "El Ançor", "El Braya", "El Kerma", "Hassi Ben Okba", "Hassi Bounif", "Hassi Mefsoukh", "Misserghin", "Oued Tlelat", "Sidi Benyebka", "Tafraoui"]
+  },
+  "el bayadh": {
+    fee: 750,
+    delay: "4–6 jours",
+    communes: ["El Bayadh", "Bougtob", "Rogassa", "Brezina", "Labiodh Sidi Cheikh", "Chellala", "Arbaouat", "Ghassoul", "Boussemghoun", "Boualem", "Cheheima", "El Abiodh Sidi Cheikh", "El Bnoud", "El Kheither", "Kef El Ahmar", "Krakda", "Rogassa", "Sidi Ameur", "Sidi Slimane", "Sidi Tiffour", "Stitten", "Tousmouline"]
+  },
+  "bordj bou arreridj": {
+    fee: 500,
+    delay: "2–4 jours",
+    communes: ["Bordj Bou Arreridj", "Rabta", "Zemmoura", "El Hamadia", "El Achir", "Hasnaoua", "Aïn Taghrout", "Djaafra", "Mansoura", "Medjana", "Aïn Tesra", "Belimour", "Ben Daoud", "Bir Kasdali", "Bordj Ghedir", "Bordj Zemmoura", "Colla", "Djerrah", "El Euch", "El M'hir", "Ghilassa", "Haraza", "Ksour", "M'Cif", "Ouled Brahem", "Ouled Dahmane", "Ouled Sidi Brahim", "Ras El Oued", "Sidi Embarek", "Taglait", "Tassameurt", "Tefreg", "Teniet En Nasr", "Tixter"]
+  },
+  "boumerdes": {
+    fee: 350,
+    delay: "1–2 jours",
+    communes: ["Boumerdès", "Dellys", "Thenia", "Boudouaou", "Khemis El Khechna", "Naciria", "Si Mustapha", "Bordj Menaiel", "Ouled Moussa", "Tidjelabine", "Afir", "Ammal", "Baghlia", "Ben Choud", "Beni Amrane", "Boudouaou El Bahri", "Bouzegza Keddara", "Chabet El Ameur", "Corso", "Djinet", "Isser", "Khemis El Khechna", "Larbatache", "Leghata", "Ouled Aissa", "Ouled Hedadj", "Ouled Haddadj", "Taourga", "Timezrit", "Zemmouri"]
+  },
+  "el tarf": {
+    fee: 600,
+    delay: "3–5 jours",
+    communes: ["El Tarf", "Bouhadjar", "Ben M'Hidi", "Bouteldja", "Souarekh", "El Kala", "Berrihane", "Raml Souk", "Zitouna", "Aïn El Assel", "Aïn Kerma", "Asfour", "Ben Mehdi", "Bougous", "Chebaita Mokhtar", "Chihani", "Echatt", "Zerizer", "Zitouna"]
+  },
+  "tindouf": {
+    fee: 1000,
+    delay: "6–9 jours",
+    communes: ["Tindouf", "Oum El Assel"]
+  },
+  "tissemsilt": {
+    fee: 500,
+    delay: "3–5 jours",
+    communes: ["Tissemsilt", "Bordj Bounaama", "Lardjem", "Beni Chaib", "Theniet El Had", "Khémisti", "Melaab", "Bordj Emir Abdelkader", "Sidi Boutouchent", "Ammari", "Beni Lahcene", "Bordj El Emir Abdelkader", "Boucaid", "Khemisti", "Larbaa", "Layoune", "Maacem", "Sidi Abed", "Sidi Slimane", "Tamellahet", "Youssoufia"]
+  },
+  "el oued": {
+    fee: 700,
+    delay: "4–6 jours",
+    communes: ["El Oued", "Djamaa", "Bayoudh", "Mih Ouensa", "Robbah", "Reguiba", "Kouinine", "Guemar", "Taghzout", "Beni Guecha", "Douar El Ma", "El Ogla", "Hassani Abdelkrim", "Magrane", "Mih Ouansa", "Nakhla", "Oued El Alenda", "Oum Touyour", "Sidi Amrane", "Sidi Khellil", "Still", "Taleb Larbi", "Trifaoui"]
+  },
+  "khenchela": {
+    fee: 600,
+    delay: "3–5 jours",
+    communes: ["Khenchela", "Chelia", "Chechar", "El Hamma", "Baghai", "Bouhmama", "Aïn Touila", "Kais", "Tamza", "Bab El Assa", "Bouaichoune", "Djellal", "El Mahmal", "Ensigha", "Ferkane", "Khirane", "M'Sara", "M'toussa", "Ouled Rechache", "Remila", "Taouzianat", "Yabous"]
+  },
+  "souk ahras": {
+    fee: 600,
+    delay: "3–5 jours",
+    communes: ["Souk Ahras", "Taoura", "Bir Bouhouche", "Heddada", "Mechroha", "Sedrata", "Oum El Adhaim", "Ouled Driss", "Ouillen", "Zaarouria", "Khedara", "Aïn Zana", "Drea", "Hanencha", "Khemissa", "Merahna", "Oued Keberit", "Ouled Moumen", "Ragouba", "Safel El Ouiden", "Sidi Fredj", "Terraguelt", "Tiffech", "Zouabi"]
+  },
+  "tipaza": {
+    fee: 350,
+    delay: "1–2 jours",
+    communes: ["Tipaza", "Merad", "Koléa", "Bou Ismail", "Cherchell", "Hadjout", "Sidi Amar", "Fouka", "Aïn Tagourait", "Menaceur", "Ahmar El Aïn", "Aïn Defla", "Aïn Taggourait", "Attatba", "Bou Haroun", "Bourkika", "Chaiba", "Damous", "Douaouda", "Gouraya", "Hadjeret Ennous", "Khemisti", "Larhat", "Messelmoun", "Nador", "Sidi Ghiles", "Sidi Rached", "Sidi Semiane"]
+  },
+  "mila": {
+    fee: 500,
+    delay: "2–4 jours",
+    communes: ["Mila", "Tikrirt", "Sidi Merouane", "Chelghoum Laïd", "Ferdjioua", "Tassadane Haddada", "Rouached", "Grah Bou Noura", "Hamala", "Aïn Beida Harriche", "Aïn Mellouk", "Amira Arras", "Benyahia Abderrahmane", "Bouhatem", "Chigara", "Derradji Bousselah", "El Ayadi Barbes", "El Mechira", "Oued Athmania", "Oued Endja", "Oued Seguen", "Ouled Khalouf", "Sidi Khelifa", "Tadjenanet", "Tassadane Haddada", "Teleghma", "Terrai Bainen", "Terrai Bainen", "Tiberguent", "Yahia Beni Guecha", "Zeghaia"]
+  },
+ "ain defla": {
+    fee: 400,
+    delay: "2–3 jours",
+    communes: ["Aïn Defla", "El Abadia", "Miliana", "Boumedfaa", "El Amra", "Djelida", "Tacheta Zougagha", "Rouina", "Khemis Miliana", "Bordj Emir Khaled", "Aïn Benian", "Aïn Bouyahia", "Aïn Lechiekh", "Aïn Soltane", "Aïn Torki", "Bathia", "Belaas", "Ben Allal", "Birbouche", "Bordj Emir Khaled", "Boumedfaa", "Djemaa Ouled Cheikh", "El Attaf", "El Hassania", "El Maine", "Hammam Righa", "Hoceinia", "Mekhatria", "Oued Chorfa", "Oued Djemaa", "Rouina", "Sidi Lakhdar", "Tarik Ibn Ziad", "Tiberkanine", "Zeddine"]
+  },
+  "naama": {
+    fee: 750,
+    delay: "4–6 jours",
+    communes: ["Naâma", "Mécheria", "Sfissifa", "Aïn Sefra", "Kasdir", "Tiout", "El Biodh", "Assela", "Aïn Ben Khelil", "Djeniane Bourzeg", "Mekmen Ben Amar", "Moghrar", "Ouargla", "Sidi Boumediene", "Tiout"]
+  },
+  "ain temouchent": {
+    fee: 500,
+    delay: "2–4 jours",
+    communes: ["Aïn Témouchent", "Sidi Safi", "El Amria", "Hammam Bouhadjar", "Oulhaca El Gheraba", "El Malah", "Aghlal", "Chaabat El Ham", "Aïn El Arbaa", "Aïn Kihal", "Aïn Tolba", "Beni Saf", "Bouzedjar", "Chentouf", "El Emir Abdelkader", "Hassasna", "Hassi El Ghella", "Oued Berkeche", "Oued Sebbah", "Ouled Boudjemaa", "Ouled Kihal", "Sidi Ben Adda", "Sidi Ouriache", "Tamzoura", "Terga"]
+  },
+  "ghardaia": {
+    fee: 700,
+    delay: "4–6 jours",
+    communes: ["Ghardaïa", "El Atteuf", "Metlili", "Berriane", "El Guerrara", "Zelfana", "Dhayet Bendhahoua", "Bounoura", "Dhayet Bendhahoua", "El Meniaa", "Sebseb"]
+  },
+  "relizane": {
+    fee: 500,
+    delay: "2–4 jours",
+    communes: ["Relizane", "Oued Rhiou", "Mansourah", "Yellel", "Mazouna", "Ammi Moussa", "El H'Madna", "Ouled Sidi Mihoub", "Mediouna", "Sidi Saâda", "Aïn Rahma", "Aïn Tarek", "Bendaoud", "Beni Dergoun", "Beni Zentis", "Dar Ben Abdellah", "Djidioua", "El Guettar", "El Hamri", "El Matmar", "El Ouldja", "Had Echkalla", "Hamri", "Kalaa", "Lahlef", "Mendes", "Merine", "Merrahi", "Oued Essalem", "Ouled Aiche", "Ouled Sidi Lazreg", "Ramka", "Sidi Khettab", "Sidi Lazreg", "Sidi M'Hamed Ben Ali", "Sidi M'Hamed Benaouda", "Souk El Had", "Zemmora"]
+  },
+"el mghair": {
+    fee: 700,
+    delay: "4–6 jours",
+    communes: ["El M'Ghair", "Djamaa", "Oum Touyour", "Sidi Amrane", "Still", "Taleb Larbi", "Trifaoui"]
+  },
+  "el menia": {
+    fee: 750,
+    delay: "4–6 jours",
+    communes: ["El Menia", "Hassi Messaoud", "Hassi Gara", "El Borma", "El Haoud", "Hassi Ben Abdellah"]
+  },
+  "ouled djellal": {
+    fee: 650,
+    delay: "4–6 jours",
+    communes: ["Ouled Djellal", "Sidi Khaled", "Doucen", "Besbes", "Chaiba", "Ras El Miad", "Sidi Okba"]
+  },
+  "beni abbes": {
+    fee: 800,
+    delay: "5–7 jours",
+    communes: ["Beni Abbes", "Tamtert", "El Ouata", "Ouled Khoudir", "Igli", "Kerzaz", "Taghit"]
+  },
+  "timimoun": {
+    fee: 800,
+    delay: "5–7 jours",
+    communes: ["Timimoun", "Tinerkouk", "Ouled Said", "Aougrout", "Charouine", "Deldoul", "Metarfa", "Ouled Aissa"]
+  },
+  "touggourt": {
+    fee: 700,
+    delay: "4–6 jours",
+    communes: ["Touggourt", "Megarine", "Nezla", "Sidi Slimane", "Blidet Amor", "Benaceur", "Taïbet"]
+  },
+  "djanet": {
+    fee: 950,
+    delay: "6–9 jours",
+    communes: ["Djanet", "Bordj El Haouass", "Illizi", "Debdeb", "In Amenas"]
+  },
+  "in salah": {
+    fee: 850,
+    delay: "6–9 jours",
+    communes: ["In Salah", "Foggaret Ezzoua", "Ain Salah Sud", "Foggaret Ezzaouia", "In Salah Nord"]
+  },
+  "in guezzam": {fee: 1000,delay: "7–10 jours",communes: ["In Guezzam", "Tin Zouatine", "Taessa", "Ain Guezzam"]
+  },
+"annaba": { fee: 500, delay: "2–3 jours", communes: [
+    "Annaba", "El Bouni", "El Hadjar", "Sidi Amar", "Treat", "Aïn Berda", "Berrahal", 
+    "Cheurfa", "Chetaïbi", "Echatt", "El Eulma", "Oued El Aneb", "Serraïdi", 
+    "Sidi Salem", "Oued Kouba", "Bouchegouf", "Aïn Charchar", "Zighoud Youcef"
+  ]
+},
+"illizi": {  fee: 950, delay: "6–9 jours", communes: [
+    "Illizi", "Djanet", "In Amenas", "Bordj El Haouass", "Debdeb", "Tin Alkoum"
+  ]
+},
+"medea": { fee: 450, delay: "2–3 jours", communes: [
+    "Médéa", "Berrouaghia", "Ksar El Boukhari", "Aïn Boucif", "Aziz", "Beni Slimane", 
+    "Bouaichoune", "Boumedfaa", "Chabounia", "Chelalet El Adhaoura", "Derrag", 
+    "Draa Essamar", "El Azizia", "El Omaria", "Guelb El Kébir", "Kef Lakhdar", 
+    "Mezerana", "Ouamri", "Ouled Antar", "Ouled Bouachra", "Ouled Deide", 
+    "Ouled Hellal", "Ouled Maaref", "Rebaia", "Saneg", "Sedraia", "Seghouane", 
+    "Si Mahdjoub", "Sidi Demed", "Sidi Naamane", "Souagui", "Tablat", "Tafraout", 
+    "Tamesguida", "Tizi Mahdi", "Tlatet Eddouair", "Zoubiria"
+  ]
+},
+"bordj badji mokhtar": { fee: 900, delay: "5–8 jours", communes: ["Bordj Badji Mokhtar", "Timiaouine", "Zaouiet Kounta"]}
+};
+
+  const FREE_SHIPPING_THRESHOLD = 5000;
+  let basePrice = <%= cart.totalPrice %>;
+
+  const citySelect = document.getElementById('city');
+  const communeSelect = document.getElementById('commune');
+  const shippingDisplay = document.getElementById('shippingDisplay');
+  const delayDisplay = document.getElementById('delayDisplay');
+  const totalDisplay = document.getElementById('totalDisplay');
+  const btnTotalSpan = document.getElementById('btn-total');
+  const shippingFeeInput = document.getElementById('shippingFee');
+  const deliveryDelayInput = document.getElementById('deliveryDelay');
+  const totalPriceFinalInput = document.getElementById('totalPriceFinal');
+
+  function formatPrice(n) {
+    return n.toLocaleString('ar-DZ') + ' دج';
+  }
+
+  function populateCommunes(wilayaKey) {
+    communeSelect.innerHTML = '<option value="">اختر البلدية</option>';
+    const entry = shippingData[wilayaKey];
+    if (entry && entry.communes) {
+      entry.communes.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c; opt.textContent = c;
+        communeSelect.appendChild(opt);
+      });
+    }
+  }
+
+  function updateShipping(wilayaKey) {
+    if (!wilayaKey) {
+      shippingDisplay.textContent = '—';
+      delayDisplay.textContent = '—';
+      shippingFeeInput.value = 0;
+      deliveryDelayInput.value = '';
+      updateTotalDisplay(basePrice);
+      return;
+    }
+    const data = shippingData[wilayaKey] || { fee: 700, delay: "3–5 أيام" };
+    let fee = data.fee;
+    if (basePrice >= FREE_SHIPPING_THRESHOLD) fee = 0;
+    const total = basePrice + fee;
+    shippingDisplay.textContent = fee === 0 ? 'مجاني' : formatPrice(fee);
+    delayDisplay.textContent = data.delay;
+    shippingFeeInput.value = fee;
+    deliveryDelayInput.value = data.delay;
+    totalPriceFinalInput.value = total;
+    updateTotalDisplay(total);
+  }
+
+  function updateTotalDisplay(total) {
+    totalDisplay.textContent = formatPrice(total);
+    btnTotalSpan.textContent = formatPrice(total);
+  }
+
+  citySelect.addEventListener('change', function() {
+    populateCommunes(this.value);
+    updateShipping(this.value);
+  });
+
+  // Init
+  document.addEventListener('DOMContentLoaded', () => {
+    updateShipping(citySelect.value);
+    // Payment method visual update
+    const radios = document.querySelectorAll('input[name="paymentMethod"]');
+    radios.forEach(r => r.addEventListener('change', function() {
+      document.querySelectorAll('.payment-option').forEach(l => l.classList.remove('active'));
+      this.closest('.payment-option').classList.add('active');
+      const btn = document.getElementById('placeOrderBtn');
+      if (this.value === 'chargily') {
+        const card = this.dataset.card === 'cib' ? 'CIB' : 'الذهبية';
+        btn.innerHTML = `<i class="fas fa-lock"></i> ادفع بـ ${card} — ${btnTotalSpan.textContent}`;
+      } else {
+        btn.innerHTML = `<i class="fas fa-box"></i> تأكيد الطلب (الدفع عند الاستلام) — ${btnTotalSpan.textContent}`;
+      }
+    }));
+  });
+</script>
+
+<%- include('../partials/footer') %>
