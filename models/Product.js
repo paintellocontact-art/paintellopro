@@ -31,6 +31,17 @@ const productSchema = new mongoose.Schema({
   createdAt: {
     type: Date,
     default: Date.now
+  },
+   // Video (full‑width player)
+  videoFile: {
+    type: String,           // URL of a video file (e.g. Cloudinary .mp4)
+    default: ''
+  },
+
+  // YouTube tab
+  videoId: {
+    type: String,           // YouTube video ID (e.g. "dQw4w9WgXcQ")
+    default: ''
   }
 });
 
