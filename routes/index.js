@@ -1,5 +1,8 @@
 const express = require('express');
 const router = express.Router();
+// At the top of your routes file, add:
+const Product = require('../models/Product');
+
 const sendMetaCAPIEvent = require('../services/metaCapi');
 const getCleanUserData = require('../utils/userData');
 function generateEventId() { return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) { const r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8); return v.toString(16); }); }
@@ -8,6 +11,49 @@ const Painter = require('../models/Painter');
 const bcrypt = require('bcrypt');
 const { uploadIdCard, deleteFromCloudinary } = require('../utils/cloudinary');
 // Painter Login Page - FIXED PATH
+
+// GET /products/:id
+router.get('/:id', async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id);
+    if (!product) return res.status(404).render('404');
+
+    // --- Meta Conversions API (same pattern as home routes) ---
+    const userData = getCleanUserData(req);
+    const pageViewId = generateEventId();
+    const viewContentId = generateEventId();
+    const addToCartId = generateEventId(); // for Buy Now event
+
+    if (userData) {
+      await sendMetaCAPIEvent({
+        eventName: 'PageView',
+        eventId: pageViewId,
+        userData,
+        eventSourceUrl: `${req.protocol}://${req.get('host')}${req.originalUrl}`,
+        testEventCode: req.query.test_event_code || process.env.FB_TEST_EVENT_CODE,
+      });
+    }
+
+    // Determine language (you can use session or prefix)
+    const lang = req.originalUrl.startsWith('/ar') ? 'ar' : 'en';
+    const viewPath = lang === 'ar' ? 'ar/products/product' : 'products/product';
+
+    res.render(viewPath, {
+      title: product.name + ' - Paintello Pro',
+      product,
+      metaEventIdPageView: pageViewId,
+      metaEventIdView: viewContentId,
+      metaEventIdCart: addToCartId,
+      user: req.session.user || null,
+      sessionPainter: req.session.painter || null,
+      // WhatsApp phone from env (optional)
+      whatsappPhone: process.env.WHATSAPP_PHONE || '213555555555',
+    });
+  } catch (error) {
+    console.error('Product detail error:', error);
+    res.status(500).send('Server Error');
+  }
+});
 // Route pour la recherche des peintres en arabe
 
 router.get('/ar/painters', async (req, res) => {
@@ -160,9 +206,11 @@ router.get('/ar/painters/:id', async (req, res) => {
     });
   }
 });
-// ---------- HOME PAGE ----------
+
+// ---------- HOME PAGE (English) ----------
 router.get('/', async (req, res) => {
   try {
+    // Fetch featured painters (your existing query)
     const featuredPainters = await Painter.find({
       'verification.status': 'verified',
       'isActive': true
@@ -170,6 +218,11 @@ router.get('/', async (req, res) => {
     .sort({ rating: -1, completedJobs: -1 })
     .limit(6)
     .select('name experience pricePerSqm specialization rating completedJobs profilePicture location');
+
+    // Fetch featured products for the carousel
+    const featuredProducts = await Product.find({ featured: true })
+      .sort({ createdAt: -1 })
+      .limit(8);   // adjust limit as needed
 
     const userData = getCleanUserData(req);
     const pageViewId = generateEventId();
@@ -187,6 +240,7 @@ router.get('/', async (req, res) => {
     res.render('index', {
       title: 'Paintello Pro - Find Professional Painters in Algeria',
       featuredPainters,
+      featuredProducts,           // <-- NEW
       user: req.session.user || null,
       sessionPainter: req.session.painter || null,
       painter: null,
@@ -197,6 +251,7 @@ router.get('/', async (req, res) => {
     res.render('index', {
       title: 'Paintello Pro - Find Professional Painters in Algeria',
       featuredPainters: [],
+      featuredProducts: [],       // <-- NEW
       user: req.session.user || null,
       sessionPainter: req.session.painter || null,
       painter: null,
@@ -208,6 +263,7 @@ router.get('/', async (req, res) => {
 // ---------- ARABIC HOME PAGE ----------
 router.get('/ar', async (req, res) => {
   try {
+    // Fetch featured painters
     const featuredPainters = await Painter.find({
       'verification.status': 'verified',
       'isActive': true
@@ -215,6 +271,11 @@ router.get('/ar', async (req, res) => {
     .sort({ rating: -1, completedJobs: -1 })
     .limit(6)
     .select('name experience pricePerSqm specialization rating completedJobs profilePicture location');
+
+    // Fetch featured products for the carousel
+    const featuredProducts = await Product.find({ featured: true })
+      .sort({ createdAt: -1 })
+      .limit(8);
 
     const userData = getCleanUserData(req);
     const pageViewId = generateEventId();
@@ -232,6 +293,7 @@ router.get('/ar', async (req, res) => {
     res.render('ar/index', {
       title: 'بينتيلو برو - منصة الدهانين المحترفين في الجزائر',
       featuredPainters,
+      featuredProducts,           // <-- NEW
       user: req.session.user || null,
       sessionPainter: req.session.painter || null,
       painter: null,
@@ -242,6 +304,7 @@ router.get('/ar', async (req, res) => {
     res.render('ar/index', {
       title: 'بينتيلو برو - منصة الدهانين المحترفين في الجزائر',
       featuredPainters: [],
+      featuredProducts: [],       // <-- NEW
       user: req.session.user || null,
       sessionPainter: req.session.painter || null,
       painter: null,
@@ -249,7 +312,8 @@ router.get('/ar', async (req, res) => {
     });
   }
 });
-// Utility function to check if Cloudinary URL is accessible
+
+// Utility function – unchanged
 const checkCloudinaryUrl = async (url) => {
   try {
     const response = await fetch(url, { method: 'HEAD' });
