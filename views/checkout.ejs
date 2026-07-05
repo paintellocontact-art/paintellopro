@@ -1,4 +1,4 @@
-<%- include('../partials/header', {
+<%- include('partials/header', {
   title: 'إتمام الطلب - Paintello Pro',
   metaEventIdPageView: typeof metaEventIdPageView !== 'undefined' ? metaEventIdPageView : '',
   user: typeof user !== 'undefined' ? user : null,
@@ -593,5 +593,4 @@ const shippingData = {
     }));
   });
 </script>
-
-<%- include('../partials/footer') %>
+<%- include('partials/footer') %>
