@@ -8,6 +8,10 @@ const sendMetaCAPIEvent = require('../services/metaCapi');
 const getCleanUserData = require('../utils/userData');
 const wilayas = require('../utils/wilayas');
 const { uploadIdCard, deleteFromCloudinary } = require('../utils/cloudinary');
+var Cart = require("../models/cart");
+const { createPayment, verifyPayment } = require('../helpers/chargily');
+const { sendPurchaseForDeliveredCOD } = require('../helpers/deliveryEvents');
+
 
 function generateEventId() {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
@@ -199,6 +203,51 @@ router.get('/products', async (req, res) => {
   }
 });
 
+// Add to Cart – from product page "Buy Now" button
+router.get('/add-to-cart/:id', async (req, res) => {
+  try {
+    const productId = req.params.id;
+    const quantity = parseInt(req.query.qty) || 1;
+    const product = await Product.findById(productId);
+    if (!product) return res.status(404).send('Product not found');
+
+    // Simple cart on session
+    if (!req.session.cart) {
+      req.session.cart = { items: {}, totalQty: 0, totalPrice: 0 };
+    }
+    const cart = req.session.cart;
+
+    if (cart.items[productId]) {
+      cart.items[productId].qty += quantity;
+      cart.items[productId].price += product.price * quantity;
+    } else {
+      cart.items[productId] = {
+        item: {
+          _id: product._id,
+          name: product.name,
+          price: product.price,
+          image: product.images?.[0] || product.image
+        },
+        qty: quantity,
+        price: product.price * quantity
+      };
+    }
+
+    // Recalculate totals
+    cart.totalQty = 0;
+    cart.totalPrice = 0;
+    for (const id in cart.items) {
+      cart.totalQty += cart.items[id].qty;
+      cart.totalPrice += cart.items[id].price;
+    }
+
+    // Redirect to checkout
+    res.redirect('/checkout');
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server error');
+  }
+});
 // Product listing page (Arabic) – prevents /products/ar from hitting /:id
 router.get('/products/ar', async (req, res) => {
   try {
@@ -564,6 +613,187 @@ router.post('/logout', (req, res) => {
     req.flash('success', `Goodbye, ${userName}! You have been logged out successfully.`);
     res.redirect('/');
   });
+});
+
+// -------------------- CHECKOUT GET (render page) --------------------
+router.get('/checkout', async (req, res) => {
+  // If cart is empty or not set, redirect to products page
+  if (!req.session.cart || !req.session.cart.totalQty) {
+    return res.redirect('/products'); // or home
+  }
+
+  try {
+    const cart = req.session.cart;
+    const userData = getCleanUserData(req);
+    const pageViewId = generateEventId();
+
+    // Pixel PageView (server)
+    if (userData) {
+      await sendMetaCAPIEvent({
+        eventName: 'PageView',
+        eventId: pageViewId,
+        userData,
+        eventSourceUrl: `${req.protocol}://${req.get('host')}${req.originalUrl}`,
+        testEventCode: req.query.test_event_code || process.env.FB_TEST_EVENT_CODE,
+      });
+    }
+
+    // Render the Arabic checkout page
+    res.render('checkout', {   // or 'ar/checkout' if you separate views
+      title: 'إتمام الطلب - Paintello Pro',
+      cart: cart,
+      user: req.session.user || null,
+      sessionPainter: req.session.painter || null,
+      metaEventIdPageView: pageViewId
+    });
+  } catch (error) {
+    console.error('Checkout GET error:', error);
+    res.redirect('/');
+  }
+});
+
+// -------------------- CHECKOUT POST (process order) --------------------
+router.post('/checkout', async (req, res) => {
+  if (!req.session.cart || !req.session.cart.totalQty) {
+    return res.redirect('/products');
+  }
+
+  const {
+    firstName, lastName, address, city, commune,
+    numero, paymentMethod, shippingFee, deliveryDelay, totalPriceFinal
+  } = req.body;
+
+  // Clean phone number
+  const cleanNumero = '213' + numero.replace(/^0+/, '').replace(/\D/g, '');
+  const cart = req.session.cart;
+  const finalTotal = parseFloat(totalPriceFinal) || cart.totalPrice + parseFloat(shippingFee || 0);
+
+  // Generate InitiateCheckout Event ID (will be used later in confirmation)
+  const initiateCheckoutId = generateEventId();
+  const userData = getCleanUserData(req);
+
+  // ---------- COD (Cash on Delivery) ----------
+  if (paymentMethod === 'cod') {
+    try {
+      // Save order to DB (you already have an Order model)
+      const order = new Order({
+        user: req.session.user || null,
+        cart: cart,
+        firstName,
+        lastName,
+        address,
+        city,
+        commune,
+        country: 'Algeria',
+        numero: cleanNumero,
+        shippingFee: parseFloat(shippingFee || 0),
+        deliveryDelay: deliveryDelay || '',
+        orderType: req.session.user ? 'user' : 'guest',
+        totalWithShipping: finalTotal,
+        paymentMethod: 'cod',
+        status: 'pending',
+        metaUserData: userData || {}
+      });
+      await order.save();
+
+      // Pixel InitiateCheckout (server)
+      if (userData) {
+        await sendMetaCAPIEvent({
+          eventName: 'InitiateCheckout',
+          eventId: initiateCheckoutId,
+          userData,
+          customData: {
+            content_ids: Object.keys(cart.items),
+            contents: Object.values(cart.items).map(item => ({
+              id: item.item._id.toString(),
+              quantity: item.qty,
+              item_price: item.item.price
+            })),
+            value: finalTotal,
+            currency: 'DZD',
+            num_items: cart.totalQty
+          },
+          eventSourceUrl: `${req.protocol}://${req.get('host')}${req.originalUrl}`,
+          testEventCode: req.query.test_event_code || process.env.FB_TEST_EVENT_CODE
+        });
+      }
+
+      // Clear cart
+      req.session.cart = null;
+
+      // Store confirmation data in session
+      req.session.confirmationData = {
+        paymentMethod: 'cod',
+        eventId: initiateCheckoutId,
+        eventName: 'InitiateCheckout',
+        firstName,
+        lastName,
+        numero: cleanNumero,
+        address,
+        city,
+        commune,
+        cartTotal: cart.totalPrice,
+        shippingFee: parseFloat(shippingFee || 0),
+        deliveryDelay: deliveryDelay || '',
+        totalPrice: finalTotal,
+        cartItems: Object.values(cart.items)
+      };
+
+      return res.redirect('/confirmation');
+    } catch (error) {
+      console.error('COD order error:', error);
+      req.flash('error', 'حدث خطأ أثناء معالجة الطلب.');
+      return res.redirect('/checkout');
+    }
+  }
+
+  // ---------- Online Payment (Chargily) ----------
+  if (paymentMethod === 'chargily') {
+    // Save pending order data (will be used after payment success)
+    req.session.pendingOrder = {
+      cart: req.session.cart,
+      firstName,
+      lastName,
+      address,
+      city,
+      commune,
+      shippingFee: parseFloat(shippingFee || 0),
+      shippingDelay: deliveryDelay || '',
+      finalTotal,
+      rawNumero: numero,
+      user: req.session.user || null,
+      savedUserData: userData || {}
+    };
+
+    // Create Chargily payment
+    try {
+      const baseUrl = `${req.protocol}://${req.get('host')}`;
+      const payment = await createPayment({
+        amount: Math.round(finalTotal),
+        currency: 'dzd',
+        success_url: `${baseUrl}/payment/success`,
+        failure_url: `${baseUrl}/checkout?payment=failed`,
+        metadata: { session_id: req.sessionID }
+      });
+      return res.redirect(payment.checkout_url);
+    } catch (error) {
+      console.error('Chargily payment creation error:', error);
+      req.flash('error', 'فشل إنشاء عملية الدفع. حاول مرة أخرى.');
+      return res.redirect('/checkout');
+    }
+  }
+
+  // If unknown payment method
+  req.flash('error', 'طريقة دفع غير معروفة.');
+  return res.redirect('/checkout');
+});
+
+// In confirmation route (GET)
+router.get('/confirmation', async (req, res) => {
+  const data = req.session.confirmationData;
+  if (!data) return res.redirect('/');
+  // Render confirmation.ejs with data, and also pass eventId for pixel
+  res.render('confirmation', { ...data, user: req.session.user });
 });
 
 module.exports = router;
