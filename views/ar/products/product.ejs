@@ -382,135 +382,179 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
   document.addEventListener('DOMContentLoaded', function() {
-    // ---------- Image Gallery ----------
-    const allImages = <%- JSON.stringify(images) %>;
-    const slides = document.querySelectorAll('.slider-img');
-    const thumbItems = document.querySelectorAll('.thumb-item');
-    const galleryItems = document.querySelectorAll('.gallery-item');
-    let currentIndex = 0;
 
-    function setMainImage(index) {
-      if (allImages.length === 0) return;
-      currentIndex = index;
-      slides.forEach((s, i) => {
-        s.style.opacity = i === index ? '1' : '0';
-        s.style.position = i === index ? 'relative' : 'absolute';
-      });
-      thumbItems.forEach((t, i) => t.classList.toggle('active', i === index));
+    // ---------- SERVER VALUES → CLIENT VARIABLES ----------
+    const productName = '<%- product.name.replace(/'/g, "\\'") %>';
+    const productPrice = <%= product.price %>;
+    const productId   = '<%= product._id %>';
+
+    // ---------- IMAGE GALLERY (safe fallback) ----------
+    try {
+      const imagesData = <%- JSON.stringify(typeof images !== 'undefined' ? images : []) %>;
+      const slides = document.querySelectorAll('.slider-img');
+      const thumbItems = document.querySelectorAll('.thumb-item');
+      const galleryItems = document.querySelectorAll('.gallery-item');
+      let currentIndex = 0;
+
+      function setMainImage(index) {
+        if (!imagesData.length) return;
+        currentIndex = index;
+        slides.forEach((s, i) => {
+          s.style.opacity = i === index ? '1' : '0';
+          s.style.position = i === index ? 'relative' : 'absolute';
+        });
+        thumbItems.forEach((t, i) => t.classList.toggle('active', i === index));
+      }
+
+      if (thumbItems.length) {
+        thumbItems.forEach(thumb => thumb.addEventListener('click', () => setMainImage(parseInt(thumb.dataset.index))));
+      }
+      if (galleryItems.length) {
+        galleryItems.forEach(item => item.addEventListener('click', () => setMainImage(parseInt(item.dataset.index))));
+      }
+
+      const prevBtn = document.getElementById('prevSlide');
+      const nextBtn = document.getElementById('nextSlide');
+      if (prevBtn) prevBtn.addEventListener('click', () => setMainImage((currentIndex - 1 + imagesData.length) % imagesData.length));
+      if (nextBtn) nextBtn.addEventListener('click', () => setMainImage((currentIndex + 1) % imagesData.length));
+
+      // Swipe
+      const slider = document.querySelector('.main-image-wrapper');
+      if (slider) {
+        let startX = 0;
+        slider.addEventListener('touchstart', e => startX = e.touches[0].clientX);
+        slider.addEventListener('touchend', e => {
+          const diff = e.changedTouches[0].clientX - startX;
+          if (Math.abs(diff) > 50) {
+            diff > 0 ? setMainImage((currentIndex - 1 + imagesData.length) % imagesData.length) : setMainImage((currentIndex + 1) % imagesData.length);
+          }
+        });
+      }
+
+      // Lightbox
+      const lightbox = document.getElementById('lightbox');
+      const lightboxImage = document.getElementById('lightboxImage');
+      const openLightboxBtn = document.getElementById('openLightboxBtn');
+      const lightboxClose = document.getElementById('lightboxClose');
+      const lightboxPrev = document.getElementById('lightboxPrev');
+      const lightboxNext = document.getElementById('lightboxNext');
+
+      if (openLightboxBtn && lightbox && lightboxImage) {
+        openLightboxBtn.addEventListener('click', () => {
+          if (imagesData.length) lightboxImage.src = imagesData[currentIndex];
+          lightbox.classList.add('active');
+          document.body.style.overflow = 'hidden';
+        });
+        lightboxClose.addEventListener('click', () => { lightbox.classList.remove('active'); document.body.style.overflow = ''; });
+        lightboxPrev.addEventListener('click', () => { setMainImage((currentIndex - 1 + imagesData.length) % imagesData.length); if (imagesData.length) lightboxImage.src = imagesData[currentIndex]; });
+        lightboxNext.addEventListener('click', () => { setMainImage((currentIndex + 1) % imagesData.length); if (imagesData.length) lightboxImage.src = imagesData[currentIndex]; });
+        lightbox.addEventListener('click', e => { if (e.target === lightbox) { lightbox.classList.remove('active'); document.body.style.overflow = ''; } });
+        document.addEventListener('keydown', e => {
+          if (e.key === 'Escape' && lightbox.classList.contains('active')) { lightbox.classList.remove('active'); document.body.style.overflow = ''; }
+          else if (lightbox.classList.contains('active')) {
+            if (e.key === 'ArrowLeft') { setMainImage((currentIndex - 1 + imagesData.length) % imagesData.length); if (imagesData.length) lightboxImage.src = imagesData[currentIndex]; }
+            else if (e.key === 'ArrowRight') { setMainImage((currentIndex + 1) % imagesData.length); if (imagesData.length) lightboxImage.src = imagesData[currentIndex]; }
+          }
+        });
+      }
+    } catch (e) {
+      console.warn('Image gallery script error:', e);
     }
 
-    thumbItems.forEach(thumb => thumb.addEventListener('click', () => setMainImage(parseInt(thumb.dataset.index))));
-    galleryItems.forEach(item => item.addEventListener('click', () => setMainImage(parseInt(item.dataset.index))));
-
-    document.getElementById('prevSlide').addEventListener('click', () => {
-      setMainImage((currentIndex - 1 + allImages.length) % allImages.length);
-    });
-    document.getElementById('nextSlide').addEventListener('click', () => {
-      setMainImage((currentIndex + 1) % allImages.length);
-    });
-
-    // Swipe
-    let startX = 0;
-    const slider = document.querySelector('.main-image-wrapper');
-    slider.addEventListener('touchstart', e => startX = e.touches[0].clientX);
-    slider.addEventListener('touchend', e => {
-      const diff = e.changedTouches[0].clientX - startX;
-      if (Math.abs(diff) > 50) {
-        diff > 0 ? setMainImage((currentIndex - 1 + allImages.length) % allImages.length) : setMainImage((currentIndex + 1) % allImages.length);
-      }
-    });
-
-    // Lightbox
-    const lightbox = document.getElementById('lightbox');
-    const lightboxImage = document.getElementById('lightboxImage');
-    document.getElementById('openLightboxBtn').addEventListener('click', () => {
-      lightboxImage.src = allImages[currentIndex];
-      lightbox.classList.add('active');
-      document.body.style.overflow = 'hidden';
-    });
-    document.getElementById('lightboxClose').addEventListener('click', () => { lightbox.classList.remove('active'); document.body.style.overflow = ''; });
-    document.getElementById('lightboxPrev').addEventListener('click', () => { setMainImage((currentIndex - 1 + allImages.length) % allImages.length); lightboxImage.src = allImages[currentIndex]; });
-    document.getElementById('lightboxNext').addEventListener('click', () => { setMainImage((currentIndex + 1) % allImages.length); lightboxImage.src = allImages[currentIndex]; });
-    lightbox.addEventListener('click', e => { if (e.target === lightbox) { lightbox.classList.remove('active'); document.body.style.overflow = ''; } });
-    document.addEventListener('keydown', e => {
-      if (e.key === 'Escape' && lightbox.classList.contains('active')) { lightbox.classList.remove('active'); document.body.style.overflow = ''; }
-      else if (lightbox.classList.contains('active')) {
-        if (e.key === 'ArrowLeft') { setMainImage((currentIndex - 1 + allImages.length) % allImages.length); lightboxImage.src = allImages[currentIndex]; }
-        else if (e.key === 'ArrowRight') { setMainImage((currentIndex + 1) % allImages.length); lightboxImage.src = allImages[currentIndex]; }
-      }
-    });
-
-    // Quantity controls
+    // ---------- QUANTITY CONTROLS ----------
     const qtyInput = document.getElementById('qtyInput');
-    document.getElementById('qtyMinus').addEventListener('click', () => { qtyInput.value = Math.max(1, parseInt(qtyInput.value) - 1); });
-    document.getElementById('qtyPlus').addEventListener('click', () => { qtyInput.value = parseInt(qtyInput.value) + 1; });
+    const qtyMinus = document.getElementById('qtyMinus');
+    const qtyPlus = document.getElementById('qtyPlus');
+    if (qtyInput && qtyMinus && qtyPlus) {
+      qtyMinus.addEventListener('click', () => { qtyInput.value = Math.max(1, parseInt(qtyInput.value) - 1); });
+      qtyPlus.addEventListener('click', () => { qtyInput.value = parseInt(qtyInput.value) + 1; });
+    }
 
-    // ----- Meta Pixel ViewContent -----
+    // ---------- META PIXEL VIEWCONTENT ----------
     try {
       if (typeof fbq !== 'undefined') {
         fbq('track', 'ViewContent', {
-          content_name: '<%= product.name.replace(/'/g, "\\'") %>',
-          content_ids: ['<%= product._id %>'],
+          content_name: productName,
+          content_ids: [productId],
           content_type: 'product',
-          value: <%= product.price %>,
+          value: productPrice,
           currency: 'DZD',
-          contents: [{ id: '<%= product._id %>', quantity: 1, item_price: <%= product.price %> }]
+          contents: [{ id: productId, quantity: 1, item_price: productPrice }]
         }, { eventID: '<%= metaEventIdView %>' });
       }
-    } catch(e) {}
+    } catch (e) {}
 
-    // ----- Buy Now button (AddToCart + WhatsApp) -----
-    document.getElementById('buyNowBtn').addEventListener('click', function() {
-      const qty = parseInt(qtyInput.value) || 1;
-      try {
-        if (typeof fbq !== 'undefined') {
-          fbq('track', 'AddToCart', {
-            content_name: '<%= product.name.replace(/'/g, "\\'") %>',
-            content_ids: ['<%= product._id %>'],
-            content_type: 'product',
-            value: <%= product.price %> * qty,
-            currency: 'DZD',
-            contents: [{ id: '<%= product._id %>', quantity: qty, item_price: <%= product.price %> }]
-          }, { eventID: '<%= metaEventIdCart %>' });
-        }
-      } catch(e) {}
-      const phone = '<%= whatsappPhone %>';
-      const text = encodeURIComponent(`أريد شراء ${qty} × "${product.name}" بسعر ${product.price * qty} دج.`);
-      window.open(`https://wa.me/${phone}?text=${text}`, '_blank');
-    });
+    // ---------- BUY NOW BUTTON (WhatsApp) ----------
+    const buyNowBtn = document.getElementById('buyNowBtn');
+    if (buyNowBtn) {
+      buyNowBtn.addEventListener('click', function() {
+        const qty = qtyInput ? (parseInt(qtyInput.value) || 1) : 1;
+        // Pixel AddToCart
+        try {
+          if (typeof fbq !== 'undefined') {
+            fbq('track', 'AddToCart', {
+              content_name: productName,
+              content_ids: [productId],
+              content_type: 'product',
+              value: productPrice * qty,
+              currency: 'DZD',
+              contents: [{ id: productId, quantity: qty, item_price: productPrice }]
+            }, { eventID: '<%= metaEventIdCart %>' });
+          }
+        } catch (e) {}
+        const phone = '<%= whatsappPhone %>';
+        const text = encodeURIComponent(`أريد شراء ${qty} × "${productName}" بسعر ${productPrice * qty} دج.`);
+        window.open(`https://wa.me/${phone}?text=${text}`, '_blank');
+      });
+    }
 
-    // ----- WhatsApp Bulk button -----
-    document.getElementById('whatsappBulkBtn').addEventListener('click', () => {
-      const text = encodeURIComponent(`أرغب في طلب كمية كبيرة من "${product.name}" بسعر ${product.price} دج. أرجو تزويدي بسعر الجملة.`);
-      window.open(`https://wa.me/<%= whatsappPhone %>?text=${text}`, '_blank');
-    });
+    // ---------- WHATSAPP BULK BUTTON ----------
+    const bulkBtn = document.getElementById('whatsappBulkBtn');
+    if (bulkBtn) {
+      bulkBtn.addEventListener('click', () => {
+        const text = encodeURIComponent(`أرغب في طلب كمية كبيرة من "${productName}" بسعر ${productPrice} دج. أرجو تزويدي بسعر الجملة.`);
+        window.open(`https://wa.me/<%= whatsappPhone %>?text=${text}`, '_blank');
+      });
+    }
 
-    // ----- WhatsApp Chat Widget -----
+    // ---------- WHATSAPP FLOATING WIDGET ----------
     const toggleBtn = document.getElementById('whatsappToggle');
     const modal = document.getElementById('whatsappModal');
     const closeBtn = document.getElementById('whatsappClose');
     const sendBtn = document.getElementById('whatsappSend');
     const msgInput = document.getElementById('whatsappMessage');
-    toggleBtn?.addEventListener('click', () => modal.classList.toggle('active'));
-    closeBtn?.addEventListener('click', () => modal.classList.remove('active'));
-    document.addEventListener('click', (e) => {
-      if (modal.classList.contains('active') && !modal.contains(e.target) && e.target !== toggleBtn) modal.classList.remove('active');
-    });
-    sendBtn?.addEventListener('click', () => {
-      let userMsg = msgInput.value.trim();
-      let text = `مرحباً، أنا مهتم بمنتج "${product.name}" بسعر ${product.price} دج.`;
-      if (userMsg) text += `\n\n${userMsg}`;
-      text += '\n\n--\nأرسلت من Paintello Pro';
-      window.open(`https://wa.me/<%= whatsappPhone %>?text=${encodeURIComponent(text)}`, '_blank');
-      modal.classList.remove('active');
-    });
 
-    // Related carousel arrows
-    function scrollRelated(delta) {
-      document.getElementById('relatedCarousel').scrollBy({ left: delta, behavior: 'smooth' });
+    if (toggleBtn && modal) {
+      toggleBtn.addEventListener('click', () => modal.classList.toggle('active'));
     }
-    document.querySelector('.left-arrow-related').addEventListener('click', () => scrollRelated(-280));
-    document.querySelector('.right-arrow-related').addEventListener('click', () => scrollRelated(280));
+    if (closeBtn && modal) {
+      closeBtn.addEventListener('click', () => modal.classList.remove('active'));
+    }
+    if (modal) {
+      document.addEventListener('click', (e) => {
+        if (modal.classList.contains('active') && !modal.contains(e.target) && e.target !== toggleBtn) {
+          modal.classList.remove('active');
+        }
+      });
+    }
+    if (sendBtn && modal && msgInput) {
+      sendBtn.addEventListener('click', () => {
+        let userMsg = msgInput.value.trim();
+        let text = `مرحباً، أنا مهتم بمنتج "${productName}" بسعر ${productPrice} دج.`;
+        if (userMsg) text += `\n\n${userMsg}`;
+        text += '\n\n--\nأرسلت من Paintello Pro';
+        window.open(`https://wa.me/<%= whatsappPhone %>?text=${encodeURIComponent(text)}`, '_blank');
+        modal.classList.remove('active');
+      });
+    }
+
+    // ---------- RELATED PRODUCTS SCROLL ----------
+    const leftArrow = document.querySelector('.left-arrow-related');
+    const rightArrow = document.querySelector('.right-arrow-related');
+    const relatedCarousel = document.getElementById('relatedCarousel');
+    if (leftArrow && relatedCarousel) leftArrow.addEventListener('click', () => relatedCarousel.scrollBy({ left: -280, behavior: 'smooth' }));
+    if (rightArrow && relatedCarousel) rightArrow.addEventListener('click', () => relatedCarousel.scrollBy({ left: 280, behavior: 'smooth' }));
+
   });
 </script>
 
