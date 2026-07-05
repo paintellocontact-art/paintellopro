@@ -1,0 +1,384 @@
+<%- include('partials/header', {
+  title: 'تم تأكيد الطلب - Paintello Pro',
+  metaEventIdPageView: typeof metaEventIdPageView !== 'undefined' ? metaEventIdPageView : '',
+  user: typeof user !== 'undefined' ? user : null,
+  sessionPainter: typeof sessionPainter !== 'undefined' ? sessionPainter : null
+}) %>
+
+<!-- Confirmation Content -->
+<div dir="rtl" class="confirmation-container">
+  <div class="container" style="max-width:800px; margin:0 auto; padding:0 24px;">
+    
+    <!-- Success Card -->
+    <div class="success-card text-center">
+      <div class="success-icon">
+        <i class="fas fa-check-circle"></i>
+      </div>
+      <h1>تم تأكيد طلبك بنجاح!</h1>
+      <p>شكراً لثقتك. سيتم تجهيز طلبك وشحنه في أقرب وقت.</p>
+
+      <div class="tracking-box">
+        <p>يمكنك متابعة حالة طلبك باستخدام رقم هاتفك.</p>
+        <a href="/track-login" class="btn-track">
+          <i class="fas fa-search"></i> تتبع الطلب
+        </a>
+      </div>
+    </div>
+
+    <!-- Order Details Card -->
+    <div class="details-card">
+      <h2>تفاصيل الطلب</h2>
+
+      <div class="row g-4">
+        <div class="col-md-6">
+          <div class="info-item">
+            <span class="info-label">الاسم</span>
+            <span class="info-value"><%= firstName %> <%= lastName %></span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">الهاتف</span>
+            <span class="info-value"><%= numero %></span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">الولاية</span>
+            <span class="info-value"><%= city %></span>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="info-item">
+            <span class="info-label">العنوان</span>
+            <span class="info-value"><%= address %><% if (commune) { %>، <%= commune %><% } %></span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">مدة التوصيل</span>
+            <span class="info-value"><%= deliveryDelay %></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Order Products (if any) -->
+      <% if (typeof cartItems !== 'undefined' && cartItems.length > 0) { %>
+        <hr>
+        <h3>المنتجات</h3>
+        <% cartItems.forEach(item => { %>
+          <div class="cart-item">
+            <img src="<%= item.item.image %>" alt="<%= item.item.name %>" />
+            <div>
+              <p><%= item.item.name %></p>
+              <small>الكمية: <%= item.qty %></small>
+            </div>
+            <span><%= (item.item.price * item.qty).toLocaleString('ar-DZ') %> دج</span>
+          </div>
+        <% }); %>
+      <% } %>
+
+      <hr>
+      <div class="summary-line">
+        <span>إجمالي المنتجات</span>
+        <span><%= cartTotal.toLocaleString('ar-DZ') %> دج</span>
+      </div>
+      <div class="summary-line">
+        <span>رسوم التوصيل</span>
+        <span>
+          <% if (shippingFee === 0) { %>
+            <span class="free-badge">مجاني</span>
+          <% } else { %>
+            <%= shippingFee.toLocaleString('ar-DZ') %> دج
+          <% } %>
+        </span>
+      </div>
+      <div class="summary-total">
+        <span>المبلغ الإجمالي</span>
+        <span><%= totalPrice.toLocaleString('ar-DZ') %> دج</span>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="action-buttons">
+      <a href="/track-login" class="btn-primary">
+        <i class="fas fa-search"></i> تتبع الطلب
+      </a>
+      <a href="/" class="btn-secondary">
+        <i class="fas fa-home"></i> العودة للرئيسية
+      </a>
+    </div>
+
+    <!-- Help Section -->
+    <div class="help-card text-center">
+      <h3>تحتاج مساعدة؟</h3>
+      <p>لأي استفسار حول طلبك، لا تتردد في الاتصال بنا.</p>
+      <a href="tel:0791679611" class="btn-secondary">
+        <i class="fas fa-phone"></i> اتصل بنا
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- Styles -->
+<style>
+  :root {
+    --primary-blue: #295797;
+    --accent-blue: #1C84C1;
+    --primary-dark: #1E3F5C;
+    --bg-light: #E8EEF6;
+    --bg-white: #FFFFFF;
+    --border-light: #D1DCE6;
+    --shadow-sm: 0 2px 8px rgba(41,87,151,0.08);
+    --shadow-md: 0 4px 12px rgba(41,87,151,0.12);
+    --text-dark: #2D3748;
+    --text-gray: #4A5568;
+  }
+
+  body {
+    font-family: 'Tajawal','Cairo',sans-serif;
+    background: var(--bg-light);
+  }
+
+  .confirmation-container {
+    padding: 60px 0;
+  }
+
+  .success-card, .details-card, .help-card {
+    background: var(--bg-white);
+    border-radius: 24px;
+    padding: 32px;
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--border-light);
+    margin-bottom: 24px;
+  }
+
+  .success-icon {
+    width: 80px;
+    height: 80px;
+    background: #d4edda;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    font-size: 36px;
+    color: #28a745;
+  }
+
+  .success-card h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--primary-blue);
+    margin-bottom: 12px;
+  }
+  .success-card p {
+    color: var(--text-gray);
+    margin-bottom: 20px;
+  }
+
+  .tracking-box {
+    background: var(--bg-light);
+    border-radius: 16px;
+    padding: 16px;
+    margin-top: 16px;
+  }
+  .tracking-box p {
+    color: var(--text-dark);
+    margin-bottom: 12px;
+  }
+
+  .btn-track, .btn-primary {
+    background: var(--primary-blue);
+    color: white;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 40px;
+    font-size: 1rem;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s;
+    box-shadow: var(--shadow-sm);
+  }
+  .btn-track:hover, .btn-primary:hover {
+    background: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    color: white;
+  }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--primary-blue);
+    border: 1px solid var(--primary-blue);
+    padding: 10px 24px;
+    border-radius: 40px;
+    font-size: 1rem;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s;
+  }
+  .btn-secondary:hover {
+    background: var(--primary-blue);
+    color: white;
+  }
+
+  .details-card h2 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--primary-blue);
+    border-bottom: 1px solid var(--border-light);
+    padding-bottom: 12px;
+    margin-bottom: 20px;
+  }
+
+  .info-item {
+    margin-bottom: 16px;
+  }
+  .info-label {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--text-gray);
+    margin-bottom: 4px;
+    font-weight: 600;
+  }
+  .info-value {
+    font-size: 1rem;
+    color: var(--text-dark);
+  }
+
+  .cart-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border-light);
+  }
+  .cart-item img {
+    width: 50px;
+    height: 50px;
+    object-fit: contain;
+    border-radius: 8px;
+  }
+  .cart-item p {
+    margin: 0;
+    font-weight: 500;
+  }
+  .cart-item small {
+    color: var(--text-gray);
+  }
+  .cart-item span:last-child {
+    font-weight: 700;
+    color: var(--primary-blue);
+  }
+
+  .summary-line {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 0.95rem;
+    color: var(--text-dark);
+  }
+  .summary-total {
+    display: flex;
+    justify-content: space-between;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--primary-blue);
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border-light);
+  }
+  .free-badge {
+    color: #28a745;
+    font-weight: 600;
+  }
+
+  .action-buttons {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+  }
+  .action-buttons a {
+    flex: 1;
+    text-align: center;
+    justify-content: center;
+  }
+
+  .help-card h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--primary-blue);
+    margin-bottom: 8px;
+  }
+  .help-card p {
+    color: var(--text-gray);
+    margin-bottom: 16px;
+  }
+
+  @media (max-width: 768px) {
+    .action-buttons {
+      flex-direction: column;
+    }
+  }
+</style>
+
+<!-- Pixel Events (keep your existing logic) -->
+<% if (typeof eventId !== 'undefined' && eventId) { %>
+<script>
+  if (typeof fbq !== 'undefined') {
+    var method = '<%= paymentMethod %>';
+    var eventName = '<%= eventName %>';
+    var id = '<%= eventId %>';
+
+    <% if (paymentMethod === 'chargily') { %>
+      fbq('track', 'Purchase', {
+        value: <%= totalPrice %>,
+        currency: 'DZD',
+        content_type: 'product',
+        content_ids: <%- JSON.stringify(cartItems ? cartItems.map(i => i.item._id.toString()) : []) %>,
+        contents: <%- JSON.stringify(cartItems ? cartItems.map(i => ({
+          id: i.item._id.toString(),
+          quantity: i.qty,
+          item_price: i.item.price
+        })) : []) %>
+      }, {
+        eventID: id
+      });
+    <% } else { %>
+      fbq('track', 'InitiateCheckout', {}, {
+        eventID: id
+      });
+    <% } %>
+  }
+</script>
+<% } %>
+
+<!-- GA4 (only for online payment) -->
+<% if (typeof paymentMethod !== 'undefined' && paymentMethod === 'chargily') { %>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  dataLayer.push({
+    'event': 'purchase',
+    'value': <%= totalPrice %>,
+    'currency': 'DZD',
+    'items': <%- JSON.stringify(cartItems ? cartItems.map(p => ({
+      item_id: p.item._id.toString(),
+      item_name: p.item.name,
+      price: p.item.price,
+      quantity: p.qty
+    })) : []) %>
+  });
+</script>
+<% } %>
+
+<!-- Auto-redirect to tracking after 25 seconds (optional) -->
+<script>
+  setTimeout(() => {
+    window.location.href = '/track-login';
+  }, 25000);
+</script>
+
+<%- include('partials/footer') %>
