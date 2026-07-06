@@ -88,23 +88,7 @@ const sendMetaCAPIEvent = async ({
       }
     });
 
-    // ✅ Diagnostic logging
-    console.log("📊 Meta CAPI Diagnostics:", {
-      eventName,
-      eventId,
-      isBot: isBotUserAgent(userData.userAgent) ? "🤖" : "👤",
-      criticalParams: {
-        fbp: !!hashedUserData.fbp ? "✅" : "❌",
-        fbc: !!hashedUserData.fbc ? "✅" : "❌",
-        ip: !!hashedUserData.client_ip_address ? "✅" : "❌",
-        userAgent: !!hashedUserData.client_user_agent ? "✅" : "❌",
-        country: !!hashedUserData.country ? "✅" : "❌"
-      },
-      userParams: {
-        email: !!hashedUserData.em ? "✅" : "➖",
-        phone: !!hashedUserData.ph ? "✅" : "➖"
-      }
-    });
+    
 
     // ✅ Only send if we have basic requirements
     if (!hashedUserData.client_ip_address || !hashedUserData.client_user_agent) {
