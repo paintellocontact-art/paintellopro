@@ -1,39 +1,51 @@
 // helpers/deliveryEvents.js
-const sendFacebookCAPIEvent = require('../services/facebookCapi');
+const sendMetaCAPIEvent = require('../services/metaCapi'); // ✅ uses your existing Meta CAPI sender
 
-// UUID v4 generator function
+// UUID v4 generator (same as in your routes)
 function generateEventId() {
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
     const r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
     return v.toString(16);
   });
 }
+
+/**
+ * Send a "Purchase" event for a delivered COD order.
+ * Works with both ProductOrder (new) and legacy Order models.
+ *
+ * @param {Object} order - The order document (must have paymentMethod, metaUserData, cart, totalWithShipping)
+ */
 async function sendPurchaseForDeliveredCOD(order) {
-  if (order.paymentMethod !== "cod" || !order.metaUserData || Object.keys(order.metaUserData).length === 0) {
-    console.log("⚠️ Skip Purchase – not a valid COD order or missing user data");
+  // Only for COD orders with stored user data
+  if (order.paymentMethod !== 'cod' || !order.metaUserData || Object.keys(order.metaUserData).length === 0) {
+    console.log('⚠️ Skip Purchase – not a valid COD order or missing user data');
     return;
   }
 
-  // --- Extract items array safely ---
+  // ---- Extract cart items safely ----
   let itemsArray = [];
-  const cart = order.cart;
-  if (cart && cart.items) {
-    if (Array.isArray(cart.items)) {
-      itemsArray = cart.items;
-    } else if (typeof cart.items === 'object') {
-      itemsArray = Object.values(cart.items);
+  if (order.cart && order.cart.items) {
+    if (Array.isArray(order.cart.items)) {
+      itemsArray = order.cart.items;
+    } else if (typeof order.cart.items === 'object') {
+      itemsArray = Object.values(order.cart.items);
     }
   }
 
-  const contents = itemsArray.map(item => ({
-    id: (item.item && item.item._id) ? item.item._id.toString() : (item._id ? item._id.toString() : ''),
-    quantity: item.qty || item.quantity || 1,
-    item_price: item.price || (item.unitPrice || 0),
-  }));
-  const content_ids = contents.map(c => c.id).filter(id => id);
+  // ---- Build contents for Meta CAPI ----
+  const contents = itemsArray.map(item => {
+    // ProductOrder stores: { product, name, price, image, qty }
+    // Legacy Order may have: { item: { _id, price }, qty }
+    const id = (item.product || (item.item && item.item._id) || '').toString();
+    const itemPrice = item.price || (item.item && item.item.price) || 0;
+    const quantity = item.qty || 1;
+    return { id, quantity, item_price: itemPrice };
+  }).filter(c => c.id);   // remove entries without an ID
+
+  const content_ids = contents.map(c => c.id);
 
   if (content_ids.length === 0) {
-    console.log("⚠️ No valid product IDs – skipping Purchase event");
+    console.log('⚠️ No valid product IDs – skipping Purchase event');
     return;
   }
 
@@ -41,18 +53,18 @@ async function sendPurchaseForDeliveredCOD(order) {
   const userData = order.metaUserData;
 
   try {
-    await sendFacebookCAPIEvent({
-      eventName: "Purchase",
-      eventId: eventId,
-      userData: userData,
+    await sendMetaCAPIEvent({
+      eventName: 'Purchase',
+      eventId,
+      userData,
       customData: {
-        value: order.totalWithShipping || order.cart.totalPrice,
-        currency: "DZD",
-        content_type: "product",
-        content_ids: content_ids,
-        contents: contents,
+        value: order.totalWithShipping || (order.cart && order.cart.totalPrice) || 0,
+        currency: 'DZD',
+        content_type: 'product',
+        content_ids,
+        contents,
       },
-      eventSourceUrl: `https://${process.env.DOMAIN || "paintellopro.onrender.com"}/order/${order._id}`,
+      eventSourceUrl: `https://${process.env.DOMAIN || 'paintellopro.onrender.com'}/order/${order._id}`,
       testEventCode: process.env.FB_TEST_EVENT_CODE,
     });
     console.log(`✅ Purchase event sent for delivered COD order ${order._id}, eventID: ${eventId}`);
