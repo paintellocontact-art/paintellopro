@@ -64,7 +64,7 @@ const sendMetaCAPIEvent = async ({
     const enhancedCustomData = {
       ...customData,
       currency: customData.currency || "DZD",
-      content_category: customData.content_category || "home_paint"
+      content_category: customData.content_category || "paint_tools"
     };
 
     Object.keys(enhancedCustomData).forEach(key => {
@@ -73,27 +73,9 @@ const sendMetaCAPIEvent = async ({
       }
     });
 
-    // Diagnostic logging
-    console.log("📊 Meta CAPI Diagnostics:", {
-      eventName,
-      eventId,
-      criticalParams: {
-        fbp: !!hashedUserData.fbp ? "✅" : "❌",
-        fbc: !!hashedUserData.fbc ? "✅" : "❌",
-        ip: !!hashedUserData.client_ip_address ? "✅" : "❌",
-        userAgent: !!hashedUserData.client_user_agent ? "✅" : "❌",
-        country: !!hashedUserData.country ? "✅" : "❌"
-      },
-      userParams: {
-        email: !!hashedUserData.em ? "✅" : "➖",
-        phone: !!hashedUserData.ph ? "✅" : "➖"
-      }
-    });
+   
 
-    if (!hashedUserData.client_ip_address || !hashedUserData.client_user_agent) {
-      console.log("🚫 Skipping event - Missing IP or UserAgent");
-      return;
-    }
+   
 
     const payload = {
       data: [
@@ -109,10 +91,7 @@ const sendMetaCAPIEvent = async ({
       ],
     };
 
-    if (testEventCode) {
-      payload.test_event_code = testEventCode;
-      console.log("🧪 Test event code:", testEventCode);
-    }
+    
 
     const url = `https://graph.facebook.com/v18.0/${PIXEL_ID}/events?access_token=${ACCESS_TOKEN}`;
     
