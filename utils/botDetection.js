@@ -4,7 +4,7 @@
 
 /**
  * MAIN BOT DETECTION FUNCTION - Multi-layer approach
- */
+ */z
 function isBotRequest(req, options = {}) {
   const userAgent = req.get('User-Agent') || '';
   const ip = extractIP(req);
