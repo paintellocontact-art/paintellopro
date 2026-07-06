@@ -42,7 +42,14 @@ const productSchema = new mongoose.Schema({
   videoId: {
     type: String,           // YouTube video ID (e.g. "dQw4w9WgXcQ")
     default: ''
-  }
+  },
+  specifications: [{
+    key: { type: String, required: true },      // e.g. "الأبعاد"
+    value: { type: String, required: true }      // e.g. "30 × 40 × 15 سم"
+  }],
+
+  // Key features (bullet points)
+  features: [{ type: String }]
 });
 
 module.exports = mongoose.model('Product', productSchema);
