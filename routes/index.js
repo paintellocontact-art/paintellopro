@@ -13,6 +13,7 @@ const { createPayment, verifyPayment } = require('../helpers/chargily');
 const { sendPurchaseForDeliveredCOD } = require('../helpers/deliveryEvents');
 const ProductOrder = require('../models/ProductOrder');
 const { sendTelegramMessage } = require('../helpers/telegram');
+const ProductOrder = require('../models/ProductOrder');
 
 function generateEventId() {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
@@ -911,34 +912,35 @@ router.get('/confirmation', async (req, res) => {
   res.render('confirmation', { ...data, user: req.session.user });
 });
 
-// Minimal admin-like route – secure it with a secret query param for now
-router.get("/order/deliver/:orderId", async (req, res) => {
-  // Basic protection – change the secret to something strong later
-  if (req.query.secret !== "mySuperSecret123") {
-    return res.status(403).send("Access denied");
+// Admin delivery confirmation route
+router.get('/order/deliver/:orderId', async (req, res) => {
+  // Basic secret protection
+  if (req.query.secret !== 'mySuperSecret123') {
+    return res.status(403).send('Access denied');
   }
 
   try {
-    const order = await Order.findById(req.params.orderId);
-    if (!order) return res.status(404).send("Order not found");
+    // ✅ Use ProductOrder instead of Order
+    const order = await ProductOrder.findById(req.params.orderId);
+    if (!order) return res.status(404).send('Order not found');
 
-    if (order.status === "delivered") {
-      return res.send("Order already marked as delivered.");
+    if (order.status === 'delivered') {
+      return res.send('Order already marked as delivered.');
     }
 
-    // Use the existing instance method from your model
-    await order.updateStatus("delivered", "Manual delivery confirmation via admin route", "admin");
+    // Manually update the status (ProductOrder doesn't have updateStatus method)
+    order.status = 'delivered';
+    await order.save();
 
-    // Now trigger the Purchase event
+    // Trigger the Purchase CAPI event
     await sendPurchaseForDeliveredCOD(order);
 
     res.send(`Order ${order._id} marked as delivered. Purchase event sent.`);
   } catch (err) {
-    console.error("Error delivering order:", err);
-    res.status(500).send("Server error");
+    console.error('Error delivering order:', err);
+    res.status(500).send('Server error');
   }
 });
-
 module.exports = router;
     
 
