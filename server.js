@@ -100,6 +100,7 @@ app.set('views', path.join(__dirname, 'views'));
 
 // Static files
 app.use(express.static(path.join(__dirname, 'public')));
+app.use('/favicon',express.static(__dirname + '/favicon'))
 
 app.get('/healty', (req, res) => {
   res.status(200).json({
