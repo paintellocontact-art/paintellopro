@@ -808,18 +808,84 @@
 </section>
 
 <!-- Carousel Scroll Logic Handler JS -->
-<script>
-    function scrollProductCarousel(direction) {
-        const track = document.getElementById('productCarousel');
-        if (track) {
-            const firstCard = track.querySelector('.carousel-card');
-            const cardWidth = firstCard ? firstCard.offsetWidth + 24 : 284;
-            track.scrollBy({
-                left: direction * cardWidth,
-                behavior: 'smooth'
-            });
-        }
+function scrollProductCarousel(direction) {
+    const track = document.getElementById('productCarousel');
+    if (track) {
+        const firstCard = track.querySelector('.carousel-card');
+        const cardWidth = firstCard ? firstCard.offsetWidth + 24 : 284;
+        
+        // في الـ RTL، التمرير لليمين يكون بقيمة سالبة، لضمان دعم متوافق 100% مع المتصفحات الحديثة:
+        const isRTL = document.documentElement.dir === 'rtl' || document.body.getAttribute('dir') === 'rtl';
+        const scrollAmount = isRTL ? (-direction * cardWidth) : (direction * cardWidth);
+        
+        track.scrollBy({
+            left: scrollAmount,
+            behavior: 'smooth'
+        });
     }
+}
+    document.addEventListener("DOMContentLoaded", function() {
+        // 1. إعداد الخريطة والتركيز على إحداثيات وسط الجزائر ومستوى التقريب (Zoom) مناسب
+        var map = L.map('algeriaMap', {
+            scrollWheelZoom: false // لضمان عدم حدوث مشاكل أثناء التمرير العادي في الصفحة
+        }).setView([28.0000, 2.0000], 5);
+
+        // 2. إضافة تصميم الخريطة (قرميد الخرائط) من OpenStreetMap
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        // 3. عينات من البيانات الجغرافية لبعض الولايات (يمكنك تعويضها لاحقاً ببيانات قادمة من قاعدة البيانات)
+        var provincesData = [
+            { name: "الجزائر العاصمة", coords: [36.7538, 3.0588], activity: "high", count: 120 },
+            { name: "وهران", coords: [35.6971, -0.6308], activity: "high", count: 75 },
+            { name: "قسنطينة", coords: [36.3650, 6.6147], activity: "medium", count: 42 },
+            { name: "سطيف", coords: [36.1911, 5.4137], activity: "high", count: 60 },
+            { name: "ورقلة", coords: [31.9500, 5.3167], activity: "medium", count: 25 },
+            { name: "بشار", coords: [31.6167, -2.2167], activity: "low", count: 12 },
+            { name: "تمنراست", coords: [22.7850, 5.5228], activity: "low", count: 5 },
+            { name: "عنابة", coords: [36.9000, 7.7667], activity: "medium", count: 38 },
+            { name: "الشلف", coords: [36.1647, 1.3317], activity: "medium", count: 22 },
+            { name: "تلمسان", coords: [34.8783, -1.3150], activity: "medium", count: 31 }
+        ];
+
+        // 4. دالة لتحديد لون الدائرة بناءً على مستوى النشاط
+        function getColor(activity) {
+            switch(activity) {
+                case 'high': return '#295797';   // الأزرق الأساسي الداكن
+                case 'medium': return '#1C84C1'; // الأزرق الفاتح
+                case 'low': return '#A0C4D9';    // الأزرق الباهت للنشاط المتنامي
+                default: return '#A0C4D9';
+            }
+        }
+
+        // 5. رسم الدوائر التفاعلية على الخريطة
+        provincesData.forEach(function(province) {
+            var marker = L.circleMarker(province.coords, {
+                radius: province.activity === 'high' ? 14 : province.activity === 'medium' ? 10 : 7,
+                fillColor: getColor(province.activity),
+                color: '#fff',
+                weight: 2,
+                opacity: 1,
+                fillOpacity: 0.85
+            }).addTo(map);
+
+            // إضافة نافذة منبثقة (Popup) تظهر عند الضغط على الدائرة
+            var popupContent = `
+                <div style="text-align: right; font-family: 'Tajawal', sans-serif; direction: rtl;">
+                    <strong style="font-size: 1.1rem; color: #1E3F5C;">ولاية ${province.name}</strong><br>
+                    <span style="color: #718096;">عدد الدهانين: ${province.count} محترف</span><br>
+                    <a href="/painters?wilaya=${province.name}" style="display:inline-block; margin-top: 8px; font-weight: bold; color: #1C84C1; text-decoration: none;">عرض الكل ←</a>
+                </div>
+            `;
+            marker.bindPopup(popupContent);
+        });
+
+        // تعديل طفيف لتحديث حجم الخريطة لتجنب مشاكل العرض عند التحميل الأولي
+        setTimeout(function(){ map.invalidateSize(); }, 400);
+    });
+</script>
+
 </script>
 
 <%- include('../partials/footer') %>
