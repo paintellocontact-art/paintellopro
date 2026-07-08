@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   <%
+    <%
   const pixelId = typeof fbPixelId !== 'undefined' ? fbPixelId : process.env.FB_PIXEL_ID;
 
   const pageViewEventId =
@@ -311,6 +311,53 @@
         [dir="rtl"] .ms-1 { margin-left: 0 !important; margin-right: 0.25rem !important; }
         [dir="rtl"] .ms-2 { margin-left: 0 !important; margin-right: 0.5rem !important; }
         [dir="rtl"] .ms-3 { margin-left: 0 !important; margin-right: 1rem !important; }
+
+        /* ===== 📱 ANDROID NATIVE APP UI STYLES ===== */
+        .app-top-bar {
+            background-color: var(--primary-blue);
+            color: white;
+            padding: 14px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 1040;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .app-brand-zone {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .app-brand-title {
+            font-weight: 700;
+            font-size: 1.15rem;
+            letter-spacing: 0.3px;
+            color: white;
+        }
+
+        .app-action-zone {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .app-bar-link {
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.2s ease;
+        }
+
+        .app-bar-link:hover {
+            opacity: 0.82;
+            color: white;
+        }
         
         @media (max-width: 768px) {
             .navbar-nav { padding: 16px 0; }
@@ -340,18 +387,18 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- Modern Navbar -->
 <!-- Native App Layout vs Standard Website Logic -->
 <% if (typeof isAndroidApp !== 'undefined' && isAndroidApp) { %>
-    <!-- 📱 MUULA HUB STYLE TOP BAR (Only shows inside the Mobile App) -->
-    <header class="bg-[#295797] text-white sticky-top py-3 px-3 shadow-sm flex items-center justify-between" style="background-color: var(--primary-blue);">
-        <div class="d-flex align-items-center gap-2">
-            <i class="fas fa-paint-roller text-xl text-white"></i>
-            <span class="fw-bold tracking-wide text-lg text-white">Paintello Pro</span>
+    <!-- 📱 APP MODE TOP BAR -->
+    <header class="app-top-bar">
+        <div class="app-brand-zone">
+            <i class="fas fa-paint-roller fs-5"></i>
+            <span class="app-brand-title">Paintello Pro</span>
         </div>
         
-        <div class="d-flex align-items-center gap-3">
+        <div class="app-action-zone">
             <% if (typeof sessionPainter !== 'undefined' && sessionPainter) { %>
-                <!-- If painter is logged in, show their quick-access avatar directly on the top bar -->
-                <a href="/painter/profile" class="text-white decoration-none">
-                    <div class="avatar-small border border-white" style="width: 34px; height: 34px;">
+                <!-- Quick Access Avatar directly on App bar -->
+                <a href="/painter/profile" class="app-bar-link">
+                    <div class="avatar-small border border-white" style="width: 32px; height: 32px;">
                         <% if (sessionPainter.profilePicture && sessionPainter.profilePicture.url) { %>
                             <img src="<%= sessionPainter.profilePicture.url %>" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
                         <% } else { %>
@@ -360,15 +407,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     </div>
                 </a>
             <% } else { %>
-                <!-- If not logged in, show a subtle login icon link -->
-                <a href="/auth/login-painter" class="text-white hover:text-gray-200">
-                    <i class="fas fa-sign-in-alt text-xl"></i>
+                <!-- Profile/Login Action Icon -->
+                <a href="/auth/login-painter" class="app-bar-link">
+                    <i class="fas fa-user-circle fs-4"></i>
                 </a>
             <% } %>
         </div>
     </header>
 <% } else { %>
-    <!-- 💻 ORIGINAL DESKTOP NAVBAR (Shows normally on Chrome, Safari, PC) -->
+    <!-- 💻 ORIGINAL DESKTOP/MOBILE BROWSER NAVBAR -->
     <nav class="navbar navbar-expand-lg navbar-modern sticky-top">
         <div class="container">
             <a class="navbar-brand navbar-brand-modern" href="/ar">
@@ -453,8 +500,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script>
     window.addEventListener('scroll', function() {
         const navbar = document.querySelector('.navbar-modern');
-        if (window.scrollY > 50) navbar.classList.add('scrolled');
-        else navbar.classList.remove('scrolled');
+        if (navbar && window.scrollY > 50) navbar.classList.add('scrolled');
+        else if (navbar) navbar.classList.remove('scrolled');
     });
     document.querySelectorAll('.nav-link-modern, .dropdown-item, .btn-login-modern, .btn-signup-modern').forEach(link => {
         if (link) {
