@@ -7,6 +7,7 @@
   sessionPainter: typeof sessionPainter !== 'undefined' ? sessionPainter : null,
   whatsappPhone: typeof whatsappPhone !== 'undefined' ? whatsappPhone : '213796530868'
 }) %>
+
 <!-- ===== STYLES ===== -->
 <style>
 /* ===== FULL-BLEED PRODUCT VIDEO (Zara style) ===== */
@@ -397,126 +398,118 @@
             </div>
           </div>
           
-      <!-- Buy Now Button -->
-<button id="buyNowBtn" class="btn-buy-now">
-  <i class="fas fa-bolt me-2"></i> اشتري الآن
-</button>
+          <!-- Buy Now Button -->
+          <button id="buyNowBtn" class="btn-buy-now">
+            <i class="fas fa-bolt me-2"></i> اشتري الآن
+          </button>
           
           <!-- WhatsApp Bulk Order Button -->
           <button id="whatsappBulkBtn" class="btn-whatsapp-bulk">
             <i class="fab fa-whatsapp me-2"></i> طلب بالجملة عبر واتساب
           </button>
           
-         <!-- Tabs: Description / Delivery / Guarantee -->
-<div class="product-tabs mt-4">
-  <ul class="nav nav-tabs" role="tablist">
-    <li class="nav-item">
-      <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#desc" type="button">الوصف</button>
-    </li>
-    <li class="nav-item">
-      <button class="nav-link" data-bs-toggle="tab" data-bs-target="#delivery" type="button">التوصيل</button>
-    </li>
-    <li class="nav-item">
-      <button class="nav-link" data-bs-toggle="tab" data-bs-target="#guarantee" type="button">الضمان</button>
-    </li>
-  </ul>
+          <!-- Tabs: Description / Delivery / Guarantee -->
+          <div class="product-tabs mt-4">
+            <ul class="nav nav-tabs" role="tablist">
+              <li class="nav-item">
+                <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#desc" type="button">الوصف</button>
+              </li>
+              <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#delivery" type="button">التوصيل</button>
+              </li>
+              <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#guarantee" type="button">الضمان</button>
+              </li>
+            </ul>
 
-  <div class="tab-content mt-3">
-    <!-- Description Tab -->
-<div class="tab-pane fade show active" id="desc">
+            <div class="tab-content mt-3">
+              <!-- Description Tab -->
+              <div class="tab-pane fade show active" id="desc">
+                <!-- Product Description -->
+                <div class="desc-section">
+                  <h4 class="desc-heading">وصف المنتج</h4>
+                  <p class="desc-text"><%= product.description %></p>
+                </div>
 
-  <!-- Product Description -->
-  <div class="desc-section">
-    <h4 class="desc-heading">وصف المنتج</h4>
-    <p class="desc-text"><%= product.description %></p>
-  </div>
+                <!-- Key Features -->
+                <% if (product.features && product.features.length > 0) { %>
+                <div class="desc-section">
+                  <h4 class="desc-heading">المميزات الرئيسية</h4>
+                  <ul class="features-list">
+                    <% product.features.forEach(f => { %>
+                      <li><i class="fas fa-check-circle"></i> <%= f %></li>
+                    <% }); %>
+                  </ul>
+                </div>
+                <% } %>
 
-  <!-- Key Features -->
-  <% if (product.features && product.features.length > 0) { %>
-  <div class="desc-section">
-    <h4 class="desc-heading">المميزات الرئيسية</h4>
-    <ul class="features-list">
-      <% product.features.forEach(f => { %>
-        <li><i class="fas fa-check-circle"></i> <%= f %></li>
-      <% }); %>
-    </ul>
-  </div>
-  <% } %>
+                <!-- Specifications Table -->
+                <% if (product.specifications && product.specifications.length > 0) { %>
+                <div class="desc-section">
+                  <h4 class="desc-heading">المواصفات الفنية</h4>
+                  <table class="specs-table">
+                    <tbody>
+                      <% product.specifications.forEach(spec => { %>
+                        <tr>
+                          <td class="spec-key"><%= spec.key %></td>
+                          <td class="spec-value"><%= spec.value %></td>
+                        </tr>
+                      <% }); %>
+                    </tbody>
+                  </table>
+                </div>
+                <% } %>
+              </div>
 
-  <!-- Specifications Table -->
-  <% if (product.specifications && product.specifications.length > 0) { %>
-  <div class="desc-section">
-    <h4 class="desc-heading">المواصفات الفنية</h4>
-    <table class="specs-table">
-      <tbody>
-        <% product.specifications.forEach(spec => { %>
-          <tr>
-            <td class="spec-key"><%= spec.key %></td>
-            <td class="spec-value"><%= spec.value %></td>
-          </tr>
-        <% }); %>
-      </tbody>
-    </table>
-  </div>
-  <% } %>
+              <!-- Delivery Tab -->
+              <div class="tab-pane fade" id="delivery">
+                <p><strong>خيارات التوصيل :</strong></p>
+                <p class="mt-2">نقدم توصيلًا قياسيًا وسريعًا مع تتبع كامل لجميع الطلبات.</p>
+                <p class="mt-4"><strong>توصيل سريع مجاني :</strong></p>
+                <p class="mt-2">يتم تطبيق التوصيل السريع المجاني تلقائيًا عند الدفع عندما يكون طلبك مؤهلاً (ابتداءً من 5000 دج).</p>
+                <p class="mt-4"><strong>مدة الشحن :</strong></p>
+                <p class="mt-2">يتم شحن جميع الطلبات في نفس اليوم إذا تم تقديمها قبل الساعة 14:00.</p>
+                <div class="mt-6 p-4 rounded-lg" style="background: rgba(41,87,151,0.08); border: 1px solid var(--primary-blue);">
+                  <p class="font-medium" style="color: var(--primary-blue);">أوقات التسليم المقدرة :</p>
+                  <ul class="mt-2 space-y-1" style="color: var(--primary-dark);">
+                    <li>• توصيل قياسي : 3-5 أيام عمل</li>
+                    <li>• توصيل سريع : 1-2 أيام عمل</li>
+                    <li>• الولايات البعيدة : 5-8 أيام عمل</li>
+                  </ul>
+                </div>
+              </div>
 
-</div>
-
-    <!-- Delivery Tab (Arabic – Paintello Pro style) -->
-    <div class="tab-pane fade" id="delivery">
-      <p><strong>خيارات التوصيل :</strong></p>
-      <p class="mt-2">نقدم توصيلًا قياسيًا وسريعًا مع تتبع كامل لجميع الطلبات.</p>
-
-      <p class="mt-4"><strong>توصيل سريع مجاني :</strong></p>
-      <p class="mt-2">يتم تطبيق التوصيل السريع المجاني تلقائيًا عند الدفع عندما يكون طلبك مؤهلاً (ابتداءً من 5000 دج).</p>
-
-      <p class="mt-4"><strong>مدة الشحن :</strong></p>
-      <p class="mt-2">يتم شحن جميع الطلبات في نفس اليوم إذا تم تقديمها قبل الساعة 14:00.</p>
-
-      <div class="mt-6 p-4 rounded-lg" style="background: rgba(41,87,151,0.08); border: 1px solid var(--primary-blue);">
-        <p class="font-medium" style="color: var(--primary-blue);">أوقات التسليم المقدرة :</p>
-        <ul class="mt-2 space-y-1" style="color: var(--primary-dark);">
-          <li>• توصيل قياسي : 3-5 أيام عمل</li>
-          <li>• توصيل سريع : 1-2 أيام عمل</li>
-          <li>• الولايات البعيدة : 5-8 أيام عمل</li>
-        </ul>
-      </div>
-    </div>
-
-    <!-- Guarantee Tab (Arabic – Paintello Pro style) -->
-    <div class="tab-pane fade" id="guarantee">
-      <div class="p-4 rounded-lg border" style="background: rgba(41,87,151,0.05); border-color: var(--primary-blue);">
-        <p class="font-semibold" style="color: var(--primary-blue);">ضمان الرضا 100%</p>
-        <p class="mt-1" style="color: var(--primary-dark);">ضمان استرداد كامل للمبلغ خلال 4 أيام دون أي أسئلة.</p>
-      </div>
-
-      <p class="mt-4"><strong>تعهدنا :</strong></p>
-      <p class="mt-2">نحن واثقون من أنك ستحب منتجاتنا. إذا لم تكن راضيًا تمامًا، يمكنك إرجاع المنتج خلال 4 أيام من الاستلام.</p>
-
-      <p class="mt-4"><strong>كيف يعمل :</strong></p>
-      <p class="mt-2">إذا لم تكن راضيًا عن مشترياتك، ما عليك سوى الاتصال بنا خلال 4 أيام من استلام الطلب لبدء عملية الإرجاع.</p>
-      <a href="/track-login" class="learn-more-link">معرفة المزيد</a>
-
-      <p class="mt-4"><strong>ضمان الجودة :</strong></p>
-      <p class="mt-2">يخضع كل منتج لفحوصات جودة صارمة قبل الشحن. نحن نضمن الحرفية والمتانة لمنتجاتنا.</p>
-
-      <div class="mt-6 p-4 rounded-lg" style="background: rgba(41,87,151,0.08); border: 1px solid var(--primary-blue);">
-        <p class="font-medium" style="color: var(--primary-blue);">سياسة الإرجاع :</p>
-        <ul class="mt-2 space-y-1" style="color: var(--primary-dark);">
-          <li>• ضمان استرداد لمدة 4 أيام</li>
-          <li>• بدون طرح أي أسئلة</li>
-          <li>• استرداد كامل على وسيلة الدفع الأصلية</li>
-          <li>• يجب أن يكون المنتج في حالته الأصلية</li>
-        </ul>
-      </div>
-    </div>
-  </div>
-</div>
+              <!-- Guarantee Tab -->
+              <div class="tab-pane fade" id="guarantee">
+                <div class="p-4 rounded-lg border" style="background: rgba(41,87,151,0.05); border-color: var(--primary-blue);">
+                  <p class="font-semibold" style="color: var(--primary-blue);">ضمان الرضا 100%</p>
+                  <p class="mt-1" style="color: var(--primary-dark);">ضمان استرداد كامل للمبلغ خلال 4 أيام دون أي أسئلة.</p>
+                </div>
+                <p class="mt-4"><strong>تعهدنا :</strong></p>
+                <p class="mt-2">نحن واثقون من أنك ستحب منتجاتنا. إذا لم تكن راضيًا تمامًا، يمكنك إرجاع المنتج خلال 4 أيام من الاستلام.</p>
+                <p class="mt-4"><strong>كيف يعمل :</strong></p>
+                <p class="mt-2">إذا لم تكن راضيًا عن مشترياتك، ما عليك سوى الاتصال بنا خلال 4 أيام من استلام الطلب لبدء عملية الإرجاع.</p>
+                <a href="/track-login" class="learn-more-link">معرفة المزيد</a>
+                <p class="mt-4"><strong>ضمان الجودة :</strong></p>
+                <p class="mt-2">يخضع كل منتج لفحوصات جودة صارمة قبل الشحن. نحن نضمن الحرفية والمتانة لمنتجاتنا.</p>
+                <div class="mt-6 p-4 rounded-lg" style="background: rgba(41,87,151,0.08); border: 1px solid var(--primary-blue);">
+                  <p class="font-medium" style="color: var(--primary-blue);">سياسة الإرجاع :</p>
+                  <ul class="mt-2 space-y-1" style="color: var(--primary-dark);">
+                    <li>• ضمان استرداد لمدة 4 أيام</li>
+                    <li>• بدون طرح أي أسئلة</li>
+                    <li>• استرداد كامل على وسيلة الدفع الأصلية</li>
+                    <li>• يجب أن يكون المنتج في حالته الأصلية</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </div>
 </section>
+
 <!-- ===== FULL-WIDTH CLOUDINARY VIDEO ===== -->
 <% if (product.videoFile) { %>
 <section class="product-video-fullbleed" dir="rtl">
@@ -535,7 +528,7 @@
         allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
         allowfullscreen
         style="position:absolute;top:0;left:0;width:100%;height:100%;">
-      </iframe>
+       Galbraith iframe </iframe>
     </div>
   </div>
 </section>
@@ -638,8 +631,6 @@
   </div>
 </div>
 
-
-
 <!-- ===== LIGHTBOX ELEMENT ===== -->
 <div id="lightbox" class="lightbox-backdrop">
   <button id="lightboxClose" class="lightbox-close"><i class="fas fa-times"></i></button>
@@ -651,11 +642,10 @@
 <!-- ===== JAVASCRIPT ===== -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-
   document.addEventListener('DOMContentLoaded', function() {
 
     // ---------- SERVER VALUES → CLIENT VARIABLES ----------
-    const productName = '<%- product.name.replace(/'/g, "\\'") %>';
+    const productName = '<%- product.name.replace(/\'/g, "\\\'") %>';
     const productPrice = <%= product.price %>;
     const productId   = '<%= product._id %>';
 
@@ -689,7 +679,7 @@
       if (prevBtn) prevBtn.addEventListener('click', () => setMainImage((currentIndex - 1 + imagesData.length) % imagesData.length));
       if (nextBtn) nextBtn.addEventListener('click', () => setMainImage((currentIndex + 1) % imagesData.length));
 
-      // Swipe
+      // Swipe Touch Control for Mobile
       const slider = document.querySelector('.main-image-wrapper');
       if (slider) {
         let startX = 0;
@@ -697,140 +687,123 @@
         slider.addEventListener('touchend', e => {
           const diff = e.changedTouches[0].clientX - startX;
           if (Math.abs(diff) > 50) {
-            diff > 0 ? setMainImage((currentIndex - 1 + imagesData.length) % imagesData.length) : setMainImage((currentIndex + 1) % imagesData.length);
+            if (diff > 0) {
+              setMainImage((currentIndex - 1 + imagesData.length) % imagesData.length);
+            } else {
+              setMainImage((currentIndex + 1) % imagesData.length);
+            }
           }
         });
       }
 
-      // Lightbox
+      // ---------- LIGHTBOX ----------
       const lightbox = document.getElementById('lightbox');
-      const lightboxImage = document.getElementById('lightboxImage');
+      const lightboxImg = document.getElementById('lightboxImage');
       const openLightboxBtn = document.getElementById('openLightboxBtn');
-      const lightboxClose = document.getElementById('lightboxClose');
-      const lightboxPrev = document.getElementById('lightboxPrev');
-      const lightboxNext = document.getElementById('lightboxNext');
 
-      if (openLightboxBtn && lightbox && lightboxImage) {
+      if (openLightboxBtn && lightbox && lightboxImg) {
         openLightboxBtn.addEventListener('click', () => {
-          if (imagesData.length) lightboxImage.src = imagesData[currentIndex];
-          lightbox.classList.add('active');
-          document.body.style.overflow = 'hidden';
-        });
-        lightboxClose.addEventListener('click', () => { lightbox.classList.remove('active'); document.body.style.overflow = ''; });
-        lightboxPrev.addEventListener('click', () => { setMainImage((currentIndex - 1 + imagesData.length) % imagesData.length); if (imagesData.length) lightboxImage.src = imagesData[currentIndex]; });
-        lightboxNext.addEventListener('click', () => { setMainImage((currentIndex + 1) % imagesData.length); if (imagesData.length) lightboxImage.src = imagesData[currentIndex]; });
-        lightbox.addEventListener('click', e => { if (e.target === lightbox) { lightbox.classList.remove('active'); document.body.style.overflow = ''; } });
-        document.addEventListener('keydown', e => {
-          if (e.key === 'Escape' && lightbox.classList.contains('active')) { lightbox.classList.remove('active'); document.body.style.overflow = ''; }
-          else if (lightbox.classList.contains('active')) {
-            if (e.key === 'ArrowLeft') { setMainImage((currentIndex - 1 + imagesData.length) % imagesData.length); if (imagesData.length) lightboxImage.src = imagesData[currentIndex]; }
-            else if (e.key === 'ArrowRight') { setMainImage((currentIndex + 1) % imagesData.length); if (imagesData.length) lightboxImage.src = imagesData[currentIndex]; }
+          if (imagesData.length > 0) {
+            lightboxImg.src = imagesData[currentIndex];
+            lightbox.classList.add('active');
           }
         });
       }
-    } catch (e) {
-      console.warn('Image gallery script error:', e);
+
+      const lightboxClose = document.getElementById('lightboxClose');
+      if (lightboxClose) {
+        lightboxClose.addEventListener('click', () => lightbox.classList.remove('active'));
+      }
+
+      const lightboxPrev = document.getElementById('lightboxPrev');
+      if (lightboxPrev) {
+        lightboxPrev.addEventListener('click', () => {
+          currentIndex = (currentIndex - 1 + imagesData.length) % imagesData.length;
+          lightboxImg.src = imagesData[currentIndex];
+          setMainImage(currentIndex);
+        });
+      }
+
+      const lightboxNext = document.getElementById('lightboxNext');
+      if (lightboxNext) {
+        lightboxNext.addEventListener('click', () => {
+          currentIndex = (currentIndex + 1) % imagesData.length;
+          lightboxImg.src = imagesData[currentIndex];
+          setMainImage(currentIndex);
+        });
+      }
+
+    } catch (err) {
+      console.error('Gallery initialization failed:', err);
     }
 
     // ---------- QUANTITY CONTROLS ----------
     const qtyInput = document.getElementById('qtyInput');
     const qtyMinus = document.getElementById('qtyMinus');
     const qtyPlus = document.getElementById('qtyPlus');
+
     if (qtyInput && qtyMinus && qtyPlus) {
-      qtyMinus.addEventListener('click', () => { qtyInput.value = Math.max(1, parseInt(qtyInput.value) - 1); });
-      qtyPlus.addEventListener('click', () => { qtyInput.value = parseInt(qtyInput.value) + 1; });
+      qtyMinus.addEventListener('click', () => {
+        let val = parseInt(qtyInput.value) || 1;
+        if (val > 1) qtyInput.value = val - 1;
+      });
+      qtyPlus.addEventListener('click', () => {
+        let val = parseInt(qtyInput.value) || 1;
+        qtyInput.value = val + 1;
+      });
     }
 
-    // ---------- META PIXEL VIEWCONTENT ----------
-    try {
-      if (typeof fbq !== 'undefined') {
-        fbq('track', 'ViewContent', {
-          content_name: productName,
-          content_ids: [productId],
-          content_type: 'product',
-          value: productPrice,
-          currency: 'DZD',
-          contents: [{ id: productId, quantity: 1, item_price: productPrice }]
-        }, { eventID: '<%= metaEventIdView %>' });
-      }
-    } catch (e) {}
-
-        // ---------- BUY NOW BUTTON (Add to Cart + redirect) ----------
+    // ---------- BUY NOW ACTION ----------
     const buyNowBtn = document.getElementById('buyNowBtn');
-    if (buyNowBtn && qtyInput) {
-      buyNowBtn.addEventListener('click', function(e) {
-        e.preventDefault();
-        const qty = parseInt(qtyInput.value) || 1;
-        const productId = '<%= product._id %>';
-        const eventId = '<%= metaEventIdCart %>';
-
-        // Browser pixel AddToCart
-        try {
-          if (typeof fbq !== 'undefined') {
-            fbq('track', 'AddToCart', {
-              content_name: '<%= product.name.replace(/'/g, "\\'") %>',
-              content_ids: [productId],
-              content_type: 'product',
-              value: <%= product.price %> * qty,
-              currency: 'DZD',
-              contents: [{ id: productId, quantity: qty, item_price: <%= product.price %> }]
-            }, { eventID: eventId });
-          }
-        } catch (e) {}
-
-        // Redirect to add‑to‑cart route (which handles the server event and redirects to checkout)
-        window.location.href = `/products/add-to-cart/${productId}?qty=${qty}&eventId=${eventId}`;
+    if (buyNowBtn) {
+      buyNowBtn.addEventListener('click', function() {
+        const qty = qtyInput ? qtyInput.value : 1;
+        window.location.href = `/checkout?product=${productId}&qty=${qty}`;
       });
     }
 
-    // ---------- WHATSAPP BULK BUTTON ----------
-    const bulkBtn = document.getElementById('whatsappBulkBtn');
-    if (bulkBtn) {
-      bulkBtn.addEventListener('click', () => {
-        const text = encodeURIComponent(`أرغب في طلب كمية كبيرة من "${productName}" بسعر ${productPrice} دج. أرجو تزويدي بسعر الجملة.`);
-        window.open(`https://wa.me/<%= whatsappPhone %>?text=${text}`, '_blank');
+    // ---------- WHATSAPP CHAT MODAL ----------
+    const whatsappToggle = document.getElementById('whatsappToggle');
+    const whatsappModal = document.getElementById('whatsappModal');
+    const whatsappClose = document.getElementById('whatsappClose');
+    const whatsappSend = document.getElementById('whatsappSend');
+    const whatsappMessage = document.getElementById('whatsappMessage');
+    const whatsappPhone = '<%= typeof whatsappPhone !== "undefined" ? whatsappPhone : "213796530868" %>';
+
+    if (whatsappToggle && whatsappModal) {
+      whatsappToggle.addEventListener('click', () => whatsappModal.classList.toggle('active'));
+    }
+    if (whatsappClose) {
+      whatsappClose.addEventListener('click', () => whatsappModal.classList.remove('active'));
+    }
+
+    if (whatsappSend && whatsappMessage) {
+      whatsappMessage.value = `مرحباً Paintello، أنا مهتم بمنتج "${productName}" بسعر ${productPrice.toLocaleString('ar-DZ')} دج. هل هو متوفر؟`;
+
+      whatsappSend.addEventListener('click', () => {
+        const text = encodeURIComponent(whatsappMessage.value);
+        window.open(`https://wa.me/${whatsappPhone}?text=${text}`, '_blank');
       });
     }
 
-    // ---------- WHATSAPP FLOATING WIDGET ----------
-    const toggleBtn = document.getElementById('whatsappToggle');
-    const modal = document.getElementById('whatsappModal');
-    const closeBtn = document.getElementById('whatsappClose');
-    const sendBtn = document.getElementById('whatsappSend');
-    const msgInput = document.getElementById('whatsappMessage');
-
-    if (toggleBtn && modal) {
-      toggleBtn.addEventListener('click', () => modal.classList.toggle('active'));
-    }
-    if (closeBtn && modal) {
-      closeBtn.addEventListener('click', () => modal.classList.remove('active'));
-    }
-    if (modal) {
-      document.addEventListener('click', (e) => {
-        if (modal.classList.contains('active') && !modal.contains(e.target) && e.target !== toggleBtn) {
-          modal.classList.remove('active');
-        }
+    // ---------- WHATSAPP BULK ORDER ----------
+    const whatsappBulkBtn = document.getElementById('whatsappBulkBtn');
+    if (whatsappBulkBtn) {
+      whatsappBulkBtn.addEventListener('click', () => {
+        const bulkText = encodeURIComponent(`مرحباً Paintello، أود الاستفسار عن أسعار البيع بالجملة والشحن لمنتج: "${productName}" (معرف: ${productId}).`);
+        window.open(`https://wa.me/${whatsappPhone}?text=${bulkText}`, '_blank');
       });
     }
-    if (sendBtn && modal && msgInput) {
-      sendBtn.addEventListener('click', () => {
-        let userMsg = msgInput.value.trim();
-        let text = `مرحباً، أنا مهتم بمنتج "${productName}" بسعر ${productPrice} دج.`;
-        if (userMsg) text += `\n\n${userMsg}`;
-        text += '\n\n--\nأرسلت من Paintello Pro';
-        window.open(`https://wa.me/<%= whatsappPhone %>?text=${encodeURIComponent(text)}`, '_blank');
-        modal.classList.remove('active');
-      });
-    }
-
-    // ---------- RELATED PRODUCTS SCROLL ----------
-    const leftArrow = document.querySelector('.left-arrow-related');
-    const rightArrow = document.querySelector('.right-arrow-related');
-    const relatedCarousel = document.getElementById('relatedCarousel');
-    if (leftArrow && relatedCarousel) leftArrow.addEventListener('click', () => relatedCarousel.scrollBy({ left: -280, behavior: 'smooth' }));
-    if (rightArrow && relatedCarousel) rightArrow.addEventListener('click', () => relatedCarousel.scrollBy({ left: 280, behavior: 'smooth' }));
 
   });
+
+  // ---------- RELATED CAROUSEL SCROLL ----------
+  function scrollRelated(direction) {
+    const carousel = document.getElementById('relatedCarousel');
+    if (carousel) {
+      carousel.scrollBy({ left: direction, behavior: 'smooth' });
+    }
+  }
 </script>
 
 <%- include('../../partials/footer') %>
