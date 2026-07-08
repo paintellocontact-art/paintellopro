@@ -61,6 +61,15 @@ app.locals.fbPixelId = process.env.FB_PIXEL_ID;
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.set('trust proxy', 1);
+// Add this inside server.js to feed our templates the app flag
+app.use((req, res, next) => {
+    const userAgent = req.get('User-Agent') || '';
+    const isAndroidApp = userAgent.includes('PaintelloProAndroid');
+    
+    // This allows us to use <% if (isAndroidApp) { %> inside ANY view file
+    res.locals.isAndroidApp = isAndroidApp;
+    next();
+});
 
 // Session middleware (using the compatible store)
 app.use(session({
