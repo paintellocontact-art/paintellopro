@@ -7,12 +7,14 @@ const bcrypt = require('bcrypt');
 const sendMetaCAPIEvent = require('../services/metaCapi');
 const getCleanUserData = require('../utils/userData');
 const wilayas = require('../utils/wilayas');
-const { uploadIdCard, deleteFromCloudinary } = require('../utils/cloudinary');
+const { uploadIdCard, deleteFromCloudinary, checkCloudinaryUrl } = require('../utils/cloudinary');
 var Cart = require("../models/cart");
 const { createPayment, verifyPayment } = require('../helpers/chargily');
 const { sendPurchaseForDeliveredCOD } = require('../helpers/deliveryEvents');
 const ProductOrder = require('../models/ProductOrder');
 const { sendTelegramMessage } = require('../helpers/telegram');
+
+const DELIVERY_SECRET = process.env.DELIVERY_SECRET;
 
 
 function generateEventId() {
@@ -335,26 +337,27 @@ router.get('/products/:id', async (req, res) => {
         testEventCode: req.query.test_event_code || process.env.FB_TEST_EVENT_CODE,
       });
     }
-// ✅ NEW – ViewContent (server side)
-  await sendMetaCAPIEvent({
-    eventName: 'ViewContent',
-    eventId: viewContentId,
-    userData,
-    customData: {
-      content_name: product.name,
-      content_ids: [product._id.toString()],
-      content_type: 'product',
-      value: product.price,
-      currency: 'DZD',
-      contents: [{
-        id: product._id.toString(),
-        quantity: 1,
-        item_price: product.price
-      }]
-    },
-    eventSourceUrl: `${req.protocol}://${req.get('host')}${req.originalUrl}`,
-    testEventCode: req.query.test_event_code || process.env.FB_TEST_EVENT_CODE,
-  });
+    if (userData) {
+      await sendMetaCAPIEvent({
+        eventName: 'ViewContent',
+        eventId: viewContentId,
+        userData,
+        customData: {
+          content_name: product.name,
+          content_ids: [product._id.toString()],
+          content_type: 'product',
+          value: product.price,
+          currency: 'DZD',
+          contents: [{
+            id: product._id.toString(),
+            quantity: 1,
+            item_price: product.price
+          }]
+        },
+        eventSourceUrl: `${req.protocol}://${req.get('host')}${req.originalUrl}`,
+        testEventCode: req.query.test_event_code || process.env.FB_TEST_EVENT_CODE,
+      });
+    }
 
     res.render('ar/products/product', {
       title: product.name + ' - Paintello Pro',
@@ -379,23 +382,27 @@ router.get('/products/:id', async (req, res) => {
 // Use it in your routes
 router.get('/validate-profile-picture', async (req, res) => {
   try {
-    const painter = await Painter.findById(req.session.painter._id);
-    
-    if (painter.profilePicture && painter.profilePicture.url) {
-      const isValid = await checkCloudinaryUrl(painter.profilePicture.url);
-      
-      res.json({
-        hasProfilePicture: true,
-        url: painter.profilePicture.url,
-        isValid: isValid,
-        message: isValid ? 'Profile picture URL is valid' : 'Profile picture URL is invalid'
-      });
-    } else {
-      res.json({
-        hasProfilePicture: false,
-        message: 'No profile picture found'
-      });
+    if (!req.session?.painter?._id) {
+      return res.status(401).json({ error: 'Unauthorized' });
     }
+
+    const painter = await Painter.findById(req.session.painter._id);
+    if (!painter) {
+      return res.status(404).json({ error: 'Painter not found' });
+    }
+
+    const url = painter.profilePicture?.url;
+    if (!url) {
+      return res.json({ hasProfilePicture: false, message: 'No profile picture found' });
+    }
+
+    const isValid = typeof checkCloudinaryUrl === 'function' ? await checkCloudinaryUrl(url) : true;
+    res.json({
+      hasProfilePicture: true,
+      url,
+      isValid,
+      message: isValid ? 'Profile picture URL is valid' : 'Profile picture URL is invalid'
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -675,18 +682,13 @@ router.get('/logout', (req, res) => {
 
 // Alternative logout with flash message
 router.post('/logout', (req, res) => {
-  const userName = req.session.user ? req.session.user.name : 
-                   req.session.painter ? req.session.painter.name : 'User';
-  
   req.session.destroy((err) => {
     if (err) {
       console.error('Logout error:', err);
-      req.flash('error', 'Error during logout');
       return res.redirect('/painter/dashboard');
     }
-    
+
     res.clearCookie('connect.sid');
-    req.flash('success', `Goodbye, ${userName}! You have been logged out successfully.`);
     res.redirect('/');
   });
 });
@@ -765,9 +767,11 @@ router.post('/checkout', async (req, res) => {
   const shipping = parseFloat(shippingFee) || 0;
   const finalTotal = adjustedTotalPrice + shipping;
 
-  // Clean phone
-  const cleanNumero = '213' + numero.replace(/^0+/, '').replace(/\D/g, '');
-
+  const cleanNumero = getCleanUserData.cleanPhoneNumber(numero);
+  if (!firstName || !lastName || !address || !city || !commune || !cleanNumero || !paymentMethod) {
+    req.flash('error', 'Please fill in all required checkout fields.');
+    return res.redirect('/checkout');
+  }
   // Meta event
   const initiateCheckoutId = generateEventId();
   const userData = getCleanUserData(req);
@@ -827,16 +831,20 @@ router.post('/checkout', async (req, res) => {
           testEventCode: req.query.test_event_code || process.env.FB_TEST_EVENT_CODE
         });
       }
-await sendTelegramMessage(
-  `🛒 <b>طلب جديد</b> — ${order.guest.firstName} ${order.guest.lastName}\n` +
-  `📱 الهاتف: ${order.guest.numero}\n` +
-  `📍 العنوان: ${order.guest.address}, ${order.guest.commune}, ${order.guest.city}\n` +
-  `💰 المجموع: ${order.totalWithShipping} دج\n` +
-  `🚚 التوصيل: ${order.deliveryDelay}\n` +
-  `📦 الحالة: ${order.status}\n` +
-  `💳 الدفع: ${order.paymentMethod === 'chargily' ? 'CIB / الذهبية' : 'الدفع عند الاستلام'}\n` +
-  `🔗 رابط: https://www.paintello.uk/order/deliver/${order._id}?secret=mySuperSecret123`
-);
+      const deliveryLink = DELIVERY_SECRET
+        ? `https://www.paintello.uk/order/deliver/${order._id}?secret=${encodeURIComponent(DELIVERY_SECRET)}`
+        : `https://www.paintello.uk/order/deliver/${order._id}`;
+
+      await sendTelegramMessage(
+        `🛒 <b>طلب جديد</b> — ${order.guest.firstName} ${order.guest.lastName}\n` +
+        `📱 الهاتف: ${order.guest.numero}\n` +
+        `📍 العنوان: ${order.guest.address}, ${order.guest.commune}, ${order.guest.city}\n` +
+        `💰 المجموع: ${order.totalWithShipping} دج\n` +
+        `🚚 التوصيل: ${order.deliveryDelay}\n` +
+        `📦 الحالة: ${order.status}\n` +
+        `💳 الدفع: ${order.paymentMethod === 'chargily' ? 'CIB / الذهبية' : 'الدفع عند الاستلام'}\n` +
+        `🔗 رابط: ${deliveryLink}`
+      );
       // Clear cart
       req.session.cart = null;
 
@@ -868,6 +876,27 @@ await sendTelegramMessage(
 
   // ---------- Online Payment (Chargily) ----------
   if (paymentMethod === 'chargily') {
+    if (userData) {
+      await sendMetaCAPIEvent({
+        eventName: 'InitiateCheckout',
+        eventId: initiateCheckoutId,
+        userData,
+        customData: {
+          content_ids: Object.keys(cart.items),
+          contents: Object.values(cart.items).map(item => ({
+            id: item.item._id.toString(),
+            quantity: item.qty,
+            item_price: item.item.price
+          })),
+          value: finalTotal,
+          currency: 'DZD',
+          num_items: cart.totalQty
+        },
+        eventSourceUrl: `${req.protocol}://${req.get('host')}${req.originalUrl}`,
+        testEventCode: req.query.test_event_code || process.env.FB_TEST_EVENT_CODE
+      });
+    }
+
     req.session.pendingOrder = {
       cart: req.session.cart,
       firstName,
@@ -879,6 +908,7 @@ await sendTelegramMessage(
       shippingDelay: deliveryDelay || '',
       finalTotal,
       rawNumero: numero,
+      initiateCheckoutId,
       user: req.session.user || null,
       savedUserData: userData || {}
     };
@@ -890,12 +920,12 @@ await sendTelegramMessage(
         currency: 'dzd',
         success_url: `${baseUrl}/payment/success`,
         failure_url: `${baseUrl}/checkout?payment=failed`,
-        metadata: { session_id: req.sessionID }
+        metadata: { session_id: req.sessionID, event_id: initiateCheckoutId }
       });
       return res.redirect(payment.checkout_url);
     } catch (error) {
       console.error('Chargily payment creation error:', error);
-      req.flash('error', 'فشل إنشاء عملية الدفع. حاول مرة أخرى.');
+      req.flash('error', 'Failed to create payment. Please try again.');
       return res.redirect('/checkout');
     }
   }
@@ -903,19 +933,113 @@ await sendTelegramMessage(
   req.flash('error', 'طريقة دفع غير معروفة.');
   return res.redirect('/checkout');
 });
+
+router.get('/payment/success', async (req, res) => {
+  const pendingOrder = req.session.pendingOrder;
+  if (!pendingOrder) return res.redirect('/checkout');
+
+  try {
+    const checkoutId = req.query.checkout_id || req.query.payment_id || req.query.id;
+    const payment = checkoutId ? await verifyPayment(checkoutId) : null;
+    const paymentStatus = String(payment?.status || payment?.data?.status || '').toLowerCase();
+
+    if (payment && paymentStatus && !['paid', 'succeeded', 'success'].includes(paymentStatus)) {
+      req.flash('error', 'Payment was not completed.');
+      return res.redirect('/checkout');
+    }
+
+    const cleanNumero = getCleanUserData.cleanPhoneNumber(pendingOrder.rawNumero);
+    const order = new ProductOrder({
+      user: pendingOrder.user?._id || null,
+      guest: {
+        firstName: pendingOrder.firstName,
+        lastName: pendingOrder.lastName,
+        numero: cleanNumero,
+        address: pendingOrder.address,
+        city: pendingOrder.city,
+        commune: pendingOrder.commune
+      },
+      cart: {
+        items: Object.values(pendingOrder.cart.items).map(item => ({
+          product: item.item._id,
+          name: item.item.name,
+          price: item.item.price,
+          image: item.item.image,
+          qty: item.qty
+        })),
+        totalQty: pendingOrder.cart.totalQty,
+        totalPrice: pendingOrder.cart.totalPrice
+      },
+      shippingFee: pendingOrder.shippingFee,
+      deliveryDelay: pendingOrder.shippingDelay || '',
+      totalWithShipping: pendingOrder.finalTotal,
+      paymentMethod: 'chargily',
+      status: 'paid',
+      metaUserData: pendingOrder.savedUserData || {}
+    });
+
+    await order.save();
+
+    if (pendingOrder.savedUserData) {
+      await sendMetaCAPIEvent({
+        eventName: 'Purchase',
+        eventId: `purchase_${order._id}`,
+        userData: pendingOrder.savedUserData,
+        customData: {
+          content_ids: Object.keys(pendingOrder.cart.items),
+          contents: Object.values(pendingOrder.cart.items).map(item => ({
+            id: item.item._id.toString(),
+            quantity: item.qty,
+            item_price: item.item.price
+          })),
+          value: pendingOrder.finalTotal,
+          currency: 'DZD',
+          num_items: pendingOrder.cart.totalQty,
+          order_id: order._id.toString()
+        },
+        eventSourceUrl: `${req.protocol}://${req.get('host')}${req.originalUrl}`,
+        testEventCode: req.query.test_event_code || process.env.FB_TEST_EVENT_CODE
+      });
+    }
+
+    req.session.cart = null;
+    req.session.pendingOrder = null;
+    req.session.confirmationData = {
+      paymentMethod: 'chargily',
+      eventId: `purchase_${order._id}`,
+      eventName: 'Purchase',
+      firstName: pendingOrder.firstName,
+      lastName: pendingOrder.lastName,
+      numero: cleanNumero,
+      address: pendingOrder.address,
+      city: pendingOrder.city,
+      commune: pendingOrder.commune,
+      cartTotal: pendingOrder.cart.totalPrice,
+      shippingFee: pendingOrder.shippingFee,
+      deliveryDelay: pendingOrder.shippingDelay || '',
+      totalPrice: pendingOrder.finalTotal,
+      cartItems: Object.values(pendingOrder.cart.items)
+    };
+
+    return res.redirect('/confirmation');
+  } catch (error) {
+    console.error('Chargily success handling error:', error);
+    req.flash('error', 'Payment was received, but order confirmation failed. Please contact support.');
+    return res.redirect('/checkout');
+  }
+});
     
-// In confirmation route (GET)
 router.get('/confirmation', async (req, res) => {
   const data = req.session.confirmationData;
   if (!data) return res.redirect('/');
-  // Render confirmation.ejs with data, and also pass eventId for pixel
-  res.render('confirmation', { ...data, user: req.session.user });
+
+  delete req.session.confirmationData;
+  res.render('confirmation', { ...data, user: req.session.user || null });
 });
 
 // Admin delivery confirmation route
 router.get('/order/deliver/:orderId', async (req, res) => {
-  // Basic secret protection
-  if (req.query.secret !== 'mySuperSecret123') {
+  if (!DELIVERY_SECRET || req.query.secret !== DELIVERY_SECRET) {
     return res.status(403).send('Access denied');
   }
 
