@@ -63,22 +63,22 @@
     --primary-blue: #295797;
     --accent-blue: #1C84C1;
     --primary-dark: #1E3F5C;
-    --text-dark: #2D3748;
-    --text-gray: #4A5568;
-    --bg-light: #E8EEF6;
+    --text-dark: #1A202C;
+    --text-gray: #718096;
+    --bg-light: #F7FAFC;
     --bg-white: #FFFFFF;
-    --border-light: #D1DCE6;
-    --shadow-sm: 0 2px 8px rgba(41, 87, 151, 0.08);
-    --shadow-md: 0 4px 12px rgba(41, 87, 151, 0.12);
-    --shadow-lg: 0 8px 24px rgba(41, 87, 151, 0.16);
-    --radius-lg: 24px;
-    --radius-md: 16px;
-    --radius-sm: 12px;
+    --border-light: #E2E8F0;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.03);
+    --shadow-md: 0 10px 15px -3px rgba(0,0,0,0.05), 0 4px 6px -2px rgba(0,0,0,0.03);
+    --shadow-lg: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
+    --radius-lg: 16px;
+    --radius-md: 12px;
+    --radius-sm: 8px;
   }
 
   body {
     font-family: 'Tajawal', 'Cairo', sans-serif;
-    background-color: var(--bg-light);
+    background-color: #F8FAFC;
   }
 
   .products-listing-page {
@@ -91,14 +91,15 @@
   }
 
   .page-title {
-    font-size: 2.2rem;
+    font-size: 2.5rem;
     font-weight: 800;
     color: var(--primary-blue);
     margin-bottom: 12px;
+    letter-spacing: -0.5px;
   }
 
   .page-subtitle {
-    font-size: 1.1rem;
+    font-size: 1.15rem;
     color: var(--text-gray);
     max-width: 500px;
     margin: 0 auto;
@@ -108,7 +109,7 @@
   .products-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 30px;
+    gap: 32px;
   }
 
   .product-card {
@@ -116,73 +117,83 @@
     border-radius: var(--radius-lg);
     border: 1px solid var(--border-light);
     overflow: hidden;
-    transition: all 0.3s ease;
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease;
     box-shadow: var(--shadow-sm);
+    display: flex;
+    flex-direction: column;
   }
 
   .product-card:hover {
-    transform: translateY(-5px);
-    border-color: var(--primary-blue);
-    box-shadow: var(--shadow-md);
+    transform: translateY(-6px);
+    border-color: #CBD5E1;
+    box-shadow: var(--shadow-lg);
   }
 
   .product-link {
     text-decoration: none;
     color: inherit;
-    display: block;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
   }
 
+  /* Modernized Image Box */
   .product-image-wrap {
     position: relative;
-    height: 220px;
-    background: var(--bg-light);
+    width: 100%;
+    aspect-ratio: 1 / 1; /* Keeps images beautifully balanced and square like modern retail stores */
+    background: #FFFFFF;
     display: flex;
     align-items: center;
     justify-content: center;
     overflow: hidden;
+    border-bottom: 1px solid var(--border-light);
   }
 
   .product-image {
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: contain;
-    padding: 16px;
-    transition: transform 0.3s ease;
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* Prevents stretching while scaling gracefully */
+    padding: 24px; /* Clean breathing room for product items */
+    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   .product-card:hover .product-image {
-    transform: scale(1.05);
+    transform: scale(1.06);
   }
 
   .product-category-badge {
     position: absolute;
-    top: 12px;
-    right: 12px;
-    background: rgba(41, 87, 151, 0.9);
+    top: 16px;
+    right: 16px;
+    background: var(--primary-blue);
     color: white;
-    font-size: 0.75rem;
-    font-weight: 600;
-    padding: 4px 12px;
-    border-radius: 40px;
-    backdrop-filter: blur(4px);
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 6px 14px;
+    border-radius: var(--radius-sm);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
   }
 
   .product-info {
-    padding: 20px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
   }
 
   .product-name {
-    font-size: 1.2rem;
+    font-size: 1.25rem;
     font-weight: 700;
     color: var(--text-dark);
-    margin-bottom: 8px;
+    margin-bottom: 10px;
     line-height: 1.4;
   }
 
   .product-description {
-    font-size: 0.85rem;
+    font-size: 0.9rem;
     color: var(--text-gray);
-    margin-bottom: 20px;
+    margin-bottom: 24px;
     line-height: 1.6;
     display: -webkit-box;
     -webkit-line-clamp: 2;
@@ -195,29 +206,29 @@
     align-items: center;
     justify-content: space-between;
     border-top: 1px solid var(--border-light);
-    padding-top: 16px;
-    margin-top: auto;
+    padding-top: 18px;
+    margin-top: auto; /* Pushes footer neatly to the bottom */
   }
 
   .product-price {
-    font-size: 1.3rem;
+    font-size: 1.4rem;
     font-weight: 800;
     color: var(--primary-blue);
   }
 
   .btn-view-detail {
-    font-size: 0.85rem;
-    font-weight: 600;
+    font-size: 0.9rem;
+    font-weight: 700;
     color: var(--primary-blue);
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    transition: all 0.2s;
+    transition: all 0.2s ease;
   }
 
   .product-card:hover .btn-view-detail {
-    color: var(--primary-dark);
-    gap: 10px;
+    color: var(--accent-blue);
+    gap: 12px;
   }
 
   .empty-state {
@@ -230,10 +241,10 @@
     margin-top: 20px;
     background: var(--primary-blue);
     color: white;
-    padding: 10px 24px;
-    border-radius: 40px;
+    padding: 12px 28px;
+    border-radius: var(--radius-md);
     text-decoration: none;
-    font-weight: 600;
+    font-weight: 700;
     transition: all 0.3s;
   }
 
@@ -243,18 +254,20 @@
     transform: translateY(-2px);
   }
 
-  @media (max-width: 768px) {
+  /* Responsive Adjustments */
+  @media (max-width: 992px) {
     .products-grid {
       grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-      gap: 20px;
+      gap: 24px;
     }
+  }
 
-    .product-image-wrap {
-      height: 180px;
+  @media (max-width: 576px) {
+    .products-grid {
+      grid-template-columns: repeat(auto-fill, minmax(100%, 1fr));
     }
-
     .page-title {
-      font-size: 1.8rem;
+      font-size: 2rem;
     }
   }
 </style>
