@@ -118,7 +118,7 @@ async function sendMetaCAPIEvent({
 
   const enhancedCustomData = removeEmpty({
     currency: "DZD",
-    content_category: "home_decor",
+    content_category: "paint_tools",
     ...customData,
   });
 
