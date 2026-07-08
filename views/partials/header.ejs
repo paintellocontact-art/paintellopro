@@ -338,87 +338,117 @@
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
 <!-- Modern Navbar -->
-<nav class="navbar navbar-expand-lg navbar-modern sticky-top">
-    <div class="container">
-        <a class="navbar-brand navbar-brand-modern" href="/ar">
-            <i class="fas fa-paint-roller"></i>
-            <span>Paintello Pro</span>
-        </a>
+<!-- Native App Layout vs Standard Website Logic -->
+<% if (typeof isAndroidApp !== 'undefined' && isAndroidApp) { %>
+    <!-- 📱 MUULA HUB STYLE TOP BAR (Only shows inside the Mobile App) -->
+    <header class="bg-[#295797] text-white sticky-top py-3 px-3 shadow-sm flex items-center justify-between" style="background-color: var(--primary-blue);">
+        <div class="d-flex align-items-center gap-2">
+            <i class="fas fa-paint-roller text-xl text-white"></i>
+            <span class="fw-bold tracking-wide text-lg text-white">Paintello Pro</span>
+        </div>
         
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav me-auto">
-                <li class="nav-item">
-                    <a class="nav-link nav-link-modern" href="/ar">
-                        <i class="fas fa-home me-1"></i> Home
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link nav-link-modern" href="/painters">
-                        <i class="fas fa-search me-1"></i> Find Painters
-                    </a>
-                </li>
-                <% if (typeof sessionPainter !== 'undefined' && sessionPainter) { %>
-                <li class="nav-item">
-                    <a class="nav-link nav-link-modern" href="/painter/dashboard">
-                        <i class="fas fa-chart-line me-1"></i> Dashboard
-                    </a>
-                </li>
-                <% } %>
-            </ul>
+        <div class="d-flex align-items-center gap-3">
+            <% if (typeof sessionPainter !== 'undefined' && sessionPainter) { %>
+                <!-- If painter is logged in, show their quick-access avatar directly on the top bar -->
+                <a href="/painter/profile" class="text-white decoration-none">
+                    <div class="avatar-small border border-white" style="width: 34px; height: 34px;">
+                        <% if (sessionPainter.profilePicture && sessionPainter.profilePicture.url) { %>
+                            <img src="<%= sessionPainter.profilePicture.url %>" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+                        <% } else { %>
+                            <i class="fas fa-user text-sm"></i>
+                        <% } %>
+                    </div>
+                </a>
+            <% } else { %>
+                <!-- If not logged in, show a subtle login icon link -->
+                <a href="/auth/login-painter" class="text-white hover:text-gray-200">
+                    <i class="fas fa-sign-in-alt text-xl"></i>
+                </a>
+            <% } %>
+        </div>
+    </header>
+<% } else { %>
+    <!-- 💻 ORIGINAL DESKTOP NAVBAR (Shows normally on Chrome, Safari, PC) -->
+    <nav class="navbar navbar-expand-lg navbar-modern sticky-top">
+        <div class="container">
+            <a class="navbar-brand navbar-brand-modern" href="/ar">
+                <i class="fas fa-paint-roller"></i>
+                <span>Paintello Pro</span>
+            </a>
             
-            <ul class="navbar-nav">
-                <% if (typeof sessionPainter !== 'undefined' && sessionPainter) { %>
-                    <!-- Painter logged in -->
-                    <li class="nav-item dropdown dropdown-modern">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                            <div class="avatar-dropdown">
-                                <div class="avatar-small">
-                                    <% if (sessionPainter.profilePicture && sessionPainter.profilePicture.url) { %>
-                                        <img src="<%= sessionPainter.profilePicture.url %>" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
-                                    <% } else { %>
-                                        <i class="fas fa-brush"></i>
-                                    <% } %>
-                                </div>
-                                <span class="painter-name-nav">
-                                    <%= sessionPainter.name %>
-                                    <% if (sessionPainter.verification && sessionPainter.verification.status === 'verified') { %>
-                                        <span class="verified-badge-nav">
-                                            <i class="fas fa-check-circle"></i> Verified
-                                        </span>
-                                    <% } %>
-                                </span>
-                            </div>
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="/painter/dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
-                            <li><a class="dropdown-item" href="/painter/profile"><i class="fas fa-user-circle"></i> My Profile</a></li>
-                            <li><a class="dropdown-item" href="/painter/portfolio"><i class="fas fa-images"></i> Portfolio</a></li>
-                            <li><a class="dropdown-item" href="/painter/orders"><i class="fas fa-clipboard-list"></i> My Orders</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item text-danger" href="/index/logout"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
-                        </ul>
-                    </li>
-                <% } else { %>
-                    <!-- Not logged in -->
-                    <li class="nav-item me-2">
-                        <a class="btn-login-modern" href="/auth/login-painter">
-                            <i class="fas fa-sign-in-alt me-1"></i> Login
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-modern" href="/ar">
+                            <i class="fas fa-home me-1"></i> Home
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="btn-signup-modern" href="/auth/register-painter">
-                            <i class="fas fa-user-plus me-1"></i> Sign Up
+                        <a class="nav-link nav-link-modern" href="/painters">
+                            <i class="fas fa-search me-1"></i> Find Painters
                         </a>
                     </li>
-                <% } %>
-            </ul>
+                    <% if (typeof sessionPainter !== 'undefined' && sessionPainter) { %>
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-modern" href="/painter/dashboard">
+                            <i class="fas fa-chart-line me-1"></i> Dashboard
+                        </a>
+                    </li>
+                    <% } %>
+                </ul>
+                
+                <ul class="navbar-nav">
+                    <% if (typeof sessionPainter !== 'undefined' && sessionPainter) { %>
+                        <li class="nav-item dropdown dropdown-modern">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                                <div class="avatar-dropdown">
+                                    <div class="avatar-small">
+                                        <% if (sessionPainter.profilePicture && sessionPainter.profilePicture.url) { %>
+                                            <img src="<%= sessionPainter.profilePicture.url %>" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+                                        <% } else { %>
+                                            <i class="fas fa-brush"></i>
+                                        <% } %>
+                                    </div>
+                                    <span class="painter-name-nav">
+                                        <%= sessionPainter.name %>
+                                        <% if (sessionPainter.verification && sessionPainter.verification.status === 'verified') { %>
+                                            <span class="verified-badge-nav">
+                                                <i class="fas fa-check-circle"></i> Verified
+                                            </span>
+                                        <% } %>
+                                    </span>
+                                </div>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="/painter/dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                                <li><a class="dropdown-item" href="/painter/profile"><i class="fas fa-user-circle"></i> My Profile</a></li>
+                                <li><a class="dropdown-item" href="/painter/portfolio"><i class="fas fa-images"></i> Portfolio</a></li>
+                                <li><a class="dropdown-item" href="/painter/orders"><i class="fas fa-clipboard-list"></i> My Orders</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-danger" href="/index/logout"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+                            </ul>
+                        </li>
+                    <% } else { %>
+                        <li class="nav-item me-2">
+                            <a class="btn-login-modern" href="/auth/login-painter">
+                                <i class="fas fa-sign-in-alt me-1"></i> Login
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="btn-signup-modern" href="/auth/register-painter">
+                                <i class="fas fa-user-plus me-1"></i> Sign Up
+                            </a>
+                        </li>
+                    <% } %>
+                </ul>
+            </div>
         </div>
-    </div>
-</nav>
+    </nav>
+<% } %>
 
 <script>
     window.addEventListener('scroll', function() {
