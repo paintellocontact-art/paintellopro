@@ -3,7 +3,13 @@ const router = express.Router();
 const Painter = require('../models/Painter');
 const Order = require('../models/Order');
 const wilayas = require('../utils/wilayas');
-
+const StoreProduct = require('../models/StoreProduct'); // Make sure this is at the top
+function generateEventId() {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+    const r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  });
+}
 // Authentication middleware for painters
 const requirePainterAuth = (req, res, next) => {
   if (!req.session.painter) {
@@ -16,12 +22,163 @@ const requirePainterAuth = (req, res, next) => {
 // Apply authentication to all painter routes
 router.use(requirePainterAuth);
 
-// In your painter.js route file - update the dashboard function with commission
-// Updated dashboard route with real-time commission calculation
+router.get('/store-products/:id', async (req, res) => {
+  try {
+    const product = await StoreProduct.findById(req.params.id);
+    if (!product) return res.status(404).render('404');
+
+    // Related products (members‑only)
+    const relatedProducts = await StoreProduct.find({
+      isActive: true,
+      stock: { $gt: 0 },
+      _id: { $ne: product._id }
+    })
+    .sort({ createdAt: -1 })
+    .limit(8)
+    .lean();
+
+    // Optional: Meta events (can be omitted if not needed)
+   // ----- Meta events (unchanged) -----
+    const userData = getCleanUserData(req);
+    const pageViewId = generateEventId();
+    const viewContentId = generateEventId();
+    const addToCartId = generateEventId();
+
+    if (userData) {
+      await sendMetaCAPIEvent({
+        eventName: 'PageView',
+        eventId: pageViewId,
+        userData,
+        eventSourceUrl: `${req.protocol}://${req.get('host')}${req.originalUrl}`,
+        testEventCode: req.query.test_event_code || process.env.FB_TEST_EVENT_CODE,
+      });
+    }
+    if (userData) {
+      await sendMetaCAPIEvent({
+        eventName: 'ViewContent',
+        eventId: viewContentId,
+        userData,
+        customData: {
+          content_name: product.name,
+          content_ids: [product._id.toString()],
+          content_type: 'product',
+          value: product.price,
+          currency: 'DZD',
+          contents: [{
+            id: product._id.toString(),
+            quantity: 1,
+            item_price: product.price
+          }]
+        },
+        eventSourceUrl: `${req.protocol}://${req.get('host')}${req.originalUrl}`,
+        testEventCode: req.query.test_event_code || process.env.FB_TEST_EVENT_CODE,
+      });
+    }
+
+    res.render('painter/store-product', {
+      title: product.name + ' - Paintello Pro (الأعضاء)',
+      product,
+      relatedProducts,
+      user: req.session.user || null,
+      sessionPainter: req.session.painter || null,
+      whatsappPhone: process.env.WHATSAPP_PHONE || '213796530868'
+    });
+  } catch (error) {
+    console.error('StoreProduct detail error:', error);
+    if (error.name === 'CastError') {
+      return res.status(400).send('Invalid product ID');
+    }
+    res.status(500).send('Server Error');
+  }
+});
+
+router.get('/store-products/add-to-cart/:id', async (req, res) => {
+  try {
+    // Only logged‑in painters can access
+    if (!req.session.painter) {
+      req.flash('error', 'يرجى تسجيل الدخول كدهان للشراء من متجر الأعضاء.');
+      return res.redirect('/painter/login');
+    }
+
+    const productId = req.params.id;
+    const quantity = parseInt(req.query.qty) || 1;
+    const product = await StoreProduct.findById(productId);
+    if (!product) return res.status(404).send('Product not found');
+
+    // Simple cart on session
+    if (!req.session.cart) {
+      req.session.cart = { items: {}, totalQty: 0, totalPrice: 0 };
+    }
+    const cart = req.session.cart;
+
+    // Use member price
+    const itemPrice = product.price;
+
+    if (cart.items[productId]) {
+      cart.items[productId].qty += quantity;
+      cart.items[productId].price += itemPrice * quantity;
+    } else {
+      cart.items[productId] = {
+        item: {
+          _id: product._id,
+          name: product.name,
+          price: itemPrice,
+          image: product.images?.[0] || product.image
+        },
+        qty: quantity,
+        price: itemPrice * quantity
+      };
+    }
+
+    // Recalculate totals
+    cart.totalQty = 0;
+    cart.totalPrice = 0;
+    for (const id in cart.items) {
+      cart.totalQty += cart.items[id].qty;
+      cart.totalPrice += cart.items[id].price;
+    }
+
+  // 🔥 Server‑side AddToCart with the same event ID as the browser
+    const eventId = req.query.eventId;
+    const userData = getCleanUserData(req);
+    
+    if (userData && eventId) {
+      await sendMetaCAPIEvent({
+        eventName: 'AddToCart',
+        eventId,
+        userData,
+        customData: {
+          content_name: product.name,
+          content_ids: [product._id.toString()],
+          content_type: 'product',
+          value: product.price * quantity,
+          currency: 'DZD',
+          contents: [{
+            id: product._id.toString(),
+            quantity,
+            item_price: product.price
+          }]
+        },
+        eventSourceUrl: `${req.protocol}://${req.get('host')}${req.originalUrl}`,
+        testEventCode: req.query.test_event_code || process.env.FB_TEST_EVENT_CODE,
+      });
+    }
+
+    // Redirect to checkout
+    res.redirect('/checkout');
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server error');
+  }
+});
+
+
+// Updated dashboard route with real-time commission calculatio
+
 router.get('/dashboard', async (req, res) => {
   try {
     const painter = await Painter.findById(req.session.painter._id);
-   
+
     req.session.painter = {
       _id: painter._id,
       name: painter.name,
@@ -45,7 +202,6 @@ router.get('/dashboard', async (req, res) => {
       status: { $in: ['accepted', 'in_progress', 'completed'] }
     });
 
-    // Calculate financials only for accepted orders
     const totalEarnings = financialOrders.reduce((total, order) => {
       const orderAmount = order.totalAmount || order.budget || 0;
       const commission = order.commission || Math.round(orderAmount * 0.10);
@@ -61,7 +217,6 @@ router.get('/dashboard', async (req, res) => {
       return total + (order.totalAmount || order.budget || 0);
     }, 0);
 
-    // Count only pending orders for active jobs
     const pendingJobs = await Order.countDocuments({ 
       painter: req.session.painter._id,
       status: 'pending'
@@ -101,18 +256,26 @@ router.get('/dashboard', async (req, res) => {
       completionRate: totalJobs > 0 ? Math.round((completedJobs / totalJobs) * 100) : 0
     };
 
-    console.log('💰 Real-time Financials:', {
-      acceptedOrders: financialOrders.length,
-      totalRevenue: stats.totalRevenue,
-      totalCommission: stats.totalCommission,
-      painterEarnings: stats.totalEarnings
-    });
+    // --- Members-only store products ---
+    let storeProducts = [];
+    try {
+      storeProducts = await StoreProduct.find({ 
+        isActive: true,
+        stock: { $gt: 0 }
+      })
+      .sort({ createdAt: -1 })
+      .limit(8)
+      .lean();
+    } catch (productError) {
+      console.error('Error fetching member store products:', productError);
+    }
 
     res.render('painter/dashboard', {
       title: 'Painter Dashboard - Paintello Pro',
       painter: painter,
       recentJobs: recentOrders,
       stats: stats,
+      storeProducts: storeProducts,
       success: req.flash('success')[0],
       error: req.flash('error')[0]
     });
