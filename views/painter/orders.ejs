@@ -1,171 +1,328 @@
-<%- include('../partials/header', { title: 'My Jobs - Paintello Pro' }) %>
+<%- include('../partials/header', { title: 'طلبات العمل - بينتيلو برو', user: painter, painter: painter }) %>
+
+<style>
+  :root {
+    --primary-blue: #295797;
+    --accent-blue: #1C84C1;
+    --primary-dark: #1E3F5C;
+    --text-dark: #2D3748;
+    --text-gray: #4A5568;
+    --bg-light: #F7FAFC;
+    --bg-white: #FFFFFF;
+    --border-light: #E2E8F0;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.03);
+    --shadow-md: 0 4px 12px rgba(41,87,151,0.12);
+    --shadow-lg: 0 8px 24px rgba(41,87,151,0.16);
+    --radius-lg: 16px;
+    --radius-md: 12px;
+    --radius-sm: 8px;
+  }
+
+  body {
+    background-color: var(--bg-light);
+    font-family: 'Tajawal', 'Cairo', sans-serif;
+  }
+
+  .page-header {
+    background: linear-gradient(135deg, var(--primary-blue), var(--accent-blue));
+    border-radius: var(--radius-lg);
+    padding: 24px 30px;
+    color: white;
+    margin-bottom: 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: var(--shadow-md);
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .page-header h1 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  .status-filter {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .status-filter a {
+    padding: 8px 18px;
+    border-radius: 50px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s;
+    font-size: 0.9rem;
+    border: 1px solid var(--border-light);
+    background: white;
+    color: var(--text-dark);
+  }
+  .status-filter a.active {
+    background: var(--primary-blue);
+    color: white;
+    border-color: var(--primary-blue);
+  }
+  .status-filter a:hover:not(.active) {
+    background: #eef2f6;
+  }
+
+  .card-modern {
+    background: var(--bg-white);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-light);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+  }
+  .card-modern .card-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border-light);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .table-modern {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .table-modern thead th {
+    background: #f8fafc;
+    color: var(--text-dark);
+    font-weight: 600;
+    border-bottom: 2px solid var(--border-light);
+    padding: 14px 16px;
+    font-size: 0.9rem;
+  }
+  .table-modern tbody td {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border-light);
+    vertical-align: middle;
+  }
+  .table-modern tbody tr:hover {
+    background-color: #f9fafb;
+  }
+
+  .badge-status {
+    padding: 6px 14px;
+    border-radius: 50px;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+  .badge-pending { background: #fff3cd; color: #856404; }
+  .badge-accepted { background: #d1ecf1; color: #0c5460; }
+  .badge-in_progress { background: #d6e4f0; color: #1E3F5C; }
+  .badge-completed { background: #d4edda; color: #155724; }
+  .badge-cancelled { background: #f8d7da; color: #721c24; }
+
+  .btn-action {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border-light);
+    background: white;
+    color: var(--text-dark);
+    transition: all 0.2s;
+    margin: 0 4px;
+  }
+  .btn-action:hover {
+    background: #f0f2f5;
+  }
+  .btn-action.accept:hover { background: #d4edda; color: #155724; border-color: #c3e6cb; }
+  .btn-action.decline:hover { background: #f8d7da; color: #721c24; border-color: #f5c6cb; }
+  .btn-action.start:hover { background: #d6e4f0; color: #1E3F5C; border-color: #b8daff; }
+  .btn-action.complete:hover { background: #d4edda; color: #155724; border-color: #c3e6cb; }
+
+  .pagination .page-link {
+    color: var(--primary-blue);
+    border-radius: var(--radius-sm);
+    margin: 0 4px;
+  }
+  .pagination .page-item.active .page-link {
+    background: var(--primary-blue);
+    border-color: var(--primary-blue);
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+  }
+
+  @media (max-width: 768px) {
+    .page-header {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .table-modern thead {
+      display: none;
+    }
+    .table-modern tbody td {
+      display: block;
+      text-align: right;
+      padding: 10px 16px;
+      border-bottom: 1px solid #eee;
+    }
+    .table-modern tbody td::before {
+      content: attr(data-label);
+      float: left;
+      font-weight: 600;
+      color: var(--text-gray);
+    }
+    .btn-action {
+      margin: 4px;
+    }
+  }
+</style>
 
 <div class="container-fluid py-4">
-    <div class="row">
-        <div class="col-12">
-            <div class="card shadow-sm">
-                <div class="card-header bg-light d-flex justify-content-between align-items-center">
-                    <h4 class="mb-0">
-                        <i class="fas fa-clipboard-list me-2"></i>Job Management
-                    </h4>
-                    <div class="btn-group">
-                        <a href="?status=all" class="btn btn-outline-primary <%= status === 'all' ? 'active' : '' %>">All</a>
-                        <a href="?status=pending" class="btn btn-outline-warning <%= status === 'pending' ? 'active' : '' %>">Pending</a>
-                        <a href="?status=accepted" class="btn btn-outline-info <%= status === 'accepted' ? 'active' : '' %>">Accepted</a>
-                        <a href="?status=in_progress" class="btn btn-outline-primary <%= status === 'in_progress' ? 'active' : '' %>">In Progress</a>
-                        <a href="?status=completed" class="btn btn-outline-success <%= status === 'completed' ? 'active' : '' %>">Completed</a>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <% if (orders.length === 0) { %>
-                    <div class="text-center py-5">
-                        <i class="fas fa-clipboard-list fa-3x text-muted mb-3"></i>
-                        <h4 class="text-muted">No jobs found</h4>
-                        <p class="text-muted">
-                            <% if (status !== 'all') { %>
-                            No <%= status.replace('_', ' ') %> jobs at the moment
-                            <% } else { %>
-                            You don't have any job requests yet
-                            <% } %>
-                        </p>
-                    </div>
-                    <% } else { %>
-                    <div class="table-responsive">
-                        <table class="table table-hover">
-                            <thead>
-                                <tr>
-                                    <th>Job ID</th>
-                                    <th>Client</th>
-                                    <th>Service Type</th>
-                                    <th>Location</th>
-                                    <th>Area</th>
-                                    <th>Budget</th>
-                                    <th>Commission</th>
-                                    <th>Status</th>
-                                    <th>Date</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <% orders.forEach(order => { %>
-                                <tr>
-                                    <td>#<%= order._id.toString().slice(-6) %></td>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <div class="avatar-placeholder bg-secondary rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                                 style="width: 30px; height: 30px;">
-                                                <i class="fas fa-user text-white small"></i>
-                                            </div>
-                                            <div>
-                                                <div class="fw-bold"><%= order.client.name %></div>
-                                                <small class="text-muted"><%= order.client.phone %></small>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <span class="badge bg-light text-dark border"><%= order.serviceType %></span>
-                                    </td>
-                                    <td>
-                                        <small>
-                                            <i class="fas fa-map-marker-alt text-danger me-1"></i>
-                                            <%= order.wilaya %>
-                                        </small>
-                                    </td>
-                                    <td><%= order.area %> m²</td>
-                                    <td>
-                                        <strong class="text-primary"><%= order.budget %> DZD</strong>
-                                    </td>
-                                    <td>
-                                        <small class="text-muted">-<%= order.commission %> DZD</small>
-                                    </td>
-                                    <td>
-                                        <span class="badge bg-<%= 
-                                            order.status === 'completed' ? 'success' :
-                                            order.status === 'in_progress' ? 'primary' :
-                                            order.status === 'accepted' ? 'info' :
-                                            order.status === 'pending' ? 'warning' : 'danger'
-                                        %>">
-                                            <%= order.status.replace('_', ' ').toUpperCase() %>
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <small><%= new Date(order.createdAt).toLocaleDateString() %></small>
-                                    </td>
-                                    <td>
-                                        <div class="btn-group btn-group-sm">
-                                            <a href="/painter/orders/<%= order._id %>" 
-                                               class="btn btn-outline-primary" title="View Details">
-                                                <i class="fas fa-eye"></i>
-                                            </a>
-                                            <% if (order.status === 'pending') { %>
-                                            <button class="btn btn-outline-success" 
-                                                    onclick="updateOrderStatus('<%= order._id %>', 'accepted')"
-                                                    title="Accept Job">
-                                                <i class="fas fa-check"></i>
-                                            </button>
-                                            <button class="btn btn-outline-danger"
-                                                    onclick="updateOrderStatus('<%= order._id %>', 'cancelled')"
-                                                    title="Decline Job">
-                                                <i class="fas fa-times"></i>
-                                            </button>
-                                            <% } else if (order.status === 'accepted') { %>
-                                            <button class="btn btn-outline-primary"
-                                                    onclick="updateOrderStatus('<%= order._id %>', 'in_progress')"
-                                                    title="Start Work">
-                                                <i class="fas fa-play"></i>
-                                            </button>
-                                            <% } else if (order.status === 'in_progress') { %>
-                                            <button class="btn btn-outline-success"
-                                                    onclick="updateOrderStatus('<%= order._id %>', 'completed')"
-                                                    title="Mark Complete">
-                                                <i class="fas fa-flag-checkered"></i>
-                                            </button>
-                                            <% } %>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <% }); %>
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <!-- Pagination -->
-                    <% if (totalPages > 1) { %>
-                    <nav aria-label="Orders pagination" class="mt-4">
-                        <ul class="pagination justify-content-center">
-                            <li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
-                                <a class="page-link" href="?page=<%= currentPage - 1 %>&status=<%= status %>">Previous</a>
-                            </li>
-                            
-                            <% for (let i = 1; i <= totalPages; i++) { %>
-                            <li class="page-item <%= i === currentPage ? 'active' : '' %>">
-                                <a class="page-link" href="?page=<%= i %>&status=<%= status %>"><%= i %></a>
-                            </li>
-                            <% } %>
-                            
-                            <li class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
-                                <a class="page-link" href="?page=<%= currentPage + 1 %>&status=<%= status %>">Next</a>
-                            </li>
-                        </ul>
-                    </nav>
-                    <% } %>
-                    <% } %>
-                </div>
-            </div>
-        </div>
+  <!-- Header with title and filter buttons -->
+  <div class="page-header">
+    <h1><i class="fas fa-clipboard-list me-2"></i>إدارة طلبات العمل</h1>
+    <div class="status-filter">
+      <a href="?status=all" class="<%= status === 'all' ? 'active' : '' %>">الكل</a>
+      <a href="?status=pending" class="<%= status === 'pending' ? 'active' : '' %>">معلقة</a>
+      <a href="?status=accepted" class="<%= status === 'accepted' ? 'active' : '' %>">مقبولة</a>
+      <a href="?status=in_progress" class="<%= status === 'in_progress' ? 'active' : '' %>">قيد التنفيذ</a>
+      <a href="?status=completed" class="<%= status === 'completed' ? 'active' : '' %>">مكتملة</a>
     </div>
+  </div>
+
+  <div class="card-modern">
+    <div class="card-header">
+      <h5 class="mb-0"><i class="fas fa-list me-2"></i>قائمة الطلبات (<%= orders.length %>)</h5>
+      <a href="/painter/dashboard" class="btn btn-sm" style="background: var(--primary-blue); color: white; border-radius: var(--radius-sm);">
+        <i class="fas fa-arrow-left me-1"></i> العودة للوحة التحكم
+      </a>
+    </div>
+    <div class="card-body p-0">
+      <% if (orders.length === 0) { %>
+      <div class="empty-state">
+        <i class="fas fa-inbox fa-4x text-muted mb-3"></i>
+        <h4 class="text-muted">لا توجد طلبات عمل</h4>
+        <p class="text-muted">
+          <% if (status !== 'all') { %>
+          لا توجد طلبات <%= status === 'pending' ? 'معلقة' : status === 'accepted' ? 'مقبولة' : status === 'in_progress' ? 'قيد التنفيذ' : 'مكتملة' %> حالياً
+          <% } else { %>
+          لم تستلم أي طلب عمل بعد
+          <% } %>
+        </p>
+      </div>
+      <% } else { %>
+      <div class="table-responsive">
+        <table class="table-modern">
+          <thead>
+            <tr>
+              <th>رقم الطلب</th>
+              <th>العميل</th>
+              <th>نوع الخدمة</th>
+              <th>الموقع</th>
+              <th>المساحة</th>
+              <th>الميزانية</th>
+              <th>العمولة</th>
+              <th>الحالة</th>
+              <th>التاريخ</th>
+              <th>إجراءات</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% orders.forEach(order => { %>
+            <tr>
+              <td data-label="رقم الطلب"><strong>#<%= order._id.toString().slice(-6) %></strong></td>
+              <td data-label="العميل">
+                <div class="d-flex align-items-center">
+                  <div class="avatar-placeholder bg-secondary rounded-circle me-2 d-flex align-items-center justify-content-center"
+                       style="width: 32px; height: 32px;">
+                    <i class="fas fa-user text-white small"></i>
+                  </div>
+                  <div>
+                    <div class="fw-bold"><%= order.client.name %></div>
+                    <small class="text-muted"><%= order.client.phone %></small>
+                  </div>
+                </div>
+              </td>
+              <td data-label="نوع الخدمة">
+                <span class="badge-status" style="background: #eef2f6; color: var(--text-dark);"><%= order.serviceType %></span>
+              </td>
+              <td data-label="الموقع">
+                <i class="fas fa-map-marker-alt text-danger me-1"></i><%= order.wilaya %>
+              </td>
+              <td data-label="المساحة"><%= order.area %> م²</td>
+              <td data-label="الميزانية"><strong class="text-primary"><%= order.budget %> دج</strong></td>
+              <td data-label="العمولة"><small class="text-muted">-<%= order.commission %> دج</small></td>
+              <td data-label="الحالة">
+                <span class="badge-status badge-<%= order.status %>">
+                  <%= order.status === 'pending' ? 'معلقة' :
+                      order.status === 'accepted' ? 'مقبولة' :
+                      order.status === 'in_progress' ? 'قيد التنفيذ' :
+                      order.status === 'completed' ? 'مكتملة' : 'ملغية' %>
+                </span>
+              </td>
+              <td data-label="التاريخ"><%= new Date(order.createdAt).toLocaleDateString('ar') %></td>
+              <td data-label="إجراءات">
+                <div class="d-flex">
+                  <a href="/painter/orders/<%= order._id %>" class="btn-action" title="عرض التفاصيل">
+                    <i class="fas fa-eye"></i>
+                  </a>
+                  <% if (order.status === 'pending') { %>
+                    <button class="btn-action accept" onclick="updateOrderStatus('<%= order._id %>', 'accepted')" title="قبول">
+                      <i class="fas fa-check"></i>
+                    </button>
+                    <button class="btn-action decline" onclick="updateOrderStatus('<%= order._id %>', 'cancelled')" title="رفض">
+                      <i class="fas fa-times"></i>
+                    </button>
+                  <% } else if (order.status === 'accepted') { %>
+                    <button class="btn-action start" onclick="updateOrderStatus('<%= order._id %>', 'in_progress')" title="بدء العمل">
+                      <i class="fas fa-play"></i>
+                    </button>
+                  <% } else if (order.status === 'in_progress') { %>
+                    <button class="btn-action complete" onclick="updateOrderStatus('<%= order._id %>', 'completed')" title="إكمال">
+                      <i class="fas fa-flag-checkered"></i>
+                    </button>
+                  <% } %>
+                </div>
+              </td>
+            </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      <% if (totalPages > 1) { %>
+      <div class="d-flex justify-content-center py-3">
+        <ul class="pagination">
+          <li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
+            <a class="page-link" href="?page=<%= currentPage - 1 %>&status=<%= status %>">السابق</a>
+          </li>
+          <% for (let i = 1; i <= totalPages; i++) { %>
+          <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+            <a class="page-link" href="?page=<%= i %>&status=<%= status %>"><%= i %></a>
+          </li>
+          <% } %>
+          <li class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
+            <a class="page-link" href="?page=<%= currentPage + 1 %>&status=<%= status %>">التالي</a>
+          </li>
+        </ul>
+      </div>
+      <% } %>
+      <% } %>
+    </div>
+  </div>
 </div>
 
 <script>
 function updateOrderStatus(orderId, newStatus) {
     const statusMessages = {
-        'accepted': 'accept this job',
-        'cancelled': 'decline this job', 
-        'in_progress': 'start work on this job',
-        'completed': 'mark this job as completed'
+        'accepted': 'قبول هذه المهمة',
+        'cancelled': 'رفض هذه المهمة', 
+        'in_progress': 'بدء العمل على هذه المهمة',
+        'completed': 'تعليم هذه المهمة كمكتملة'
     };
 
-    if (confirm(`Are you sure you want to ${statusMessages[newStatus]}?`)) {
+    if (confirm(`هل أنت متأكد من ${statusMessages[newStatus]}؟`)) {
         fetch(`/painter/orders/${orderId}/status`, {
             method: 'PUT',
             headers: {
@@ -178,12 +335,12 @@ function updateOrderStatus(orderId, newStatus) {
             if (data.success) {
                 location.reload();
             } else {
-                alert('Error updating order status');
+                alert('حدث خطأ أثناء تحديث حالة الطلب');
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('Error updating order status');
+            alert('حدث خطأ في الشبكة');
         });
     }
 }
