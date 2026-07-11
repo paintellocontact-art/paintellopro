@@ -1,362 +1,316 @@
-    <footer class="footer-modern py-5 mt-5">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-4 col-md-6 mb-4">
-                    <h5 class="footer-brand mb-3">
-                        <i class="fas fa-paint-roller me-2"></i>Paintello Pro
-                    </h5>
-                    <p class="footer-text">Connecting clients with professional painters across Algeria. Quality service guaranteed.</p>
-                    <div class="d-flex gap-3 social-links">
-                        <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
-                       
-                    </div>
-                </div>
-                <div class="col-lg-2 col-md-6 mb-4">
-                    <h6 class="footer-heading mb-3">Quick Links</h6>
-                    <ul class="list-unstyled footer-links">
-                        <li><a href="/">Home</a></li>
-                        <li><a href="/painters">Find Painters</a></li>
-          
-                    </ul>
-                </div>
-                <div class="col-lg-3 col-md-6 mb-4">
-                    <h6 class="footer-heading mb-3">For Painters</h6>
-                    <ul class="list-unstyled footer-links">
-                        <li><a href="/auth/register-painter">Join Our Team</a></li>
-                        <li><a href="/painter/store">Team Store</a></li>
-                       
-                    </ul>
-                </div>
-                <div class="col-lg-3 col-md-6 mb-4">
-                    <h6 class="footer-heading mb-3">Contact Info</h6>
-                    <ul class="list-unstyled footer-contact">
-                        <li class="mb-2">
-                            <i class="fas fa-map-marker-alt"></i>
-                            <span>Algiers, Algeria</span>
-                        </li>
-                        <li class="mb-2">
-                            <i class="fas fa-phone"></i>
-                            <span>+213 791679611</span>
-                        </li>
-                        <li class="mb-2">
-                            <i class="fas fa-envelope"></i>
-                            <span>support@paintello.uk</span>
-                        </li>
-                    </ul>
+<!-- ===== FOOTER (Desktop / Mobile Web only) ===== -->
+<% if (typeof isAndroidApp === 'undefined' || !isAndroidApp) { %>
+<footer class="footer-modern py-5 mt-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-4 col-md-6 mb-4">
+                <h5 class="footer-brand mb-3">
+                    <i class="fas fa-paint-roller me-2"></i>Paintello Pro
+                </h5>
+                <p class="footer-text">Connecting clients with professional painters across Algeria. Quality service guaranteed.</p>
+                <div class="d-flex gap-3 social-links">
+                    <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
                 </div>
             </div>
-            <hr class="footer-divider">
-            <div class="row align-items-center">
-                <div class="col-md-6">
-                    <p class="footer-copy mb-0">&copy; 2026 Paintello Pro. All rights reserved.</p>
-                </div>
-            
+            <div class="col-lg-2 col-md-6 mb-4">
+                <h6 class="footer-heading mb-3">Quick Links</h6>
+                <ul class="list-unstyled footer-links">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/painters">Find Painters</a></li>
+                </ul>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-4">
+                <h6 class="footer-heading mb-3">For Painters</h6>
+                <ul class="list-unstyled footer-links">
+                    <li><a href="/auth/register-painter">Join Our Team</a></li>
+                    <li><a href="/painter/store">Team Store</a></li>
+                </ul>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-4">
+                <h6 class="footer-heading mb-3">Contact Info</h6>
+                <ul class="list-unstyled footer-contact">
+                    <li class="mb-2">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>Algiers, Algeria</span>
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-phone"></i>
+                        <span>+213 791679611</span>
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-envelope"></i>
+                        <span>support@paintello.uk</span>
+                    </li>
+                </ul>
             </div>
         </div>
-    </footer>
+        <hr class="footer-divider">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <p class="footer-copy mb-0">&copy; 2026 Paintello Pro. All rights reserved.</p>
+            </div>
+        </div>
+    </div>
+</footer>
+<% } %>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Custom JS -->
-  
+<!-- Bootstrap JS (always needed) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-    <!-- Painter Registration Form Script -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Wilaya selection functionality
-            const wilayaSelect = document.getElementById('wilaya');
-            const wilayaNumberInput = document.getElementById('wilayaNumber');
-            
-            if (wilayaSelect && wilayaNumberInput) {
-                console.log('Wilaya elements found, setting up event listener...');
-                
-                wilayaSelect.addEventListener('change', function() {
-                    const selectedOption = this.options[this.selectedIndex];
-                    console.log('Wilaya selected:', selectedOption.text);
-                    
-                    if (selectedOption.value) {
-                        // Extract number from text like "Algiers (16)"
-                        const match = selectedOption.text.match(/\((\d+)\)/);
-                        if (match && match[1]) {
-                            const wilayaNumber = parseInt(match[1]);
-                            wilayaNumberInput.value = wilayaNumber;
-                            console.log('Wilaya number set to:', wilayaNumber);
-                        } else {
-                            console.error('Could not extract wilaya number from:', selectedOption.text);
-                            wilayaNumberInput.value = '';
-                        }
+<!-- Custom Scripts (always needed) -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Wilaya selection functionality
+        const wilayaSelect = document.getElementById('wilaya');
+        const wilayaNumberInput = document.getElementById('wilayaNumber');
+        
+        if (wilayaSelect && wilayaNumberInput) {
+            wilayaSelect.addEventListener('change', function() {
+                const selectedOption = this.options[this.selectedIndex];
+                if (selectedOption.value) {
+                    const match = selectedOption.text.match(/\((\d+)\)/);
+                    if (match && match[1]) {
+                        const wilayaNumber = parseInt(match[1]);
+                        wilayaNumberInput.value = wilayaNumber;
                     } else {
                         wilayaNumberInput.value = '';
                     }
-                });
-
-                // Initialize if there's a preselected value
-                if (wilayaSelect.value) {
-                    wilayaSelect.dispatchEvent(new Event('change'));
+                } else {
+                    wilayaNumberInput.value = '';
                 }
-            } else {
-                console.log('Wilaya elements not found on this page');
+            });
+            if (wilayaSelect.value) {
+                wilayaSelect.dispatchEvent(new Event('change'));
             }
+        }
 
-            // Phone number validation
-            const phoneInput = document.getElementById('phone');
-            if (phoneInput) {
-                phoneInput.addEventListener('input', function(e) {
-                    // Remove any non-digit characters
-                    this.value = this.value.replace(/[^0-9]/g, '');
-                    
-                    // Ensure it starts with 0 and has 10 digits
-                    if (this.value.length > 10) {
-                        this.value = this.value.slice(0, 10);
-                    }
-                });
-            }
+        // Phone number validation
+        const phoneInput = document.getElementById('phone');
+        if (phoneInput) {
+            phoneInput.addEventListener('input', function(e) {
+                this.value = this.value.replace(/[^0-9]/g, '');
+                if (this.value.length > 10) {
+                    this.value = this.value.slice(0, 10);
+                }
+            });
+        }
 
-            // Enhanced form validation
-            const form = document.querySelector('form');
-            if (form && form.action.includes('/auth/register-painter')) {
-                form.addEventListener('submit', function(e) {
-                    let isValid = true;
-                    const errorMessages = [];
+        // Form validation for painter registration
+        const form = document.querySelector('form');
+        if (form && form.action.includes('/auth/register-painter')) {
+            form.addEventListener('submit', function(e) {
+                let isValid = true;
+                const errorMessages = [];
 
-                    // Check wilaya selection
-                    const wilayaSelect = document.getElementById('wilaya');
-                    const wilayaNumber = document.getElementById('wilayaNumber');
-                    if (wilayaSelect && (!wilayaSelect.value || wilayaSelect.value === '')) {
+                const wilayaSelect = document.getElementById('wilaya');
+                const wilayaNumber = document.getElementById('wilayaNumber');
+                if (wilayaSelect && (!wilayaSelect.value || wilayaSelect.value === '')) {
+                    isValid = false;
+                    errorMessages.push('Please select a wilaya');
+                }
+                if (wilayaNumber && (!wilayaNumber.value || isNaN(wilayaNumber.value))) {
+                    isValid = false;
+                    errorMessages.push('Please select a valid wilaya');
+                }
+
+                const password = document.getElementById('password');
+                const confirmPassword = document.getElementById('confirmPassword');
+                if (password && confirmPassword) {
+                    if (password.value !== confirmPassword.value) {
                         isValid = false;
-                        errorMessages.push('Please select a wilaya');
+                        errorMessages.push('Passwords do not match');
                     }
-                    if (wilayaNumber && (!wilayaNumber.value || isNaN(wilayaNumber.value))) {
+                    if (password.value.length < 6) {
                         isValid = false;
-                        errorMessages.push('Please select a valid wilaya');
+                        errorMessages.push('Password must be at least 6 characters long');
                     }
+                }
 
-                    // Check passwords
-                    const password = document.getElementById('password');
-                    const confirmPassword = document.getElementById('confirmPassword');
-                    if (password && confirmPassword) {
-                        if (password.value !== confirmPassword.value) {
-                            isValid = false;
-                            errorMessages.push('Passwords do not match');
-                        }
-                        if (password.value.length < 6) {
-                            isValid = false;
-                            errorMessages.push('Password must be at least 6 characters long');
-                        }
-                    }
+                const termsCheckbox = document.getElementById('terms');
+                if (termsCheckbox && !termsCheckbox.checked) {
+                    isValid = false;
+                    errorMessages.push('Please accept the Terms of Service and Privacy Policy');
+                }
 
-                    // Check terms acceptance
-                    const termsCheckbox = document.getElementById('terms');
-                    if (termsCheckbox && !termsCheckbox.checked) {
-                        isValid = false;
-                        errorMessages.push('Please accept the Terms of Service and Privacy Policy');
-                    }
+                const idCardInput = document.getElementById('idCard');
+                if (idCardInput && !idCardInput.files.length) {
+                    isValid = false;
+                    errorMessages.push('ID card photo is required');
+                }
 
-                    // Check ID card upload
-                    const idCardInput = document.getElementById('idCard');
-                    if (idCardInput && !idCardInput.files.length) {
-                        isValid = false;
-                        errorMessages.push('ID card photo is required');
-                    }
+                if (!isValid) {
+                    e.preventDefault();
+                    alert('Please fix the following errors:\n\n• ' + errorMessages.join('\n• '));
+                    return false;
+                }
 
-                    if (!isValid) {
-                        e.preventDefault();
-                        alert('Please fix the following errors:\n\n• ' + errorMessages.join('\n• '));
-                        return false;
-                    }
+                const submitBtn = form.querySelector('button[type="submit"]');
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Processing...';
+                }
+            });
+        }
 
-                    // Show loading state
-                    const submitBtn = form.querySelector('button[type="submit"]');
-                    if (submitBtn) {
-                        submitBtn.disabled = true;
-                        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Processing...';
-                    }
-                });
-            }
-
-            // Add real-time validation feedback
-            const inputs = document.querySelectorAll('input[required], select[required]');
-            inputs.forEach(input => {
-                input.addEventListener('blur', function() {
-                    if (!this.value) {
-                        this.classList.add('is-invalid');
-                    } else {
-                        this.classList.remove('is-invalid');
-                        this.classList.add('is-valid');
-                    }
-                });
+        // Real-time validation feedback
+        const inputs = document.querySelectorAll('input[required], select[required]');
+        inputs.forEach(input => {
+            input.addEventListener('blur', function() {
+                if (!this.value) {
+                    this.classList.add('is-invalid');
+                } else {
+                    this.classList.remove('is-invalid');
+                    this.classList.add('is-valid');
+                }
             });
         });
-    </script>
-    <script src="/js/main.js"></script>
+    });
+</script>
+<script src="/js/main.js"></script>
 
-    <style>
-        /* ===== FOOTER STYLES ===== */
-        .footer-modern {
-            background: var(--bg-white);
-            border-top: 1px solid var(--border-light);
-            color: var(--text-dark);
-        }
-
-        .footer-brand {
-            font-weight: 700;
-            font-size: 1.3rem;
-            color: var(--primary-blue);
-        }
-
-        .footer-brand i {
-            color: var(--accent-blue);
-        }
-
+<!-- Footer Styles (only loaded if footer is shown) -->
+<% if (typeof isAndroidApp === 'undefined' || !isAndroidApp) { %>
+<style>
+    /* ===== FOOTER STYLES ===== */
+    .footer-modern {
+        background: var(--bg-white);
+        border-top: 1px solid var(--border-light);
+        color: var(--text-dark);
+    }
+    .footer-brand {
+        font-weight: 700;
+        font-size: 1.3rem;
+        color: var(--primary-blue);
+    }
+    .footer-brand i {
+        color: var(--accent-blue);
+    }
+    .footer-text {
+        color: var(--text-gray);
+        font-size: 0.95rem;
+        line-height: 1.7;
+        max-width: 320px;
+    }
+    .footer-heading {
+        font-weight: 600;
+        font-size: 0.95rem;
+        color: var(--primary-blue);
+        letter-spacing: 0.3px;
+    }
+    .footer-links {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    .footer-links li {
+        margin-bottom: 6px;
+    }
+    .footer-links a {
+        color: var(--text-gray);
+        text-decoration: none;
+        font-size: 0.9rem;
+        transition: color 0.2s ease;
+    }
+    .footer-links a:hover {
+        color: var(--accent-blue);
+    }
+    .footer-contact {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    .footer-contact li {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: var(--text-gray);
+        font-size: 0.9rem;
+    }
+    .footer-contact li i {
+        width: 18px;
+        color: var(--accent-blue);
+        font-size: 0.95rem;
+        text-align: center;
+    }
+    .social-links {
+        margin-top: 4px;
+    }
+    .social-link {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        background: var(--bg-light);
+        color: var(--primary-blue);
+        text-decoration: none;
+        transition: all 0.25s ease;
+        font-size: 0.95rem;
+    }
+    .social-link:hover {
+        background: var(--primary-blue);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-sm);
+    }
+    .footer-divider {
+        border: 0;
+        border-top: 1px solid var(--border-light);
+        margin: 20px 0 24px;
+        opacity: 1;
+    }
+    .footer-copy {
+        color: var(--text-gray);
+        font-size: 0.85rem;
+    }
+    .footer-legal a {
+        color: var(--text-gray);
+        text-decoration: none;
+        font-size: 0.85rem;
+        transition: color 0.2s ease;
+        margin-left: 20px;
+    }
+    .footer-legal a:first-child {
+        margin-left: 0;
+    }
+    .footer-legal a:hover {
+        color: var(--accent-blue);
+    }
+    /* RTL overrides */
+    [dir="rtl"] .footer-legal a {
+        margin-left: 0;
+        margin-right: 20px;
+    }
+    [dir="rtl"] .footer-legal a:first-child {
+        margin-right: 0;
+    }
+    [dir="rtl"] .footer-contact li {
+        flex-direction: row-reverse;
+    }
+    [dir="rtl"] .social-links .social-link {
+        margin-left: 8px;
+        margin-right: 0;
+    }
+    @media (max-width: 768px) {
         .footer-text {
-            color: var(--text-gray);
-            font-size: 0.95rem;
-            line-height: 1.7;
-            max-width: 320px;
+            max-width: 100%;
         }
-
-        .footer-heading {
-            font-weight: 600;
-            font-size: 0.95rem;
-            color: var(--primary-blue);
-            letter-spacing: 0.3px;
+        .footer-legal {
+            text-align: center !important;
+            margin-top: 12px;
         }
-
-        .footer-links {
-            list-style: none;
-            padding: 0;
-            margin: 0;
+        .footer-legal a {
+            display: inline-block;
+            margin: 0 10px !important;
         }
-
-        .footer-links li {
-            margin-bottom: 6px;
-        }
-
-        .footer-links a {
-            color: var(--text-gray);
-            text-decoration: none;
-            font-size: 0.9rem;
-            transition: color 0.2s ease;
-        }
-
-        .footer-links a:hover {
-            color: var(--accent-blue);
-        }
-
-        .footer-contact {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        .footer-contact li {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            color: var(--text-gray);
-            font-size: 0.9rem;
-        }
-
-        .footer-contact li i {
-            width: 18px;
-            color: var(--accent-blue);
-            font-size: 0.95rem;
+        .footer-copy {
             text-align: center;
         }
+    }
+</style>
+<% } %>
 
-        .social-links {
-            margin-top: 4px;
-        }
-
-        .social-link {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 38px;
-            height: 38px;
-            border-radius: 50%;
-            background: var(--bg-light);
-            color: var(--primary-blue);
-            text-decoration: none;
-            transition: all 0.25s ease;
-            font-size: 0.95rem;
-        }
-
-        .social-link:hover {
-            background: var(--primary-blue);
-            color: white;
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-sm);
-        }
-
-        .footer-divider {
-            border: 0;
-            border-top: 1px solid var(--border-light);
-            margin: 20px 0 24px;
-            opacity: 1;
-        }
-
-        .footer-copy {
-            color: var(--text-gray);
-            font-size: 0.85rem;
-        }
-
-        .footer-legal a {
-            color: var(--text-gray);
-            text-decoration: none;
-            font-size: 0.85rem;
-            transition: color 0.2s ease;
-            margin-left: 20px;
-        }
-
-        .footer-legal a:first-child {
-            margin-left: 0;
-        }
-
-        .footer-legal a:hover {
-            color: var(--accent-blue);
-        }
-
-        /* RTL overrides for footer */
-        [dir="rtl"] .footer-legal a {
-            margin-left: 0;
-            margin-right: 20px;
-        }
-
-        [dir="rtl"] .footer-legal a:first-child {
-            margin-right: 0;
-        }
-
-        [dir="rtl"] .footer-contact li {
-            flex-direction: row-reverse;
-        }
-
-        [dir="rtl"] .social-links .social-link {
-            margin-left: 8px;
-            margin-right: 0;
-        }
-
-        /* Mobile adjustments */
-        @media (max-width: 768px) {
-            .footer-text {
-                max-width: 100%;
-            }
-
-            .footer-legal {
-                text-align: center !important;
-                margin-top: 12px;
-            }
-
-            .footer-legal a {
-                display: inline-block;
-                margin: 0 10px !important;
-            }
-
-            .footer-copy {
-                text-align: center;
-            }
-        }
-    </style>
 </body>
 </html>
