@@ -3,6 +3,9 @@
     user: painter,
     painter: painter 
 }) %>
+<%- include('../partials/header', { title: 'لوحة التحكم - بينتيلو برو',
+    user: painter,
+    painter: painter , isAndroidApp: typeof isAndroidApp !== 'undefined' ? isAndroidApp : false }) %>
 
 <style>
   :root {
