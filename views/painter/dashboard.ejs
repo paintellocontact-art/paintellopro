@@ -223,10 +223,10 @@
   .status-in_progress { background: #d6e4f0; color: #1E3F5C; }
   .status-completed { background: #d4edda; color: #155724; }
 
-  /* Store product grid (2 per row) */
+  /* Store product grid – FORCED two columns */
   .store-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
     gap: 16px;
   }
   .store-card {
@@ -307,12 +307,12 @@
       flex-direction: column;
     }
     .store-grid {
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: repeat(2, 1fr) !important;
     }
   }
   @media (max-width: 500px) {
     .store-grid {
-      grid-template-columns: 1fr;
+      grid-template-columns: 1fr !important;
     }
     .stats-row {
       grid-template-columns: 1fr 1fr;
@@ -449,11 +449,11 @@
             </div>
           </div>
 
-          <!-- Store products (2 per row) -->
+          <!-- Store products (forced 2 per row) -->
           <div class="card">
             <div class="card-header justify-content-between">
               <span><i class="fas fa-store"></i> المتجر – مستلزمات الدهان</span>
-              <a href="/painter/store" class="btn btn-sm" style="background: var(--primary-blue); color: white; border-radius: 20px; padding: 4px 16px; text-decoration: none;">عرض الكل</a>
+              
             </div>
             <div class="card-body">
               <% if (storeProducts && storeProducts.length > 0) { %>
@@ -488,7 +488,7 @@
               <a href="/painter/profile"><i class="fas fa-user-edit"></i> تعديل الملف الشخصي</a>
               <a href="/painter/availability"><i class="fas fa-calendar-check"></i> إدارة التوفر</a>
               <a href="/painter/orders"><i class="fas fa-list-alt"></i> جميع الطلبات</a>
-              <a href="/painter/store"><i class="fas fa-shopping-cart"></i> المتجر</a>
+            
             </div>
           </div>
 
