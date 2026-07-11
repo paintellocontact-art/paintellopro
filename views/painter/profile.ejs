@@ -1,246 +1,431 @@
 <%- include('../partials/header', { 
-    title: 'Profile - Paintello Pro',
-    user: painter, // Pass painter as user for header compatibility
+    title: 'تعديل الملف الشخصي - بينتيلو برو',
+    user: painter,
     painter: painter 
 }) %>
 
+<style>
+  :root {
+    --primary-blue: #295797;
+    --accent-blue: #1C84C1;
+    --primary-dark: #1E3F5C;
+    --text-dark: #2D3748;
+    --text-gray: #4A5568;
+    --bg-light: #F7FAFC;
+    --bg-white: #FFFFFF;
+    --border-light: #E2E8F0;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.03);
+    --shadow-md: 0 4px 12px rgba(41,87,151,0.12);
+    --shadow-lg: 0 8px 24px rgba(41,87,151,0.16);
+    --radius-lg: 16px;
+    --radius-md: 12px;
+    --radius-sm: 8px;
+  }
+  body {
+    background-color: var(--bg-light);
+    font-family: 'Tajawal', 'Cairo', sans-serif;
+  }
+  .page-header {
+    background: linear-gradient(135deg, var(--primary-blue), var(--accent-blue));
+    border-radius: var(--radius-lg);
+    padding: 24px 30px;
+    color: white;
+    margin-bottom: 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: var(--shadow-md);
+  }
+  .page-header h1 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin: 0;
+  }
+  .card-modern {
+    background: var(--bg-white);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-light);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+  }
+  .card-modern .card-body {
+    padding: 32px;
+  }
+  .form-section-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--primary-blue);
+    border-bottom: 2px solid var(--border-light);
+    padding-bottom: 10px;
+    margin: 32px 0 24px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .form-section-title:first-of-type { margin-top: 0; }
+  .form-label {
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 8px;
+  }
+  .form-control, .form-select {
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-sm);
+    padding: 10px 16px;
+    background: #fafafa;
+    transition: all 0.2s;
+    width: 100%;
+  }
+  .form-control:focus, .form-select:focus {
+    border-color: var(--primary-blue);
+    box-shadow: 0 0 0 3px rgba(41,87,151,0.1);
+    background: white;
+    outline: none;
+  }
+  textarea.form-control { resize: vertical; min-height: 100px; }
+  .form-text { font-size: 0.85rem; color: var(--text-gray); margin-top: 6px; }
+
+  .avatar-upload {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+  .avatar-preview {
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    border: 4px solid var(--primary-blue);
+    padding: 4px;
+    background: white;
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+  }
+  .avatar-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+  }
+  .avatar-placeholder {
+    width: 100%;
+    height: 100%;
+    background: #f0f2f5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-size: 3rem;
+    color: #adb5bd;
+  }
+
+  .specialization-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 12px;
+  }
+  .specialization-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #f9fafb;
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-sm);
+    padding: 12px 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .specialization-option:hover { background: #eef2f6; }
+  .specialization-option input[type="checkbox"] { accent-color: var(--primary-blue); width: 18px; height: 18px; margin: 0; }
+
+  .btn-primary-custom {
+    background: var(--primary-blue);
+    color: white;
+    border: none;
+    padding: 10px 24px;
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-primary-custom:hover {
+    background: var(--primary-dark);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+  }
+  .btn-outline-danger-custom {
+    background: transparent;
+    border: 1px solid #dc3545;
+    color: #dc3545;
+    padding: 10px 24px;
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-outline-danger-custom:hover { background: #fdecea; }
+  .btn-back {
+    background: transparent;
+    border: 1px solid var(--border-light);
+    color: var(--text-dark);
+    padding: 10px 24px;
+    border-radius: var(--radius-sm);
+    text-decoration: none;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+  }
+  .btn-back:hover { background: #f0f2f5; }
+
+  @media (max-width: 768px) {
+    .page-header { flex-direction: column; align-items: flex-start; gap: 12px; }
+    .card-modern .card-body { padding: 20px; }
+  }
+</style>
+
 <div class="container py-4">
-    <div class="row justify-content-center">
-        <div class="col-lg-10">
-            <div class="card shadow-sm">
-                <div class="card-header bg-primary text-white">
-                    <h4 class="mb-0">
-                        <i class="fas fa-user-edit me-2"></i>Painter Profile
-                    </h4>
-                </div>
-                <div class="card-body">
-                    <% if (success) { %>
-                    <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        <i class="fas fa-check-circle me-2"></i><%= success %>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    </div>
-                    <% } %>
-                    
-                    <% if (error) { %>
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        <i class="fas fa-exclamation-circle me-2"></i><%= error %>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    </div>
-                    <% } %>
+  <!-- Header -->
+  <div class="page-header">
+    <h1><i class="fas fa-user-edit me-2"></i>تعديل الملف الشخصي</h1>
+    <a href="/painter/dashboard" class="btn-back">
+      <i class="fas fa-arrow-left"></i> العودة للوحة التحكم
+    </a>
+  </div>
 
-                   <form action="/painter/profile" method="POST" enctype="multipart/form-data" id="profileForm">
-    <!-- Personal Information -->
-    <div class="row mb-4">
-        <div class="col-md-6">
-            <h5 class="text-primary mb-3">
-                <i class="fas fa-user me-2"></i>Personal Information
-            </h5>
-            <div class="mb-3">
-                <label for="name" class="form-label">Full Name *</label>
-                <input type="text" class="form-control" id="name" name="name" 
-                       value="<%= painter.name %>" required>
-            </div>
-            <div class="mb-3">
-                <label for="phone" class="form-label">Phone Number *</label>
-                <input type="tel" class="form-control" id="phone" name="phone" 
-                       value="<%= painter.phone %>" required>
-            </div>
-            <div class="mb-3">
-                <label for="email" class="form-label">Email Address *</label>
-                <input type="email" class="form-control" id="email" name="email" 
-                       value="<%= painter.email %>" readonly>
-                <div class="form-text">Email cannot be changed</div>
-            </div>
-        </div>
-        
-        <div class="col-md-6">
-            <div class="text-center">
-                <div class="avatar-upload mb-3">
-                    <% if (painter.profilePicture && painter.profilePicture.url) { %>
-                        <div class="avatar-preview mx-auto mb-3" style="width: 120px; height: 120px; border-radius: 50%; overflow: hidden;">
-                            <img src="<%= painter.profilePicture.url %>" alt="Profile Picture" 
-                                 style="width: 100%; height: 100%; object-fit: cover;">
-                        </div>
-                    <% } else { %>
-                        <div class="avatar-preview mx-auto mb-3"
-                             style="width: 120px; height: 120px; border-radius: 50%; background: #f8f9fa; border: 3px solid #dee2e6; display: flex; align-items: center; justify-content: center;">
-                            <i class="fas fa-brush fa-3x text-muted"></i>
-                        </div>
-                    <% } %>
-                    
-                    <!-- SIMPLIFIED FILE INPUT - Remove any JavaScript handlers -->
-                    <input type="file" class="form-control" id="profilePicture" name="profilePicture" accept="image/*">
-                    <div class="form-text">Upload a professional profile photo (max 1MB, JPG/PNG)</div>
-                </div>
-            </div>
-        </div>
-    </div>
+  <!-- Success/Error Alerts -->
+  <% if (success) { %>
+  <div class="alert alert-success alert-dismissible fade show" role="alert">
+    <i class="fas fa-check-circle me-2"></i><%= success %>
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  </div>
+  <% } %>
+  <% if (error) { %>
+  <div class="alert alert-danger alert-dismissible fade show" role="alert">
+    <i class="fas fa-exclamation-circle me-2"></i><%= error %>
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  </div>
+  <% } %>
 
-    <!-- Professional Information -->
-    <h5 class="text-primary mb-3">
-        <i class="fas fa-briefcase me-2"></i>Professional Information
-    </h5>
-    <div class="row mb-4">
-        <div class="col-md-6 mb-3">
-            <label for="experience" class="form-label">Years of Experience *</label>
+  <div class="card-modern">
+    <div class="card-body">
+      <form action="/painter/profile" method="POST" enctype="multipart/form-data" id="profileForm">
+
+        <!-- Personal Information -->
+        <div class="form-section-title">
+          <i class="fas fa-user"></i> المعلومات الشخصية
+        </div>
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label for="name" class="form-label">الاسم الكامل *</label>
+            <input type="text" class="form-control" id="name" name="name" 
+                   value="<%= painter.name %>" required>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label for="phone" class="form-label">رقم الهاتف *</label>
+            <input type="tel" class="form-control" id="phone" name="phone" 
+                   value="<%= painter.phone %>" required>
+          </div>
+        </div>
+        <div class="mb-4">
+          <label for="email" class="form-label">البريد الإلكتروني *</label>
+          <input type="email" class="form-control" id="email" name="email" 
+                 value="<%= painter.email %>" readonly>
+          <div class="form-text"><i class="fas fa-lock me-1"></i> لا يمكن تغيير البريد الإلكتروني</div>
+        </div>
+
+        <!-- Profile Picture -->
+        <div class="form-section-title">
+          <i class="fas fa-camera"></i> صورة الملف الشخصي
+        </div>
+        <div class="avatar-upload mb-4">
+          <div class="avatar-preview" id="avatarPreview">
+            <% if (painter.profilePicture && painter.profilePicture.url) { %>
+              <img src="<%= painter.profilePicture.url %>" alt="Profile Picture" id="previewImg">
+            <% } else { %>
+              <div class="avatar-placeholder" id="placeholderIcon">
+                <i class="fas fa-brush"></i>
+              </div>
+            <% } %>
+          </div>
+          <input type="file" class="form-control" id="profilePicture" name="profilePicture" accept="image/*" style="max-width:320px;">
+          <div class="form-text">ارفع صورة احترافية (الحد الأقصى 1 ميغا بايت، JPG/PNG)</div>
+        </div>
+
+        <!-- Professional Information -->
+        <div class="form-section-title">
+          <i class="fas fa-briefcase"></i> المعلومات المهنية
+        </div>
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label for="experience" class="form-label">سنوات الخبرة *</label>
             <input type="number" class="form-control" id="experience" name="experience" 
                    value="<%= painter.experience %>" min="0" required>
-        </div>
-        <div class="col-md-6 mb-3">
-            <label for="pricePerSqm" class="form-label">Price per m² (DZD) *</label>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label for="pricePerSqm" class="form-label">السعر لكل متر مربع (دج) *</label>
             <input type="number" class="form-control" id="pricePerSqm" name="pricePerSqm" 
                    value="<%= painter.pricePerSqm %>" min="100" required>
+          </div>
         </div>
-    </div>
 
-    <!-- Specialization -->
-    <div class="mb-4">
-        <label class="form-label">Specialization *</label>
+        <!-- Specialization -->
+        <div class="mb-4">
+          <label class="form-label fw-bold">التخصص *</label>
+          <div class="specialization-grid">
+            <% const specs = [
+              { value: 'interior', label: 'دهان داخلي' },
+              { value: 'exterior', label: 'دهان خارجي' },
+              { value: 'commercial', label: 'تجاري' },
+              { value: 'residential', label: 'سكني' }
+            ]; %>
+            <% specs.forEach(spec => { %>
+              <label class="specialization-option">
+                <input type="checkbox" name="specialization" value="<%= spec.value %>"
+                       <%= painter.specialization && painter.specialization.includes(spec.value) ? 'checked' : '' %>>
+                <span><%= spec.label %></span>
+              </label>
+            <% }); %>
+          </div>
+        </div>
+
+        <!-- Location Information -->
+        <div class="form-section-title">
+          <i class="fas fa-map-marker-alt"></i> معلومات الموقع
+        </div>
         <div class="row">
-            <div class="col-md-3">
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="specialization" value="interior" 
-                           id="interior" <%= painter.specialization && painter.specialization.includes('interior') ? 'checked' : '' %>>
-                    <label class="form-check-label" for="interior">Interior</label>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="specialization" value="exterior" 
-                           id="exterior" <%= painter.specialization && painter.specialization.includes('exterior') ? 'checked' : '' %>>
-                    <label class="form-check-label" for="exterior">Exterior</label>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="specialization" value="commercial" 
-                           id="commercial" <%= painter.specialization && painter.specialization.includes('commercial') ? 'checked' : '' %>>
-                    <label class="form-check-label" for="commercial">Commercial</label>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="specialization" value="residential" 
-                           id="residential" <%= painter.specialization && painter.specialization.includes('residential') ? 'checked' : '' %>>
-                    <label class="form-check-label" for="residential">Residential</label>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Location Information -->
-    <h5 class="text-primary mb-3">
-        <i class="fas fa-map-marker-alt me-2"></i>Location Information
-    </h5>
-    <div class="row mb-4">
-        <div class="col-md-6 mb-3">
-            <label for="wilaya" class="form-label">Wilaya *</label>
+          <div class="col-md-6 mb-3">
+            <label for="wilaya" class="form-label">الولاية *</label>
             <select class="form-select" id="wilaya" name="wilaya" required>
-                <option value="">Select Wilaya</option>
-                <% wilayas.forEach(w => { %>
-                <option value="<%= w.name %>" 
-                        <%= painter.location && painter.location.wilaya === w.name ? 'selected' : '' %>>
-                    <%= w.name %> (<%= w.number %>)
-                </option>
-                <% }); %>
+              <option value="">اختر الولاية</option>
+              <% wilayas.forEach(w => { %>
+              <option value="<%= w.name %>" 
+                      <%= painter.location && painter.location.wilaya === w.name ? 'selected' : '' %>>
+                <%= w.name %> (<%= w.number %>)
+              </option>
+              <% }); %>
             </select>
-        </div>
-        <div class="col-md-6 mb-3">
-            <label for="wilayaNumber" class="form-label">Wilaya Number *</label>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label for="wilayaNumber" class="form-label">رقم الولاية *</label>
             <input type="number" class="form-control" id="wilayaNumber" name="wilayaNumber" 
                    value="<%= painter.location && painter.location.wilayaNumber %>" readonly required>
+          </div>
         </div>
-    </div>
+        <div class="mb-4">
+          <label for="address" class="form-label">العنوان الكامل *</label>
+          <textarea class="form-control" id="address" name="address" rows="2" required><%= painter.location && painter.location.address %></textarea>
+        </div>
 
-    <div class="mb-4">
-        <label for="address" class="form-label">Full Address *</label>
-        <textarea class="form-control" id="address" name="address" rows="2" required><%= painter.location && painter.location.address %></textarea>
-    </div>
+        <!-- Bio -->
+        <div class="form-section-title">
+          <i class="fas fa-pencil-alt"></i> نبذة مهنية
+        </div>
+        <div class="mb-4">
+          <textarea class="form-control" id="bio" name="bio" rows="4" 
+                    placeholder="صف خبرتك وتخصصاتك وأسلوبك في الدهان..."><%= painter.bio || '' %></textarea>
+          <div class="form-text">ستظهر للعملاء المحتملين (الحد الأقصى 500 حرف)</div>
+        </div>
 
-    <!-- Bio Description -->
-    <div class="mb-4">
-        <label for="bio" class="form-label">Professional Bio</label>
-        <textarea class="form-control" id="bio" name="bio" rows="4" 
-                  placeholder="Describe your experience, specialties, and approach to painting..."><%= painter.bio || '' %></textarea>
-        <div class="form-text">This will be shown to potential clients (max 500 characters)</div>
-    </div>
+        <!-- Availability -->
+        <div class="form-section-title">
+          <i class="fas fa-clock"></i> حالة التوفر
+        </div>
+        <div class="mb-4">
+          <select class="form-select" name="availability" id="availability">
+            <option value="available" <%= painter.availability === 'available' ? 'selected' : '' %>>متاح للمشاريع الجديدة</option>
+            <option value="busy" <%= painter.availability === 'busy' ? 'selected' : '' %>>مشغول (توفر محدود)</option>
+            <option value="unavailable" <%= painter.availability === 'unavailable' ? 'selected' : '' %>>غير متاح</option>
+          </select>
+        </div>
 
-    <!-- Availability -->
-    <div class="mb-4">
-        <label class="form-label">Availability Status</label>
-        <select class="form-select" name="availability" id="availability">
-            <option value="available" <%= painter.availability === 'available' ? 'selected' : '' %>>Available for new projects</option>
-            <option value="busy" <%= painter.availability === 'busy' ? 'selected' : '' %>>Busy (Limited availability)</option>
-            <option value="unavailable" <%= painter.availability === 'unavailable' ? 'selected' : '' %>>Unavailable</option>
-        </select>
-    </div>
-
-    <!-- Team Information -->
-    <h5 class="text-primary mb-3">
-        <i class="fas fa-users me-2"></i>Team Information
-    </h5>
-    <div class="row mb-4">
-        <div class="col-md-6">
-            <label for="businessName" class="form-label">Business Name (Optional)</label>
+        <!-- Team Information -->
+        <div class="form-section-title">
+          <i class="fas fa-users"></i> معلومات الفريق
+        </div>
+        <div class="row mb-4">
+          <div class="col-md-6 mb-3">
+            <label for="businessName" class="form-label">اسم العمل (اختياري)</label>
             <input type="text" class="form-control" id="businessName" name="businessName" 
-                   value="<%= painter.businessName || '' %>" placeholder="Your business name if applicable">
-        </div>
-        <div class="col-md-6">
-            <label for="teamSize" class="form-label">Team Size</label>
+                   value="<%= painter.businessName || '' %>" placeholder="اسم نشاطك التجاري إن وجد">
+          </div>
+          <div class="col-md-6 mb-3">
+            <label for="teamSize" class="form-label">حجم الفريق</label>
             <select class="form-select" id="teamSize" name="teamSize">
-                <option value="1" <%= painter.teamSize === 1 ? 'selected' : '' %>>Solo Painter</option>
-                <option value="2" <%= painter.teamSize === 2 ? 'selected' : '' %>>2 People</option>
-                <option value="3" <%= painter.teamSize === 3 ? 'selected' : '' %>>3 People</option>
-                <option value="4" <%= painter.teamSize === 4 ? 'selected' : '' %>>4 People</option>
-                <option value="5" <%= painter.teamSize >= 5 ? 'selected' : '' %>>5+ People</option>
+              <option value="1" <%= painter.teamSize === 1 ? 'selected' : '' %>>دهان منفرد</option>
+              <option value="2" <%= painter.teamSize === 2 ? 'selected' : '' %>>شخصان</option>
+              <option value="3" <%= painter.teamSize === 3 ? 'selected' : '' %>>3 أشخاص</option>
+              <option value="4" <%= painter.teamSize === 4 ? 'selected' : '' %>>4 أشخاص</option>
+              <option value="5" <%= painter.teamSize >= 5 ? 'selected' : '' %>>5+ أشخاص</option>
             </select>
+          </div>
         </div>
-    </div>
 
-    <!-- Submit Buttons -->
-    <div class="d-flex justify-content-between align-items-center">
-        <a href="/painter/dashboard" class="btn btn-outline-secondary">
-            <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
-        </a>
-        <div>
-            <button type="reset" class="btn btn-outline-danger me-2">Reset</button>
-            <button type="submit" class="btn btn-primary">
-                <i class="fas fa-save me-2"></i>Update Profile
+        <!-- Buttons -->
+        <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
+          <a href="/painter/dashboard" class="btn-back">
+            <i class="fas fa-arrow-left"></i> العودة للوحة التحكم
+          </a>
+          <div class="d-flex gap-2">
+            <button type="reset" class="btn-outline-danger-custom">
+              <i class="fas fa-undo me-1"></i> إعادة تعيين
             </button>
+            <button type="submit" class="btn-primary-custom">
+              <i class="fas fa-save me-1"></i> تحديث الملف
+            </button>
+          </div>
         </div>
+      </form>
     </div>
-</form>
+  </div>
+</div>
 
-<!-- SIMPLE JavaScript - No file handling -->
 <script>
-// Only handle wilaya number update
+// Wilaya number auto-fill
 document.getElementById('wilaya')?.addEventListener('change', function() {
     const selectedOption = this.options[this.selectedIndex];
     if (selectedOption.value) {
-        const wilayaNumber = selectedOption.text.match(/\((\d+)\)/)[1];
-        const wilayaNumberInput = document.getElementById('wilayaNumber');
-        if (wilayaNumberInput) {
-            wilayaNumberInput.value = wilayaNumber;
+        const match = selectedOption.text.match(/\((\d+)\)/);
+        if (match) {
+            document.getElementById('wilayaNumber').value = match[1];
         }
     }
 });
 
-// Simple form submission - no file preview
+// Live profile picture preview
+document.getElementById('profilePicture')?.addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    if (file.size > 1024 * 1024) {
+        alert('⚠️ حجم الصورة أكبر من 1 ميغا بايت. الرجاء اختيار صورة أصغر.');
+        e.target.value = '';
+        return;
+    }
+    
+    const reader = new FileReader();
+    reader.onload = function(ev) {
+        const previewContainer = document.getElementById('avatarPreview');
+        previewContainer.innerHTML = ''; 
+        const img = document.createElement('img');
+        img.src = ev.target.result;
+        img.style.width = '100%';
+        img.style.height = '100%';
+        img.style.objectFit = 'cover';
+        img.style.borderRadius = '50%';
+        previewContainer.appendChild(img);
+    };
+    reader.readAsDataURL(file);
+});
+
+// Loading state on submit
 document.getElementById('profileForm')?.addEventListener('submit', function(e) {
     const submitBtn = this.querySelector('button[type="submit"]');
     if (submitBtn) {
         submitBtn.disabled = true;
-        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Updating...';
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> جاري التحديث...';
     }
-});
-</script>
-<script>
-document.getElementById('profilePicture')?.addEventListener('change', function(e) {
-  const file = e.target.files[0];
-  if (file && file.size > 1024 * 1024) {
-    alert('⚠️ The selected image is larger than 1 MB. Please choose a smaller one.');
-    e.target.value = ''; // Reset file input
-  }
 });
 </script>
 
