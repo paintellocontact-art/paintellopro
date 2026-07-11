@@ -1,4 +1,369 @@
-<<%- include('../partials/header', { title: 'انضم كدهان - بينتيلو برو' }) %>
+<%- include('../partials/header', { title: 'انضم كدهان - بينتيلو برو', isAndroidApp: typeof isAndroidApp !== 'undefined' ? isAndroidApp : false }) %>
+
+<!-- ===== ANDROID APP VERSION ===== -->
+<% if (typeof isAndroidApp !== 'undefined' && isAndroidApp) { %>
+<style>
+  body {
+    background: #3e58b6;
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    padding: 20px;
+    color: white;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    min-height: 100vh;
+  }
+  .register-wrapper {
+    width: 100%;
+    max-width: 520px;
+    animation: fadeUp 0.6s ease;
+    padding-bottom: 40px;
+  }
+  .register-card {
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(20px);
+    border-radius: 32px;
+    padding: 30px 25px;
+    border: 1px solid rgba(255,255,255,0.2);
+    box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+    color: white;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+  .brand i {
+    font-size: 2rem;
+    color: #FFD966;
+    filter: drop-shadow(0 0 8px rgba(255,217,102,0.6));
+  }
+  .brand span {
+    font-weight: 700;
+    font-size: 1.6rem;
+  }
+  .register-card h3 {
+    font-weight: 600;
+    font-size: 1.3rem;
+    margin: 20px 0 15px;
+    color: rgba(255,255,255,0.9);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .register-card h3 i {
+    color: #FFD966;
+    font-size: 1.1rem;
+  }
+  .form-group {
+    position: relative;
+    margin-bottom: 16px;
+    text-align: right;
+  }
+  .form-group i.input-icon {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    color: rgba(255,255,255,0.7);
+    font-size: 1rem;
+  }
+  .form-control, .form-select {
+    background: rgba(255,255,255,0.15) !important;
+    border: 1px solid rgba(255,255,255,0.25);
+    color: white !important;
+    border-radius: 16px;
+    padding: 12px 40px 12px 16px;
+    width: 100%;
+    font-size: 0.95rem;
+    transition: all 0.3s;
+    outline: none;
+    backdrop-filter: blur(10px);
+  }
+  .form-control::placeholder {
+    color: rgba(255,255,255,0.5);
+  }
+  .form-select option {
+    background: #3e58b6;
+    color: white;
+  }
+  .form-control:focus, .form-select:focus {
+    background: rgba(255,255,255,0.25) !important;
+    border-color: rgba(255,255,255,0.5);
+    box-shadow: 0 0 0 4px rgba(255,255,255,0.1);
+  }
+  textarea.form-control {
+    padding-right: 16px;
+    resize: vertical;
+  }
+  .specialization-checks {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 8px;
+  }
+  .specialization-checks label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .specialization-checks label:hover {
+    background: rgba(255,255,255,0.2);
+  }
+  .specialization-checks input[type="checkbox"] {
+    accent-color: #FFD966;
+    width: 16px;
+    height: 16px;
+    margin: 0;
+  }
+  .file-upload {
+    position: relative;
+  }
+  .file-upload input[type="file"] {
+    background: rgba(255,255,255,0.1);
+    border-radius: 16px;
+    padding: 12px;
+    color: white;
+  }
+  .btn-register {
+    background: white;
+    color: #3e58b6;
+    font-weight: 700;
+    font-size: 1.1rem;
+    padding: 14px;
+    border-radius: 50px;
+    width: 100%;
+    border: none;
+    transition: all 0.3s;
+    cursor: pointer;
+    margin-top: 20px;
+  }
+  .btn-register:hover {
+    background: #f0f4ff;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+  }
+  .btn-register:active {
+    transform: scale(0.97);
+  }
+  .terms-check {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 20px 0 10px;
+    font-size: 0.85rem;
+  }
+  .terms-check input[type="checkbox"] {
+    accent-color: #FFD966;
+    width: 18px;
+    height: 18px;
+    margin: 0;
+  }
+  .terms-check a {
+    color: #FFD966;
+    text-decoration: none;
+    font-weight: 500;
+  }
+  .signin-link {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 0.95rem;
+    opacity: 0.85;
+  }
+  .signin-link a {
+    color: #FFD966;
+    text-decoration: none;
+    font-weight: 600;
+    margin-right: 4px;
+  }
+  .alert {
+    border-radius: 16px;
+    border: none;
+    padding: 12px 16px;
+    margin-bottom: 16px;
+    font-size: 0.9rem;
+    backdrop-filter: blur(10px);
+  }
+  .alert-success { background: rgba(40,167,69,0.2); border: 1px solid rgba(40,167,69,0.4); color: #d4edda; }
+  .alert-danger { background: rgba(220,53,69,0.2); border: 1px solid rgba(220,53,69,0.4); color: #f8d7da; }
+  .alert-warning { background: rgba(255,193,7,0.2); border: 1px solid rgba(255,193,7,0.4); color: #fff3cd; }
+  .alert-info { background: rgba(23,162,184,0.2); border: 1px solid rgba(23,162,184,0.4); color: #d1ecf1; }
+  .btn-close { filter: invert(1); }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>
+
+<div class="register-wrapper">
+  <div class="register-card">
+    <div class="brand">
+      <i class="fas fa-paint-roller"></i>
+      <span>Paintello Pro</span>
+    </div>
+    <h3 style="margin-top:0;"><i class="fas fa-user-plus"></i> انضم إلى فريقنا المحترف</h3>
+
+    <!-- Flash Messages -->
+    <% if (success && success.length) { %>
+      <% success.forEach(msg => { %>
+        <div class="alert alert-success alert-dismissible fade show"><%= msg %></div>
+      <% }) %>
+    <% } %>
+    <% if (error && error.length) { %>
+      <% error.forEach(msg => { %>
+        <div class="alert alert-danger alert-dismissible fade show"><%= msg %></div>
+      <% }) %>
+    <% } %>
+    <% if (warning && warning.length) { %>
+      <% warning.forEach(msg => { %>
+        <div class="alert alert-warning alert-dismissible fade show"><%= msg %></div>
+      <% }) %>
+    <% } %>
+    <% if (info && info.length) { %>
+      <% info.forEach(msg => { %>
+        <div class="alert alert-info alert-dismissible fade show"><%= msg %></div>
+      <% }) %>
+    <% } %>
+
+    <form action="/auth/register-painter" method="POST" enctype="multipart/form-data" id="painterRegistrationForm">
+
+      <!-- Personal Information -->
+      <h3><i class="fas fa-user"></i> المعلومات الشخصية</h3>
+      <div class="form-group">
+        <i class="fas fa-user input-icon"></i>
+        <input type="text" class="form-control" name="name" placeholder="الاسم الكامل" value="<%= oldInput.name || '' %>" required>
+      </div>
+      <div class="form-group">
+        <i class="fas fa-phone input-icon"></i>
+        <input type="tel" class="form-control" name="phone" placeholder="رقم الهاتف (05XXXXXXXX)" pattern="[0]{1}[5-7]{1}[0-9]{8}" value="<%= oldInput.phone || '' %>" required>
+      </div>
+      <div class="form-group">
+        <i class="fas fa-envelope input-icon"></i>
+        <input type="email" class="form-control" name="email" placeholder="البريد الإلكتروني" value="<%= oldInput.email || '' %>" required>
+      </div>
+      <div class="form-group">
+        <i class="fas fa-lock input-icon"></i>
+        <input type="password" class="form-control" name="password" placeholder="كلمة المرور (6 أحرف على الأقل)" required>
+      </div>
+      <div class="form-group">
+        <i class="fas fa-lock input-icon"></i>
+        <input type="password" class="form-control" name="confirmPassword" placeholder="تأكيد كلمة المرور" required>
+      </div>
+
+      <!-- Professional Information -->
+      <h3><i class="fas fa-briefcase"></i> المعلومات المهنية</h3>
+      <div class="form-group">
+        <i class="fas fa-calendar input-icon"></i>
+        <input type="number" class="form-control" name="experience" placeholder="سنوات الخبرة" min="0" max="50" value="<%= oldInput.experience || '' %>" required>
+      </div>
+      <div class="form-group">
+        <i class="fas fa-money-bill input-icon"></i>
+        <input type="number" class="form-control" name="pricePerSqm" placeholder="السعر لكل متر مربع (دج)" min="0" value="<%= oldInput.pricePerSqm || '' %>" required>
+      </div>
+      <div class="form-group">
+        <label style="color: rgba(255,255,255,0.85); font-size: 0.9rem; margin-bottom: 6px; display: block;">التخصص *</label>
+        <div class="specialization-checks">
+          <label><input type="checkbox" name="specialization" value="interior" <%= (oldInput.specialization && oldInput.specialization.includes('interior')) ? 'checked' : '' %>> دهان داخلي</label>
+          <label><input type="checkbox" name="specialization" value="exterior" <%= (oldInput.specialization && oldInput.specialization.includes('exterior')) ? 'checked' : '' %>> دهان خارجي</label>
+          <label><input type="checkbox" name="specialization" value="commercial" <%= (oldInput.specialization && oldInput.specialization.includes('commercial')) ? 'checked' : '' %>> تجاري</label>
+          <label><input type="checkbox" name="specialization" value="residential" <%= (oldInput.specialization && oldInput.specialization.includes('residential')) ? 'checked' : '' %>> سكني</label>
+        </div>
+      </div>
+
+      <!-- Location Information -->
+      <h3><i class="fas fa-map-marker-alt"></i> معلومات الموقع</h3>
+      <div class="form-group">
+        <i class="fas fa-map input-icon"></i>
+        <select class="form-select" id="wilaya" name="wilaya" required>
+          <option value="">اختر الولاية</option>
+          <% wilayas.forEach(wilaya => { %>
+            <option value="<%= wilaya.name %>" <%= (oldInput.wilaya === wilaya.name) ? 'selected' : '' %>><%= wilaya.name %> (<%= wilaya.number %>)</option>
+          <% }); %>
+        </select>
+      </div>
+      <div class="form-group">
+        <i class="fas fa-hashtag input-icon"></i>
+        <input type="number" class="form-control" id="wilayaNumber" name="wilayaNumber" placeholder="رقم الولاية" value="<%= oldInput.wilayaNumber || '' %>" readonly required>
+      </div>
+      <div class="form-group">
+        <textarea class="form-control" name="address" rows="2" placeholder="العنوان الكامل" required><%= oldInput.address || '' %></textarea>
+      </div>
+
+      <!-- Verification -->
+      <h3><i class="fas fa-id-card"></i> التحقق</h3>
+      <div class="form-group file-upload">
+        <input type="file" class="form-control" id="idCard" name="idCard" accept="image/*" required>
+        <div style="font-size:0.8rem; opacity:0.7; margin-top:6px;">
+          <i class="fas fa-info-circle"></i> صورة واضحة لبطاقة الهوية (max 2MB)
+        </div>
+      </div>
+      <div class="alert alert-info" style="margin-top:10px;">
+        <i class="fas fa-info-circle me-2"></i>
+        <strong>عملية إرسال المحفظة:</strong> بعد التسجيل يمكنك إرسال صور أعمالك إلى فريق الإدارة.
+      </div>
+
+      <!-- Terms -->
+      <div class="terms-check">
+        <input type="checkbox" id="terms" required>
+        <label for="terms">أوافق على <a href="/terms">الشروط</a> و <a href="/privacy">الخصوصية</a></label>
+      </div>
+
+      <button type="submit" class="btn-register">تقديم طلب الانضمام كدهان محترف</button>
+
+      <div class="signin-link">
+        هل لديك حساب؟ <a href="/auth/login-painter">سجل الدخول</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  // Auto-dismiss alerts
+  setTimeout(() => {
+    document.querySelectorAll('.alert').forEach(alert => {
+      const bsAlert = new bootstrap.Alert(alert);
+      bsAlert.close();
+    });
+  }, 4000);
+
+  // Wilaya number auto-fill
+  document.getElementById('wilaya')?.addEventListener('change', function() {
+    const selectedOption = this.options[this.selectedIndex];
+    if (selectedOption.value) {
+      const match = selectedOption.text.match(/\((\d+)\)/);
+      if (match) {
+        document.getElementById('wilayaNumber').value = match[1];
+      }
+    } else {
+      document.getElementById('wilayaNumber').value = '';
+    }
+  });
+
+  // GTM sign-up event
+  document.getElementById('painterRegistrationForm').addEventListener('submit', function(e) {
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+      'event': 'ga4_sign_up',
+      'user_wilaya': document.getElementById('wilaya').value,
+      'painter_price_sqm': parseInt(document.getElementById('pricePerSqm').value) || 0,
+      'painter_experience': parseInt(document.getElementById('experience').value) || 0,
+      'painter_specialization': Array.from(document.querySelectorAll('input[name="specialization"]:checked'))
+                                .map(cb => cb.value).join(', ')
+    });
+  });
+</script>
+
+<!-- ===== DESKTOP VERSION (unchanged) ===== -->
+<% } else { %>
 
 <div class="container py-5">
     <div class="row justify-content-center">
@@ -38,8 +403,7 @@
   <% }) %>
 <% } %>
 
-                   <!-- Add id="painterRegistrationForm" to your form -->
-<form action="/auth/register-painter" method="POST" enctype="multipart/form-data" id="painterRegistrationForm">
+                   <form action="/auth/register-painter" method="POST" enctype="multipart/form-data" id="painterRegistrationForm">
                         <!-- المعلومات الشخصية -->
                         <h5 class="mb-3 text-primary">
                             <i class="fas fa-user me-2"></i>المعلومات الشخصية
@@ -213,7 +577,6 @@
 window.dataLayer = window.dataLayer || [];
 
 document.getElementById('painterRegistrationForm').addEventListener('submit', function(e) {
-    // These names MUST match your GTM variables exactly
     window.dataLayer.push({
         'event': 'ga4_sign_up',
         'user_wilaya': document.getElementById('wilaya').value,
@@ -232,5 +595,7 @@ document.getElementById('painterRegistrationForm').addEventListener('submit', fu
     });
   }, 4000);
 </script>
+
+<% } %>
 
 <%- include('../partials/footer') %>
