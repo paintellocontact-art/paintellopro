@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <% /* ===== Meta Pixel & Analytics (unchanged) ===== */ %>
     <%
   const pixelId = typeof fbPixelId !== 'undefined' ? fbPixelId : process.env.FB_PIXEL_ID;
 
@@ -24,17 +25,14 @@
     if (!advancedMatching.em && sessionPainter.email) {
       advancedMatching.em = sessionPainter.email;
     }
-
     if (!advancedMatching.ph && sessionPainter.phone) {
       advancedMatching.ph = sessionPainter.phone;
     }
-
     if (!advancedMatching.fn && sessionPainter.firstName) {
       advancedMatching.fn = sessionPainter.firstName;
     } else if (!advancedMatching.fn && sessionPainter.name) {
       advancedMatching.fn = sessionPainter.name;
     }
-
     if (!advancedMatching.ln && sessionPainter.lastName) {
       advancedMatching.ln = sessionPainter.lastName;
     }
@@ -312,53 +310,128 @@
         [dir="rtl"] .ms-2 { margin-left: 0 !important; margin-right: 0.5rem !important; }
         [dir="rtl"] .ms-3 { margin-left: 0 !important; margin-right: 1rem !important; }
 
-        /* ===== 📱 ANDROID NATIVE APP UI STYLES ===== */
+        /* ===== 📱 ANDROID APP BAR – MODERN 2026 STYLE ===== */
+        .app-shell {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
         .app-top-bar {
-            background-color: var(--primary-blue);
-            color: white;
-            padding: 14px 16px;
+            background: var(--primary-blue);
+            padding: 0 16px;
+            height: 64px;
             display: flex;
             align-items: center;
             justify-content: space-between;
+            color: white;
+            flex-shrink: 0;
             position: sticky;
             top: 0;
-            z-index: 1040;
-            box-shadow: var(--shadow-sm);
+            z-index: 1100;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+            backdrop-filter: blur(12px);
+            background: rgba(41,87,151,0.95);
+            border-bottom: 1px solid rgba(255,255,255,0.15);
         }
-
-        .app-brand-zone {
+        .app-top-bar .brand {
             display: flex;
             align-items: center;
             gap: 10px;
-        }
-
-        .app-brand-title {
             font-weight: 700;
-            font-size: 1.15rem;
-            letter-spacing: 0.3px;
-            color: white;
+            font-size: 1.3rem;
+            letter-spacing: 0.5px;
         }
-
-        .app-action-zone {
+        .app-top-bar .brand i {
+            font-size: 1.6rem;
+            color: #FFD966;
+            filter: drop-shadow(0 0 6px rgba(255,217,102,0.5));
+        }
+        .app-top-bar .actions {
             display: flex;
             align-items: center;
             gap: 12px;
         }
-
-        .app-bar-link {
+        .app-top-bar .icon-btn {
+            background: rgba(255,255,255,0.12);
+            border: none;
             color: white;
-            text-decoration: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: opacity 0.2s ease;
+            position: relative;
+            transition: background 0.2s, transform 0.2s;
+            cursor: pointer;
+            font-size: 1.2rem;
         }
-
-        .app-bar-link:hover {
-            opacity: 0.82;
+        .app-top-bar .icon-btn:active {
+            background: rgba(255,255,255,0.25);
+            transform: scale(0.92);
+        }
+        .app-top-bar .badge {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            background: #FF5252;
             color: white;
+            font-size: 0.65rem;
+            min-width: 18px;
+            height: 18px;
+            border-radius: 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 4px;
+            font-weight: 700;
+            border: 2px solid var(--primary-blue);
         }
-        
+        .app-top-bar .avatar-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            overflow: hidden;
+            background: rgba(255,255,255,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid rgba(255,255,255,0.5);
+            transition: transform 0.2s;
+            cursor: pointer;
+        }
+        .app-top-bar .avatar-btn img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .app-top-bar .avatar-btn:active {
+            transform: scale(0.92);
+        }
+        /* Search bar (hidden by default, toggled via JS) */
+        .app-search-bar {
+            position: absolute;
+            top: 64px;
+            left: 0;
+            right: 0;
+            background: white;
+            padding: 8px 16px;
+            box-shadow: var(--shadow-md);
+            display: none;
+            z-index: 1099;
+        }
+        .app-search-bar.active {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .app-search-bar input {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-size: 1rem;
+            padding: 8px;
+        }
         @media (max-width: 768px) {
             .navbar-nav { padding: 16px 0; }
             .nav-link-modern { padding: 10px 16px !important; }
@@ -370,7 +443,6 @@
             }
             .avatar-dropdown { width: 100%; justify-content: center; }
         }
-        
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(-10px); }
             to { opacity: 1; transform: translateY(0); }
@@ -387,35 +459,89 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- Modern Navbar -->
 <!-- Native App Layout vs Standard Website Logic -->
 <% if (typeof isAndroidApp !== 'undefined' && isAndroidApp) { %>
-    <!-- 📱 APP MODE TOP BAR -->
-    <header class="app-top-bar">
-        <div class="app-brand-zone">
-            <i class="fas fa-paint-roller fs-5"></i>
-            <span class="app-brand-title">Paintello Pro</span>
+    <!-- 📱 ANDROID APP HEADER – MODERN 2026 DESIGN -->
+    <div class="app-shell">
+        <header class="app-top-bar">
+            <div class="brand">
+                <i class="fas fa-paint-roller"></i>
+                <span>Paintello</span>
+            </div>
+            <div class="actions">
+                <!-- Search button -->
+                <button class="icon-btn" id="searchToggle" aria-label="Search">
+                    <i class="fas fa-search"></i>
+                </button>
+                <!-- Notifications -->
+                <button class="icon-btn" id="notificationBtn">
+                    <i class="fas fa-bell"></i>
+                    <span class="badge" id="notifBadge" style="display: none;">3</span>
+                </button>
+                <!-- User Avatar / Login -->
+                <% if (typeof sessionPainter !== 'undefined' && sessionPainter) { %>
+                    <a href="/painter/profile" class="icon-btn avatar-btn" style="padding:0; background:transparent;">
+                        <div class="avatar-btn">
+                            <% if (sessionPainter.profilePicture && sessionPainter.profilePicture.url) { %>
+                                <img src="<%= sessionPainter.profilePicture.url %>" alt="Profile">
+                            <% } else { %>
+                                <i class="fas fa-user"></i>
+                            <% } %>
+                        </div>
+                    </a>
+                <% } else { %>
+                    <a href="/auth/login-painter" class="icon-btn">
+                        <i class="fas fa-user-circle"></i>
+                    </a>
+                <% } %>
+            </div>
+        </header>
+        <!-- Search bar (hidden by default) -->
+        <div class="app-search-bar" id="appSearchBar">
+            <i class="fas fa-search text-muted"></i>
+            <input type="text" placeholder="ابحث عن دهان أو منتج..." id="appSearchInput">
+            <button class="icon-btn" id="searchClose" style="background: transparent; color: var(--text-dark); font-size: 1rem;">
+                <i class="fas fa-times"></i>
+            </button>
         </div>
-        
-        <div class="app-action-zone">
-            <% if (typeof sessionPainter !== 'undefined' && sessionPainter) { %>
-                <!-- Quick Access Avatar directly on App bar -->
-                <a href="/painter/profile" class="app-bar-link">
-                    <div class="avatar-small border border-white" style="width: 32px; height: 32px;">
-                        <% if (sessionPainter.profilePicture && sessionPainter.profilePicture.url) { %>
-                            <img src="<%= sessionPainter.profilePicture.url %>" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
-                        <% } else { %>
-                            <i class="fas fa-user text-sm"></i>
-                        <% } %>
-                    </div>
-                </a>
-            <% } else { %>
-                <!-- Profile/Login Action Icon -->
-                <a href="/auth/login-painter" class="app-bar-link">
-                    <i class="fas fa-user-circle fs-4"></i>
-                </a>
-            <% } %>
-        </div>
-    </header>
+        <!-- Main content will be placed after this header in the view -->
+        <!-- We'll close the app-shell div later in footer if needed, but for simplicity we assume footer handles it -->
+    </div>
+    <script>
+        // Toggle search bar
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchToggle = document.getElementById('searchToggle');
+            const searchBar = document.getElementById('appSearchBar');
+            const searchClose = document.getElementById('searchClose');
+            const searchInput = document.getElementById('appSearchInput');
+            
+            if (searchToggle && searchBar) {
+                searchToggle.addEventListener('click', function() {
+                    searchBar.classList.toggle('active');
+                    if (searchBar.classList.contains('active')) {
+                        searchInput.focus();
+                    }
+                });
+            }
+            if (searchClose && searchBar) {
+                searchClose.addEventListener('click', function() {
+                    searchBar.classList.remove('active');
+                });
+            }
+            // Hide search bar on outside click
+            document.addEventListener('click', function(e) {
+                if (searchBar && !searchBar.contains(e.target) && e.target !== searchToggle && !searchToggle.contains(e.target)) {
+                    searchBar.classList.remove('active');
+                }
+            });
+            // Sample notification badge (you can wire it later)
+            const notifBadge = document.getElementById('notifBadge');
+            // Show badge if there are notifications (demo)
+            if (notifBadge && Math.random() > 0.5) { // just for demo
+                notifBadge.style.display = 'flex';
+            }
+        });
+    </script>
 <% } else { %>
-    <!-- 💻 ORIGINAL DESKTOP/MOBILE BROWSER NAVBAR -->
+    <!-- 💻 ORIGINAL DESKTOP/MOBILE BROWSER NAVBAR (unchanged) -->
     <nav class="navbar navbar-expand-lg navbar-modern sticky-top">
         <div class="container">
             <a class="navbar-brand navbar-brand-modern" href="/ar">
