@@ -1,8 +1,111 @@
 <%- include('../partials/header', { 
     title: 'لوحة تحكم الدهان - بينتيلو برو',
-    user: painter, // Pass painter as user for header compatibility
+    user: painter,
     painter: painter 
 }) %>
+
+<!-- Additional styles for store product cards (matching your listing page) -->
+<style>
+    .store-section-card {
+        border: 1px solid #dee2e6;
+        border-radius: 16px;
+        overflow: hidden;
+    }
+    .store-header {
+        background: linear-gradient(135deg, #295797, #1C84C1);
+        color: white;
+        padding: 14px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .store-header h5 {
+        margin: 0;
+        font-weight: 700;
+    }
+    .store-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+        padding: 20px;
+    }
+    .store-product-card {
+        background: #fff;
+        border-radius: 16px;
+        border: 1px solid #E2E8F0;
+        overflow: hidden;
+        transition: transform 0.3s, box-shadow 0.3s;
+        text-decoration: none;
+        color: inherit;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .store-product-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05), 0 4px 6px -2px rgba(0,0,0,0.03);
+        border-color: #CBD5E1;
+    }
+    .store-product-img-wrap {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 1 / 1;
+        background: #FFFFFF;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        border-bottom: 1px solid #E2E8F0;
+    }
+    .store-product-img-wrap img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        padding: 16px;
+        transition: transform 0.5s;
+    }
+    .store-product-card:hover .store-product-img-wrap img {
+        transform: scale(1.05);
+    }
+    .store-product-category {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: #295797;
+        color: white;
+        font-size: 0.7rem;
+        font-weight: 700;
+        padding: 4px 10px;
+        border-radius: 8px;
+    }
+    .store-product-body {
+        padding: 16px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+    .store-product-name {
+        font-weight: 700;
+        font-size: 1rem;
+        margin-bottom: 6px;
+        line-height: 1.4;
+    }
+    .store-product-price {
+        font-size: 1.2rem;
+        font-weight: 800;
+        color: #295797;
+        margin-top: auto;
+    }
+    .store-view-all {
+        color: white;
+        font-size: 0.9rem;
+    }
+    @media (max-width: 768px) {
+        .store-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
 
 <div class="container-fluid py-4">
     <div class="row">
@@ -10,59 +113,53 @@
         <div class="col-lg-3 col-md-4">
             <div class="card shadow-sm">
                 <div class="card-body text-center">
-                 <!-- في dashboard.ejs و profile.ejs -->
-<div class="avatar-placeholder bg-primary rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center"
-     style="width: 80px; height: 80px; overflow: hidden;">
-    
-    <!-- التحقق من وجود صورة الملف الشخصي وعنوان URL صالح -->
-    <% if (painter.profilePicture && painter.profilePicture.url && painter.profilePicture.url.startsWith('http')) { %>
-        <img src="<%= painter.profilePicture.url %>" 
-             alt="<%= painter.name %>" 
-             style="width: 100%; height: 100%; object-fit: cover;"
-             onerror="this.style.display='none';">
-        <!-- النسخة الاحتياطية ستظهر إذا فشل تحميل الصورة -->
-    <% } %>
-    
-    <!-- الصورة الرمزية الاحتياطية (تظهر إذا لم توجد صورة ملف شخصي أو فشلت الصورة في التحميل) -->
-    <i class="fas fa-brush fa-2x text-white" 
-       style="<%= (painter.profilePicture && painter.profilePicture.url) ? 'display: none;' : '' %>"></i>
-</div>
+                    <div class="avatar-placeholder bg-primary rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center"
+                         style="width: 80px; height: 80px; overflow: hidden;">
+                        <% if (painter.profilePicture && painter.profilePicture.url && painter.profilePicture.url.startsWith('http')) { %>
+                            <img src="<%= painter.profilePicture.url %>" 
+                                 alt="<%= painter.name %>" 
+                                 style="width: 100%; height: 100%; object-fit: cover;"
+                                 onerror="this.style.display='none';">
+                        <% } %>
+                        <i class="fas fa-brush fa-2x text-white" 
+                           style="<%= (painter.profilePicture && painter.profilePicture.url) ? 'display: none;' : '' %>"></i>
+                    </div>
 
-<!-- حالة التوفر -->
-<div class="card shadow-sm mt-4 border-info">
-    <div class="card-header bg-info text-white">
-        <h6 class="mb-0"><i class="fas fa-calendar-check me-2"></i>حالة التوفر</h6>
-    </div>
-    <div class="card-body text-center">
-        <% if (painter.availability === 'available') { %>
-            <span class="badge bg-success fs-6 p-2 mb-2">
-                <i class="fas fa-check-circle me-1"></i>متاح
-            </span>
-            <p class="small mb-2 text-muted">جاهز للمشاريع الجديدة</p>
-        <% } else if (painter.availability === 'busy') { %>
-            <span class="badge bg-warning fs-6 p-2 mb-2">
-                <i class="fas fa-clock me-1"></i>مشغول
-            </span>
-            <p class="small mb-2 text-muted">توفر محدود</p>
-        <% } else { %>
-            <span class="badge bg-danger fs-6 p-2 mb-2">
-                <i class="fas fa-times-circle me-1"></i>غير متاح
-            </span>
-            <p class="small mb-2 text-muted">لا يقبل أعمال جديدة</p>
-        <% } %>
-        
-        <% if (painter.availableFrom && painter.availability === 'unavailable') { %>
-            <p class="small text-muted mb-1">
-                <i class="fas fa-calendar me-1"></i>
-                متاح من: <%= new Date(painter.availableFrom).toLocaleDateString('ar') %>
-            </p>
-        <% } %>
-        
-        <a href="/painter/availability" class="btn btn-outline-info btn-sm">
-            <i class="fas fa-edit me-1"></i>إدارة
-        </a>
-    </div>
-</div>
+                    <!-- حالة التوفر -->
+                    <div class="card shadow-sm mt-4 border-info">
+                        <div class="card-header bg-info text-white">
+                            <h6 class="mb-0"><i class="fas fa-calendar-check me-2"></i>حالة التوفر</h6>
+                        </div>
+                        <div class="card-body text-center">
+                            <% if (painter.availability === 'available') { %>
+                                <span class="badge bg-success fs-6 p-2 mb-2">
+                                    <i class="fas fa-check-circle me-1"></i>متاح
+                                </span>
+                                <p class="small mb-2 text-muted">جاهز للمشاريع الجديدة</p>
+                            <% } else if (painter.availability === 'busy') { %>
+                                <span class="badge bg-warning fs-6 p-2 mb-2">
+                                    <i class="fas fa-clock me-1"></i>مشغول
+                                </span>
+                                <p class="small mb-2 text-muted">توفر محدود</p>
+                            <% } else { %>
+                                <span class="badge bg-danger fs-6 p-2 mb-2">
+                                    <i class="fas fa-times-circle me-1"></i>غير متاح
+                                </span>
+                                <p class="small mb-2 text-muted">لا يقبل أعمال جديدة</p>
+                            <% } %>
+                            
+                            <% if (painter.availableFrom && painter.availability === 'unavailable') { %>
+                                <p class="small text-muted mb-1">
+                                    <i class="fas fa-calendar me-1"></i>
+                                    متاح من: <%= new Date(painter.availableFrom).toLocaleDateString('ar') %>
+                                </p>
+                            <% } %>
+                            
+                            <a href="/painter/availability" class="btn btn-outline-info btn-sm">
+                                <i class="fas fa-edit me-1"></i>إدارة
+                            </a>
+                        </div>
+                    </div>
 
                     <h5 class="card-title"><%= painter.name %></h5>
                     <p class="text-muted small">دهان محترف</p>
@@ -83,54 +180,52 @@
                         <a href="/painter/profile" class="btn btn-outline-primary">
                             <i class="fas fa-user-edit me-2"></i>تعديل الملف
                         </a>
-
                     </div>
                 </div>
             </div>
 
             <!-- نظرة عامة على الأعمال -->
-<div class="card shadow-sm mt-4">
-    <div class="card-header bg-light d-flex justify-content-between align-items-center">
-        <h6 class="mb-0">نظرة عامة على الأعمال</h6>
-        <span class="badge bg-info">المهام المقبولة فقط</span>
-    </div>
-    <div class="card-body">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <span class="text-muted">المهام المعلقة</span>
-            <span class="fw-bold text-warning"><%= stats.pendingJobs || 0 %></span>
-        </div>
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <span class="text-muted">المهام النشطة</span>
-            <span class="fw-bold text-primary"><%= stats.activeJobs || 0 %></span>
-        </div>
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <span class="text-muted">المكتملة</span>
-            <span class="fw-bold text-success"><%= stats.completedJobs || 0 %></span>
-        </div>
-        
-        <!-- القسم المالي - للمهام المقبولة فقط -->
-        <% if (stats.totalRevenue > 0) { %>
-        <hr>
-        <div class="d-flex justify-content-between align-items-center mb-2">
-            <span class="text-muted">إجمالي الإيرادات</span>
-            <span class="fw-bold text-info"><%= stats.totalRevenue %> دج</span>
-        </div>
-        <div class="d-flex justify-content-between align-items-center mb-2">
-            <span class="text-muted">عمولة المنصة (10%)</span>
-            <span class="fw-bold text-warning">-<%= stats.totalCommission %> دج</span>
-        </div>
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <span class="text-muted fw-bold">أرباحك</span>
-            <span class="fw-bold text-success"><%= stats.totalEarnings %> دج</span>
-        </div>
-        <% } else { %>
-        <hr>
-        <div class="text-center py-2">
-            <small class="text-muted">ستظهر البيانات المالية عند قبول الطلبات</small>
-        </div>
-        <% } %>
-    </div>
-</div>
+            <div class="card shadow-sm mt-4">
+                <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0">نظرة عامة على الأعمال</h6>
+                    <span class="badge bg-info">المهام المقبولة فقط</span>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="text-muted">المهام المعلقة</span>
+                        <span class="fw-bold text-warning"><%= stats.pendingJobs || 0 %></span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="text-muted">المهام النشطة</span>
+                        <span class="fw-bold text-primary"><%= stats.activeJobs || 0 %></span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="text-muted">المكتملة</span>
+                        <span class="fw-bold text-success"><%= stats.completedJobs || 0 %></span>
+                    </div>
+                    
+                    <% if (stats.totalRevenue > 0) { %>
+                    <hr>
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="text-muted">إجمالي الإيرادات</span>
+                        <span class="fw-bold text-info"><%= stats.totalRevenue %> دج</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="text-muted">عمولة المنصة (10%)</span>
+                        <span class="fw-bold text-warning">-<%= stats.totalCommission %> دج</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="text-muted fw-bold">أرباحك</span>
+                        <span class="fw-bold text-success"><%= stats.totalEarnings %> دج</span>
+                    </div>
+                    <% } else { %>
+                    <hr>
+                    <div class="text-center py-2">
+                        <small class="text-muted">ستظهر البيانات المالية عند قبول الطلبات</small>
+                    </div>
+                    <% } %>
+                </div>
+            </div>
 
             <!-- نقاط المتجر -->
             <div class="card shadow-sm mt-4 border-warning">
@@ -140,7 +235,6 @@
                 <div class="card-body text-center">
                     <h3 class="text-warning"><%= painter.loyaltyPoints || 0 %></h3>
                     <p class="small mb-2">النقاط المتاحة</p>
-                    
                 </div>
             </div>
         </div>
@@ -208,310 +302,167 @@
                     </div>
                 </div>
                 <div class="col-xl-3 col-md-6 mb-3">
-    <div class="card card-hover border-0 shadow-sm">
-        <div class="card-body">
-            <div class="d-flex align-items-center">
-                <div class="flex-shrink-0">
-                    <i class="fas fa-wallet fa-2x text-info"></i>
+                    <div class="card card-hover border-0 shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-wallet fa-2x text-info"></i>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h4 class="mb-0"><%= stats.monthlyEarnings || 0 %> دج</h4>
+                                    <span class="text-muted">هذا الشهر (بعد العمولة)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="flex-grow-1 ms-3">
-                    <h4 class="mb-0"><%= stats.monthlyEarnings || 0 %> دج</h4>
-                    <span class="text-muted">هذا الشهر (بعد العمولة)</span>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
             </div>
 
             <!-- المهام الحديثة والإجراءات السريعة -->
             <div class="row">
                 <!-- المهام الحديثة -->
-<div class="col-lg-8 mb-4">
-    <div class="card shadow-sm">
-        <div class="card-header bg-light d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">طلبات العمل الحديثة</h5>
-            <a href="/painter/orders" class="btn btn-sm btn-outline-primary">عرض الكل</a>
-        </div>
-        <div class="card-body">
-            <% if (recentJobs.length === 0) { %>
-            <div class="text-center py-4">
-                <i class="fas fa-clipboard-list fa-3x text-muted mb-3"></i>
-                <h5 class="text-muted">لا توجد طلبات عمل بعد</h5>
-                <p class="text-muted">سيتم عرض ملفك الشخصي للعملاء في منطقتك</p>
-            </div>
-            <% } else { %>
-            <div class="table-responsive">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>العميل</th>
-                            <th>النوع</th>
-                            <th>الخدمة</th>
-                            <th>الموقع</th>
-                            <th>الميزانية</th>
-                            <th>الحالة</th>
-                            <th>الإجراء</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <% recentJobs.forEach(job => { %>
-                        <tr>
-                            <td>
-                                <div class="d-flex align-items-center">
-                                    <div class="avatar-placeholder bg-secondary rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                         style="width: 30px; height: 30px;">
-                                        <i class="fas fa-user text-white small"></i>
-                                    </div>
-                                    <div>
-                                        <!-- عرض اسم العميل بدون معلومات الاتصال -->
-                                        <div class="fw-semibold">
-                                            <% if (job.source === 'guest') { %>
-                                                <%= job.guestClient.name %>
-                                                <span class="badge bg-info ms-1" title="عميل زائر">ز</span>
-                                            <% } else { %>
-                                                <%= job.client.name %>
-                                            <% } %>
-                                        </div>
-                                        <small class="text-muted">
-                                            <% if (job.source === 'guest') { %>
-                                                طلب زائر
-                                            <% } else { %>
-                                                عميل مسجل
-                                            <% } %>
-                                        </small>
-                                    </div>
-                                </div>
-                            </td>
-                            <td>
-                                <span class="badge bg-<%= job.source === 'guest' ? 'info' : 'primary' %>">
-                                    <%= job.source === 'guest' ? 'زائر' : 'مستخدم' %>
-                                </span>
-                            </td>
-                            <td>
-                                <span class="badge bg-light text-dark border">
-                                    <%= job.serviceType %>
-                                </span>
-                            </td>
-                            <td>
-                                <small>
-                                    <i class="fas fa-map-marker-alt text-danger me-1"></i>
-                                    <%= job.wilaya %>
-                                </small>
-                                <% if (job.area) { %>
-                                <br>
-                                <small class="text-muted">
-                                    <i class="fas fa-ruler-combined me-1"></i>
-                                    <%= job.area %> م²
-                                </small>
-                                <% } %>
-                            </td>
-                            <td>
-                                <span class="fw-bold text-success"><%= job.budget %> دج</span>
-                                <% if (job.totalAmount) { %>
-                                <br>
-                                <small class="text-muted">الإجمالي: <%= job.totalAmount %> دج</small>
-                                <% } %>
-                            </td>
-                            <td>
-                                <span class="badge bg-<%= 
-                                    job.status === 'completed' ? 'success' :
-                                    job.status === 'in_progress' ? 'primary' :
-                                    job.status === 'accepted' ? 'info' :
-                                    job.status === 'pending' ? 'warning' : 'secondary'
-                                %> text-uppercase">
-                                    <%= job.status === 'completed' ? 'مكتمل' :
-                                       job.status === 'in_progress' ? 'قيد التنفيذ' :
-                                       job.status === 'accepted' ? 'مقبول' :
-                                       job.status === 'pending' ? 'معلق' : job.status %>
-                                </span>
-                                <% if (job.preferredDate) { %>
-                                <br>
-                                <small class="text-muted">
-                                    <i class="fas fa-calendar me-1"></i>
-                                    <%= new Date(job.preferredDate).toLocaleDateString('ar') %>
-                                </small>
-                                <% } %>
-                            </td>
-                         <td>
-    <div class="btn-group btn-group-sm">
-        <% if (job.status === 'pending') { %>
-        <!-- زر القبول -->
-        <form action="/painter/orders/<%= job._id %>/accept" method="POST" class="d-inline">
-            <button type="submit" class="btn btn-success btn-sm" title="قبول الطلب">
-                <i class="fas fa-check"></i> قبول
-            </button>
-        </form>
-        <!-- زر الرفض -->
-        <form action="/painter/orders/<%= job._id %>/decline" method="POST" class="d-inline">
-            <button type="submit" class="btn btn-danger btn-sm" title="رفض الطلب">
-                <i class="fas fa-times"></i> رفض
-            </button>
-        </form>
-        <% } else { %>
-        <span class="badge bg-<%= 
-            job.status === 'completed' ? 'success' :
-            job.status === 'in_progress' ? 'primary' :
-            job.status === 'accepted' ? 'info' : 'secondary'
-        %> text-uppercase">
-            <%= job.status === 'completed' ? 'مكتمل' :
-               job.status === 'in_progress' ? 'قيد التنفيذ' :
-               job.status === 'accepted' ? 'مقبول' : job.status %>
-        </span>
-        <% } %>
-    </div>
-</td>
-                        </tr>
-                        <% }); %>
-                    </tbody>
-                </table>
-            </div>
-            <% } %>
-        </div>
-    </div>
-</div>
-      
-<!-- عرض المحفظة -->
-<div class="row mt-4">
-    <div class="col-12">
-        <div class="card shadow-sm">
-            <div class="card-header bg-light d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">
-                    <i class="fas fa-images me-2"></i>عرض أعمالي
-                </h5>
-                <a href="/painter/portfolio" class="btn btn-sm btn-outline-primary">عرض الكل</a>
-            </div>
-            <div class="card-body">
-                <% 
-                // إدارة قوية للمحفظة
-                const portfolio = painter.portfolio || [];
-                %>
-                
-                <% if (portfolio.length > 0) { %>
-                    <div class="row">
-                        <% 
-                        // عرض أول 4 عناصر فقط في لوحة التحكم
-                        const showcasePortfolio = portfolio.slice(0, 4);
-                        %>
-                        
-                        <% showcasePortfolio.forEach((project, index) => { %>
-                        <div class="col-xl-3 col-lg-3 col-md-6 mb-3">
-                            <div class="card portfolio-card h-100 border-0 shadow-sm">
-                                <div class="portfolio-image-container" 
-                                     style="height: 150px; overflow: hidden; background: #f8f9fa; position: relative;">
-                                    
-                                    <% 
-                                    // استخدام project.images[0].url بدلاً من project.flickrUrl
-                                    const projectImage = project.images && project.images[0] ? project.images[0].url : null;
-                                    %>
-                                    
-                                    <% if (projectImage) { %>
-                                        <img src="<%= projectImage %>" 
-                                             class="card-img-top" 
-                                             alt="<%= project.title || 'مشروع المحفظة' %>"
-                                             style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;"
-                                             onerror="this.src='https://via.placeholder.com/300x150/f8f9fa/6c757d?text=Image+Not+Found'"
-                                             onload="this.style.opacity='1'"
-                                             onmouseover="this.style.transform='scale(1.05)'"
-                                             onmouseout="this.style.transform='scale(1)'">
-                                    <% } else { %>
-                                        <div class="w-100 h-100 d-flex align-items-center justify-content-center bg-light">
-                                            <i class="fas fa-image fa-2x text-muted"></i>
-                                        </div>
-                                    <% } %>
-                                    
-                                    <!-- شارة المشروع -->
-                                    <% if (project.uploadedByAdmin) { %>
-                                        <span class="position-absolute top-0 end-0 m-2 badge bg-success" 
-                                              style="font-size: 0.6rem;">
-                                            <i class="fas fa-check-circle me-1"></i>موثوق
-                                        </span>
-                                    <% } %>
-                                </div>
-                                
-                                <div class="card-body p-3 d-flex flex-column">
-                                    <h6 class="card-title mb-2" style="font-size: 0.9rem;">
-                                        <%= project.title || 'مشروع بدون عنوان' %>
-                                    </h6>
-                                    
-                                    <% if (project.description) { %>
-                                    <p class="card-text small text-muted mb-2 flex-grow-1" 
-                                       style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.3;">
-                                        <%= project.description %>
-                                    </p>
-                                    <% } %>
-                                    
-                                    <div class="d-flex justify-content-between align-items-center mt-auto">
-                                        <small class="text-muted">
-                                            <% if (project.category) { %>
-                                                <i class="fas fa-tag me-1"></i><%= project.category %>
-                                            <% } else { %>
-                                                <i class="fas fa-paint-roller me-1"></i>مشروع
-                                            <% } %>
-                                        </small>
-                                        
-                                        <!-- شارة عدد الصور -->
-                                        <% if (project.images && project.images.length > 1) { %>
-                                            <small class="badge bg-primary">
-                                                <i class="fas fa-images me-1"></i><%= project.images.length %>
-                                            </small>
-                                        <% } %>
-                                    </div>
-                                </div>
+                <div class="col-lg-8 mb-4">
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">طلبات العمل الحديثة</h5>
+                            <a href="/painter/orders" class="btn btn-sm btn-outline-primary">عرض الكل</a>
+                        </div>
+                        <div class="card-body">
+                            <% if (recentJobs.length === 0) { %>
+                            <div class="text-center py-4">
+                                <i class="fas fa-clipboard-list fa-3x text-muted mb-3"></i>
+                                <h5 class="text-muted">لا توجد طلبات عمل بعد</h5>
+                                <p class="text-muted">سيتم عرض ملفك الشخصي للعملاء في منطقتك</p>
                             </div>
-                        </div>
-                        <% }); %>
-                    </div>
-                    
-                    <!-- إحصائيات المحفظة -->
-                    <div class="row mt-3">
-                        <div class="col-12">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <span class="badge bg-primary">
-                                        <i class="fas fa-images me-1"></i>
-                                        <%= portfolio.length %> إجمالي المشاريع
-                                    </span>
-                                    <span class="badge bg-success ms-2">
-                                        <i class="fas fa-check-circle me-1"></i>
-                                        <%= portfolio.filter(p => p.uploadedByAdmin).length %> موثوق
-                                    </span>
-                                    <span class="badge bg-info ms-2">
-                                        <i class="fas fa-image me-1"></i>
-                                        <%= portfolio.reduce((total, p) => total + (p.images ? p.images.length : 0), 0) %> صورة
-                                    </span>
-                                </div>
-                                <div>
-                                    <a href="/painter/portfolio" class="btn btn-primary btn-sm">
-                                        <i class="fas fa-eye me-1"></i>عرض المحفظة كاملة
-                                    </a>
-                                </div>
+                            <% } else { %>
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>العميل</th>
+                                            <th>النوع</th>
+                                            <th>الخدمة</th>
+                                            <th>الموقع</th>
+                                            <th>الميزانية</th>
+                                            <th>الحالة</th>
+                                            <th>الإجراء</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% recentJobs.forEach(job => { %>
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="avatar-placeholder bg-secondary rounded-circle me-2 d-flex align-items-center justify-content-center"
+                                                         style="width: 30px; height: 30px;">
+                                                        <i class="fas fa-user text-white small"></i>
+                                                    </div>
+                                                    <div>
+                                                        <div class="fw-semibold">
+                                                            <% if (job.source === 'guest') { %>
+                                                                <%= job.guestClient.name %>
+                                                                <span class="badge bg-info ms-1" title="عميل زائر">ز</span>
+                                                            <% } else { %>
+                                                                <%= job.client.name %>
+                                                            <% } %>
+                                                        </div>
+                                                        <small class="text-muted">
+                                                            <% if (job.source === 'guest') { %>
+                                                                طلب زائر
+                                                            <% } else { %>
+                                                                عميل مسجل
+                                                            <% } %>
+                                                        </small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-<%= job.source === 'guest' ? 'info' : 'primary' %>">
+                                                    <%= job.source === 'guest' ? 'زائر' : 'مستخدم' %>
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-light text-dark border">
+                                                    <%= job.serviceType %>
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <small>
+                                                    <i class="fas fa-map-marker-alt text-danger me-1"></i>
+                                                    <%= job.wilaya %>
+                                                </small>
+                                                <% if (job.area) { %>
+                                                <br>
+                                                <small class="text-muted">
+                                                    <i class="fas fa-ruler-combined me-1"></i>
+                                                    <%= job.area %> م²
+                                                </small>
+                                                <% } %>
+                                            </td>
+                                            <td>
+                                                <span class="fw-bold text-success"><%= job.budget %> دج</span>
+                                                <% if (job.totalAmount) { %>
+                                                <br>
+                                                <small class="text-muted">الإجمالي: <%= job.totalAmount %> دج</small>
+                                                <% } %>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-<%= 
+                                                    job.status === 'completed' ? 'success' :
+                                                    job.status === 'in_progress' ? 'primary' :
+                                                    job.status === 'accepted' ? 'info' :
+                                                    job.status === 'pending' ? 'warning' : 'secondary'
+                                                %> text-uppercase">
+                                                    <%= job.status === 'completed' ? 'مكتمل' :
+                                                       job.status === 'in_progress' ? 'قيد التنفيذ' :
+                                                       job.status === 'accepted' ? 'مقبول' :
+                                                       job.status === 'pending' ? 'معلق' : job.status %>
+                                                </span>
+                                                <% if (job.preferredDate) { %>
+                                                <br>
+                                                <small class="text-muted">
+                                                    <i class="fas fa-calendar me-1"></i>
+                                                    <%= new Date(job.preferredDate).toLocaleDateString('ar') %>
+                                                </small>
+                                                <% } %>
+                                            </td>
+                                            <td>
+                                                <div class="btn-group btn-group-sm">
+                                                    <% if (job.status === 'pending') { %>
+                                                    <form action="/painter/orders/<%= job._id %>/accept" method="POST" class="d-inline">
+                                                        <button type="submit" class="btn btn-success btn-sm" title="قبول الطلب">
+                                                            <i class="fas fa-check"></i> قبول
+                                                        </button>
+                                                    </form>
+                                                    <form action="/painter/orders/<%= job._id %>/decline" method="POST" class="d-inline">
+                                                        <button type="submit" class="btn btn-danger btn-sm" title="رفض الطلب">
+                                                            <i class="fas fa-times"></i> رفض
+                                                        </button>
+                                                    </form>
+                                                    <% } else { %>
+                                                    <span class="badge bg-<%= 
+                                                        job.status === 'completed' ? 'success' :
+                                                        job.status === 'in_progress' ? 'primary' :
+                                                        job.status === 'accepted' ? 'info' : 'secondary'
+                                                    %> text-uppercase">
+                                                        <%= job.status === 'completed' ? 'مكتمل' :
+                                                           job.status === 'in_progress' ? 'قيد التنفيذ' :
+                                                           job.status === 'accepted' ? 'مقبول' : job.status %>
+                                                    </span>
+                                                    <% } %>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <% }); %>
+                                    </tbody>
+                                </table>
                             </div>
+                            <% } %>
                         </div>
                     </div>
-                    
-                <% } else { %>
-                    <div class="text-center py-4">
-                        <i class="fas fa-images fa-3x text-muted mb-3"></i>
-                        <h5 class="text-muted">لا توجد عناصر في المحفظة بعد</h5>
-                        <p class="text-muted mb-3">اعرض أعمالك لجذب المزيد من العملاء</p>
-                        <div class="d-flex justify-content-center gap-2 flex-wrap">
-                            <a href="https://wa.me/1234567890?text=مرحباً! أرغب في إضافة صور إلى محفظتي في بينتيلو برو. معرف الدهان الخاص بي هو: <%= painter._id %>" 
-                               class="btn btn-success btn-sm" target="_blank">
-                                <i class="fab fa-whatsapp me-1"></i>إضافة صور عبر واتساب
-                            </a>
-                            <a href="/painter/portfolio" class="btn btn-outline-primary btn-sm">
-                                <i class="fas fa-info-circle me-1"></i>المزيد من المعلومات
-                            </a>
-                        </div>
-                    </div>
-                <% } %>
-            </div>
-        </div>
-    </div>
-</div>
+                </div>
 
-<!-- الإجراءات السريعة -->
+                <!-- الإجراءات السريعة -->
                 <div class="col-lg-4 mb-4">
                     <div class="card shadow-sm">
                         <div class="card-header bg-light">
@@ -525,7 +476,6 @@
                                 <a href="/painter/portfolio" class="btn btn-outline-primary text-start">
                                     <i class="fas fa-images me-2"></i>إدارة المحفظة
                                 </a>
-                               
                                 <a href="/painter/availability" class="btn btn-outline-success text-start">
                                     <i class="fas fa-calendar-check me-2"></i>تعيين التوفر
                                 </a>
@@ -564,6 +514,161 @@
                     </div>
                 </div>
             </div>
+
+            <!-- عرض المحفظة -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">
+                                <i class="fas fa-images me-2"></i>عرض أعمالي
+                            </h5>
+                            <a href="/painter/portfolio" class="btn btn-sm btn-outline-primary">عرض الكل</a>
+                        </div>
+                        <div class="card-body">
+                            <% const portfolio = painter.portfolio || []; %>
+                            <% if (portfolio.length > 0) { %>
+                                <div class="row">
+                                    <% const showcasePortfolio = portfolio.slice(0, 4); %>
+                                    <% showcasePortfolio.forEach((project, index) => { %>
+                                    <div class="col-xl-3 col-lg-3 col-md-6 mb-3">
+                                        <div class="card portfolio-card h-100 border-0 shadow-sm">
+                                            <div class="portfolio-image-container" 
+                                                 style="height: 150px; overflow: hidden; background: #f8f9fa; position: relative;">
+                                                <% const projectImage = project.images && project.images[0] ? project.images[0].url : null; %>
+                                                <% if (projectImage) { %>
+                                                    <img src="<%= projectImage %>" 
+                                                         class="card-img-top" 
+                                                         alt="<%= project.title || 'مشروع المحفظة' %>"
+                                                         style="width: 100%; height: 100%; object-fit: cover;"
+                                                         onerror="this.src='https://via.placeholder.com/300x150/f8f9fa/6c757d?text=Image+Not+Found'">
+                                                <% } else { %>
+                                                    <div class="w-100 h-100 d-flex align-items-center justify-content-center bg-light">
+                                                        <i class="fas fa-image fa-2x text-muted"></i>
+                                                    </div>
+                                                <% } %>
+                                                <% if (project.uploadedByAdmin) { %>
+                                                    <span class="position-absolute top-0 end-0 m-2 badge bg-success" 
+                                                          style="font-size: 0.6rem;">
+                                                        <i class="fas fa-check-circle me-1"></i>موثوق
+                                                    </span>
+                                                <% } %>
+                                            </div>
+                                            <div class="card-body p-3 d-flex flex-column">
+                                                <h6 class="card-title mb-2" style="font-size: 0.9rem;">
+                                                    <%= project.title || 'مشروع بدون عنوان' %>
+                                                </h6>
+                                                <% if (project.description) { %>
+                                                <p class="card-text small text-muted mb-2 flex-grow-1" 
+                                                   style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                                                    <%= project.description %>
+                                                </p>
+                                                <% } %>
+                                                <div class="d-flex justify-content-between align-items-center mt-auto">
+                                                    <small class="text-muted">
+                                                        <% if (project.category) { %>
+                                                            <i class="fas fa-tag me-1"></i><%= project.category %>
+                                                        <% } else { %>
+                                                            <i class="fas fa-paint-roller me-1"></i>مشروع
+                                                        <% } %>
+                                                    </small>
+                                                    <% if (project.images && project.images.length > 1) { %>
+                                                        <small class="badge bg-primary">
+                                                            <i class="fas fa-images me-1"></i><%= project.images.length %>
+                                                        </small>
+                                                    <% } %>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <% }); %>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-12">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <span class="badge bg-primary">
+                                                    <i class="fas fa-images me-1"></i>
+                                                    <%= portfolio.length %> إجمالي المشاريع
+                                                </span>
+                                                <span class="badge bg-success ms-2">
+                                                    <i class="fas fa-check-circle me-1"></i>
+                                                    <%= portfolio.filter(p => p.uploadedByAdmin).length %> موثوق
+                                                </span>
+                                                <span class="badge bg-info ms-2">
+                                                    <i class="fas fa-image me-1"></i>
+                                                    <%= portfolio.reduce((total, p) => total + (p.images ? p.images.length : 0), 0) %> صورة
+                                                </span>
+                                            </div>
+                                            <div>
+                                                <a href="/painter/portfolio" class="btn btn-primary btn-sm">
+                                                    <i class="fas fa-eye me-1"></i>عرض المحفظة كاملة
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            <% } else { %>
+                                <div class="text-center py-4">
+                                    <i class="fas fa-images fa-3x text-muted mb-3"></i>
+                                    <h5 class="text-muted">لا توجد عناصر في المحفظة بعد</h5>
+                                    <p class="text-muted mb-3">اعرض أعمالك لجذب المزيد من العملاء</p>
+                                    <div class="d-flex justify-content-center gap-2 flex-wrap">
+                                        <a href="https://wa.me/213796530868?text=مرحباً! أرغب في إضافة صور إلى محفظتي في بينتيلو برو." 
+                                           class="btn btn-success btn-sm" target="_blank">
+                                            <i class="fab fa-whatsapp me-1"></i>إضافة صور عبر واتساب
+                                        </a>
+                                        <a href="/painter/portfolio" class="btn btn-outline-primary btn-sm">
+                                            <i class="fas fa-info-circle me-1"></i>المزيد من المعلومات
+                                        </a>
+                                    </div>
+                                </div>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ======================== NEW: المتجر – مستلزمات الدهان (StoreProducts) ======================== -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="store-section-card shadow-sm">
+                        <div class="store-header">
+                            <h5><i class="fas fa-store me-2"></i>المتجر – مستلزمات الدهان</h5>
+                            <a href="/painter/store" class="store-view-all">
+                                عرض الكل <i class="fas fa-arrow-left ms-1"></i>
+                            </a>
+                        </div>
+                        <div class="card-body p-0">
+                            <% if (storeProducts && storeProducts.length > 0) { %>
+                                <div class="store-grid">
+                                    <% storeProducts.forEach(product => { %>
+                                        <a href="/painter/store-products/<%= product._id %>" class="store-product-card">
+                                            <div class="store-product-img-wrap">
+                                                <img src="<%= (product.images && product.images[0]) ? product.images[0] : (product.image || '/img/placeholder-product.png') %>" 
+                                                     alt="<%= product.name %>">
+                                                <span class="store-product-category">
+                                                    <%= product.category === 'paint' ? 'دهان' : product.category === 'tools' ? 'أدوات' : 'إكسسوارات' %>
+                                                </span>
+                                            </div>
+                                            <div class="store-product-body">
+                                                <h6 class="store-product-name"><%= product.name %></h6>
+                                                <div class="store-product-price"><%= product.price.toLocaleString('ar-DZ') %> دج</div>
+                                            </div>
+                                        </a>
+                                    <% }); %>
+                                </div>
+                            <% } else { %>
+                                <div class="text-center py-5">
+                                    <i class="fas fa-box-open fa-3x text-muted mb-3"></i>
+                                    <p>لا توجد منتجات متاحة حالياً</p>
+                                </div>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 </div>
