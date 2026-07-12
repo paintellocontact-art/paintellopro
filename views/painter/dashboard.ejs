@@ -1,8 +1,21 @@
 
 <%- include('../partials/header', { title: 'لوحة التحكم - بينتيلو برو',
     user: painter,
-    painter: painter , isAndroidApp: typeof isAndroidApp !== 'undefined' ? isAndroidApp : false }) %>
+painter: painter , isAndroidApp: typeof isAndroidApp !== 'undefined' ? isAndroidApp : false }) %>
 
+<!-- ===== Meta Pixel: Lead Event (browser side) ===== -->
+<% if (typeof metaEventIdLead !== 'undefined' && metaEventIdLead) { %>
+<script>
+  (function() {
+    if (typeof fbq !== 'undefined') {
+      fbq('track', 'Lead', {}, {
+        eventID: '<%= metaEventIdLead %>'
+      });
+      console.log('🎯 Browser Lead event sent with ID:', '<%= metaEventIdLead %>');
+    }
+  })();
+</script>
+<% } %>
 <style>
   :root {
     --primary-blue: #295797;
