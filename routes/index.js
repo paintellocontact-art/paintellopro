@@ -314,10 +314,10 @@ router.get('/products/:id', async (req, res) => {
     const product = await Product.findById(req.params.id);
     if (!product) return res.status(404).render('404');
 
-    // ----- Related products -----
+    // ----- Related products (same category) -----
     const relatedProducts = await Product.find({
-      featured: true,
-      _id: { $ne: product._id }       // exclude the current product
+      category: product.category,
+      _id: { $ne: product._id }
     })
       .sort({ createdAt: -1 })
       .limit(8);
@@ -362,7 +362,7 @@ router.get('/products/:id', async (req, res) => {
     res.render('ar/products/product', {
       title: product.name + ' - Paintello Pro',
       product,
-      relatedProducts,               // 👈 now passed to the view
+      relatedProducts,               // now correctly populated by category
       metaEventIdPageView: pageViewId,
       metaEventIdView: viewContentId,
       metaEventIdCart: addToCartId,
