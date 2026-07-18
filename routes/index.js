@@ -13,6 +13,7 @@ const { createPayment, verifyPayment } = require('../helpers/chargily');
 const { sendPurchaseForDeliveredCOD } = require('../helpers/deliveryEvents');
 const ProductOrder = require('../models/ProductOrder');
 const { sendTelegramMessage } = require('../helpers/telegram');
+const { isBotRequest } = require('../utils/botDetection');
 
 const DELIVERY_SECRET = process.env.DELIVERY_SECRET;
 
@@ -60,12 +61,12 @@ router.get('/products/add-to-cart/:id', async (req, res) => {
       cart.totalQty += cart.items[id].qty;
       cart.totalPrice += cart.items[id].price;
     }
-// 🔥 Server‑side AddToCart with the same event ID as the browser
+// 🔥 Server‑side AddToCart - FIXED like paintello
     const eventId = req.query.eventId;
-    const userData = getCleanUserData(req);
+    const userData = getCleanUserData(req); // uses FINAL bot blocking
     
     if (userData && eventId) {
-      await sendMetaCAPIEvent({
+      sendMetaCAPIEvent({
         eventName: 'AddToCart',
         eventId,
         userData,
@@ -83,7 +84,7 @@ router.get('/products/add-to-cart/:id', async (req, res) => {
         },
         eventSourceUrl: `${req.protocol}://${req.get('host')}${req.originalUrl}`,
         testEventCode: req.query.test_event_code || process.env.FB_TEST_EVENT_CODE,
-      });
+      }).catch(()=>{});
     }
     // Redirect to checkout
     res.redirect('/checkout');
@@ -96,6 +97,11 @@ router.get('/products/add-to-cart/:id', async (req, res) => {
 
 // ==================== HOME ROUTES (BEFORE any parameterised catch-all) ====================
 router.get('/', async (req, res) => {
+  // === BOT BLOCK - like paintello final ===
+  if (isBotRequest(req, { blockCloudIPs: true })) {
+    console.log(`🤖 BLOCKED HOME / UA=${(req.headers['user-agent']||'').slice(0,80)} IP=${req.headers['x-forwarded-for']?.split(',')[0]}`);
+    return res.status(200).send('ok');
+  }
   try {
     const featuredPainters = await Painter.find({
       'verification.status': 'verified',
@@ -113,13 +119,13 @@ router.get('/', async (req, res) => {
     const pageViewId = generateEventId();
 
     if (userData) {
-      await sendMetaCAPIEvent({
+      sendMetaCAPIEvent({
         eventName: 'PageView',
         eventId: pageViewId,
         userData,
         eventSourceUrl: `${req.protocol}://${req.get('host')}${req.originalUrl}`,
         testEventCode: req.query.test_event_code || process.env.FB_TEST_EVENT_CODE,
-      });
+      }).catch(()=>{});
     }
 
     res.render('index', {
@@ -147,6 +153,9 @@ router.get('/', async (req, res) => {
 
 // Arabic home
 router.get('/ar', async (req, res) => {
+  if (isBotRequest(req, { blockCloudIPs: true })) {
+    return res.status(200).send('ok');
+  }
   try {
     const featuredPainters = await Painter.find({
       'verification.status': 'verified',
@@ -164,13 +173,13 @@ router.get('/ar', async (req, res) => {
     const pageViewId = generateEventId();
 
     if (userData) {
-      await sendMetaCAPIEvent({
+      sendMetaCAPIEvent({
         eventName: 'PageView',
         eventId: pageViewId,
         userData,
         eventSourceUrl: `${req.protocol}://${req.get('host')}${req.originalUrl}`,
         testEventCode: req.query.test_event_code || process.env.FB_TEST_EVENT_CODE,
-      });
+      }).catch(()=>{});
     }
 
     res.render('ar/index', {
@@ -289,13 +298,13 @@ router.get('/products/ar', async (req, res) => {
 
     // Server-side PageView event
     if (userData) {
-      await sendMetaCAPIEvent({
+      sendMetaCAPIEvent({
         eventName: 'PageView',
         eventId: pageViewId,
         userData,
         eventSourceUrl: `${req.protocol}://${req.get('host')}${req.originalUrl}`,
         testEventCode: req.query.test_event_code || process.env.FB_TEST_EVENT_CODE,
-      });
+      }).catch(()=>{});
     }
 
     res.render('ar/products/index', {
@@ -329,13 +338,13 @@ router.get('/products/:id', async (req, res) => {
     const addToCartId = generateEventId();
 
     if (userData) {
-      await sendMetaCAPIEvent({
+      sendMetaCAPIEvent({
         eventName: 'PageView',
         eventId: pageViewId,
         userData,
         eventSourceUrl: `${req.protocol}://${req.get('host')}${req.originalUrl}`,
         testEventCode: req.query.test_event_code || process.env.FB_TEST_EVENT_CODE,
-      });
+      }).catch(()=>{});
     }
     if (userData) {
       await sendMetaCAPIEvent({
@@ -730,13 +739,13 @@ router.get('/checkout', async (req, res) => {
 
     // Pixel PageView (server)
     if (userData) {
-      await sendMetaCAPIEvent({
+      sendMetaCAPIEvent({
         eventName: 'PageView',
         eventId: pageViewId,
         userData,
         eventSourceUrl: `${req.protocol}://${req.get('host')}${req.originalUrl}`,
         testEventCode: req.query.test_event_code || process.env.FB_TEST_EVENT_CODE,
-      });
+      }).catch(()=>{});
     }
 
     // Render the Arabic checkout page
@@ -833,9 +842,9 @@ router.post('/checkout', async (req, res) => {
 
       await order.save();
 
-      // Pixel InitiateCheckout
+      // Pixel InitiateCheckout - FIXED non-blocking like paintello
       if (userData) {
-        await sendMetaCAPIEvent({
+        sendMetaCAPIEvent({
           eventName: 'InitiateCheckout',
           eventId: initiateCheckoutId,
           userData,
@@ -852,7 +861,7 @@ router.post('/checkout', async (req, res) => {
           },
           eventSourceUrl: `${req.protocol}://${req.get('host')}${req.originalUrl}`,
           testEventCode: req.query.test_event_code || process.env.FB_TEST_EVENT_CODE
-        });
+        }).catch(()=>{});
       }
       const deliveryLink = DELIVERY_SECRET
         ? `https://www.paintello.uk/order/deliver/${order._id}?secret=${encodeURIComponent(DELIVERY_SECRET)}`
@@ -900,7 +909,7 @@ router.post('/checkout', async (req, res) => {
   // ---------- Online Payment (Chargily) ----------
   if (paymentMethod === 'chargily') {
     if (userData) {
-      await sendMetaCAPIEvent({
+      sendMetaCAPIEvent({
         eventName: 'InitiateCheckout',
         eventId: initiateCheckoutId,
         userData,
@@ -1004,7 +1013,7 @@ router.get('/payment/success', async (req, res) => {
     await order.save();
 
     if (pendingOrder.savedUserData) {
-      await sendMetaCAPIEvent({
+      sendMetaCAPIEvent({
         eventName: 'Purchase',
         eventId: `purchase_${order._id}`,
         userData: pendingOrder.savedUserData,
@@ -1022,7 +1031,7 @@ router.get('/payment/success', async (req, res) => {
         },
         eventSourceUrl: `${req.protocol}://${req.get('host')}${req.originalUrl}`,
         testEventCode: req.query.test_event_code || process.env.FB_TEST_EVENT_CODE
-      });
+      }).catch(()=>{});
     }
 
     req.session.cart = null;
@@ -1060,10 +1069,16 @@ router.get('/confirmation', async (req, res) => {
   res.render('confirmation', { ...data, user: req.session.user || null });
 });
 
-// Admin delivery confirmation route
+// Admin delivery confirmation route - FIXED like paintello (block Telegram preview bots)
 router.get('/order/deliver/:orderId', async (req, res) => {
   if (!DELIVERY_SECRET || req.query.secret !== DELIVERY_SECRET) {
     return res.status(403).send('Access denied');
+  }
+  // BLOCK Telegram / WhatsApp / FB preview bots that auto-click the link
+  const ua = req.headers['user-agent'] || '';
+  if (isBotRequest(req, { blockCloudIPs: true }) || /TelegramBot|facebookexternalhit|WhatsApp|TwitterBot/i.test(ua)) {
+    console.log(`🤖 Preview bot blocked from deliver link: ${ua.slice(0,80)}`);
+    return res.status(200).send('Link preview - order not marked as delivered. Open in browser to confirm.');
   }
 
   try {
