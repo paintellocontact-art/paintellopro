@@ -216,3 +216,13 @@ const PORT = process.env.PORT || 3000;
 
 
 module.exports = app;
+
+// Only start server if not imported as module
+if (require.main === module) {
+  const PORT = process.env.PORT || 3000;
+  const http = require('http');
+  const server = http.createServer(app);
+  server.listen(PORT, () => {
+    console.log(`🚀 Server running on port ${PORT}`);
+  });
+}
