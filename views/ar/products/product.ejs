@@ -1,18 +1,9 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <%
-title: product.name + ' - Paintello Pro',
-
-  metaEventIdView: typeof metaEventIdView !== 'undefined' ? metaEventIdView : '',
-  metaEventIdCart: typeof metaEventIdCart !== 'undefined' ? metaEventIdCart : '',
-  user: typeof user !== 'undefined' ? user : null,
-  sessionPainter: typeof sessionPainter !== 'undefined' ? sessionPainter : null,
-  whatsappPhone: typeof whatsappPhone !== 'undefined' ? whatsappPhone : '213796530868',
-
   const pixelId = typeof fbPixelId !== 'undefined' ? fbPixelId : process.env.FB_PIXEL_ID;
   const pageViewEventId = typeof metaEventIdPageView !== 'undefined' && metaEventIdPageView ? metaEventIdPageView : null;
   const advancedMatching = { country: 'dz' };
@@ -38,7 +29,7 @@ title: product.name + ' - Paintello Pro',
     t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)
   }(window, document,'script','https://connect.facebook.net/en_US/fbevents.js');
   fbq('init', <%- JSON.stringify(pixelId) %>, <%- JSON.stringify(advancedMatching).replace(/</g, '\\u003c') %>);
-  
+ 
 </script>
 <noscript>
   <img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=<%= pixelId %>&ev=PageView&noscript=1" />
@@ -144,6 +135,7 @@ title: product.name + ' - Paintello Pro',
         </div>
     </div>
 </nav>
+
 <style>
   :root { --primary-blue:#295797; --accent-blue:#1C84C1; --primary-dark:#1E3F5C; --text-dark:#2D3748; --text-gray:#4A5568; --bg-light:#E8EEF6; --bg-white:#FFFFFF; --border-light:#D1DCE6; }
   body { font-family: 'Tajawal','Cairo',sans-serif; background-color: var(--bg-light); }
