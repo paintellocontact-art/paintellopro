@@ -1080,7 +1080,7 @@ router.get('/order/deliver/:orderId', async (req, res) => {
     order.status = 'delivered';
     await order.save();
 
-    // Trigger the Purchase CAPI event f
+    // Trigger the Purchase CAPI event
     await sendPurchaseForDeliveredCOD(order);
 
     res.send(`Order ${order._id} marked as delivered. Purchase event sent.`);
