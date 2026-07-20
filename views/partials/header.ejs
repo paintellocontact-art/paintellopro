@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <%
-  const pixelId = typeof fbPixelId !== 'undefined' ? fbPixelId : process.env.FB_PIXEL_ID;
-  const pageViewEventId = typeof metaEventIdPageView !== 'undefined' && metaEventIdPageView ? metaEventIdPageView : null;
+  const pixelId = typeof fbPixelId !== 'undefined' && fbPixelId ? fbPixelId : (typeof process !== 'undefined' && process.env && process.env.FB_PIXEL_ID ? process.env.FB_PIXEL_ID : '');
+  const pageViewEventId = typeof metaEventIdPageView !== 'undefined' && metaEventIdPageView ? metaEventIdPageView : '';
   const advancedMatching = { country: 'dz' };
   if (typeof user !== 'undefined' && user) {
     if (user.email) advancedMatching.em = user.email;
@@ -22,28 +22,37 @@
   }
 %>
 <% if (pixelId) { %>
+<!-- Facebook Pixel Code - MATCH HOME -->
 <script>
-  !function(f,b,e,v,n,t,s){
-    if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
-    t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)
-  }(window, document,'script','https://connect.facebook.net/en_US/fbevents.js');
-  fbq('init', <%- JSON.stringify(pixelId) %>, <%- JSON.stringify(advancedMatching).replace(/</g, '\\u003c') %>);
-  <% if (pageViewEventId) { %>
-    fbq('track', 'PageView', {}, { eventID: <%- JSON.stringify(pageViewEventId) %> });
-  <% } else { %>
-    fbq('track', 'PageView');
-  <% } %>
-  console.log('Meta Pixel PageView sent', { eventID: <%- JSON.stringify(pageViewEventId) %>, advancedMatching: <%- JSON.stringify(Object.keys(advancedMatching)) %> });
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+
+fbq('init', <%- JSON.stringify(pixelId) %>, <%- JSON.stringify(advancedMatching).replace(/</g, '\\u003c') %>);
+
+// ✅ ALWAYS track PageView - SAME AS HOME REFERENCE
+fbq('track', 'PageView', {}, {
+  eventID: <%- JSON.stringify(pageViewEventId || ('pv_' + Date.now())) %>
+});
+
+console.log('🎯 Pixel ID:', <%- JSON.stringify(pixelId) %>);
+console.log('🎯 PageView Event ID:', <%- JSON.stringify(pageViewEventId) %>);
 </script>
 <noscript>
   <img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=<%= pixelId %>&ev=PageView&noscript=1" />
 </noscript>
+<% } else { %>
+<script>console.warn('⚠️ FB_PIXEL_ID missing - pixel not loaded');</script>
 <% } %>
+
     <!-- Google Tag Manager -->
     <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-WQVTHK89');</script>
-    <!-- End Google Tag Manager -->
-    <!-- Google tag (gtag.js) -->
+    <!-- Google tag -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-HH68LJB4LB"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
@@ -60,44 +69,24 @@
         })(window, document, "clarity", "script", "u0kvphhg42");
     </script>
     <title><%= title %> - Paintello Pro</title>
-    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="/css/style.css" rel="stylesheet">
     <style>
-        :root {
-            --primary-blue: #295797;
-            --accent-blue:  #1C84C1;
-            --primary-dark: #1E3F5C;
-            --primary-light: #4A7FA8;
-            --text-dark: #2D3748;
-            --text-gray: #4A5568;
-            --bg-light: #E8EEF6;
-            --bg-white: #FFFFFF;
-            --border-light: #D1DCE6;
-            --shadow-sm: 0 2px 8px rgba(41, 87, 151, 0.08);
-            --shadow-md: 0 4px 12px rgba(41, 87, 151, 0.12);
-            --shadow-lg: 0 8px 24px rgba(41, 87, 151, 0.16);
-            --radius-sm: 8px;
-            --radius-md: 12px;
-            --radius-lg: 16px;
-        }
+        :root { --primary-blue:#295797; --accent-blue:#1C84C1; --primary-dark:#1E3F5C; --text-dark:#2D3748; --bg-light:#E8EEF6; --bg-white:#FFFFFF; --border-light:#D1DCE6; }
         body { font-family: 'Inter', sans-serif; color: var(--text-dark); background: var(--bg-light); }
-        .navbar-modern { background: var(--bg-white) !important; box-shadow: var(--shadow-sm); padding: 12px 0; }
-        .navbar-brand-modern { font-weight: 800; font-size: 1.5rem; background: linear-gradient(135deg, var(--primary-blue), var(--accent-blue)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; display: flex; align-items: center; gap: 8px; }
-        .nav-link-modern { color: var(--text-dark) !important; font-weight: 500; padding: 8px 16px !important; border-radius: var(--radius-sm); }
-        .nav-link-modern:hover { background: var(--bg-light); color: var(--primary-blue) !important; }
-        .btn-login-modern { background: transparent; border: 1px solid var(--border-light); color: var(--text-dark); padding: 8px 20px; border-radius: 40px; font-weight: 500; text-decoration: none; }
-        .btn-signup-modern { background: var(--primary-blue); border: none; color: white; padding: 8px 20px; border-radius: 40px; font-weight: 600; text-decoration: none; }
-        .avatar-dropdown { display: flex; align-items: center; gap: 10px; cursor: pointer; padding: 6px 12px; border-radius: 40px; background: var(--bg-light); }
-        .avatar-small { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; background: linear-gradient(135deg, var(--primary-blue), var(--accent-blue)); display: flex; align-items: center; justify-content: center; color: white; }
+        .navbar-modern { background: var(--bg-white) !important; box-shadow: 0 2px 8px rgba(41,87,151,0.08); padding: 12px 0; }
+        .navbar-brand-modern { font-weight:800; font-size:1.5rem; background:linear-gradient(135deg,var(--primary-blue),var(--accent-blue)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; display:flex; align-items:center; gap:8px; }
+        .nav-link-modern { color:var(--text-dark)!important; font-weight:500; padding:8px 16px!important; }
+        .btn-login-modern { background:transparent; border:1px solid var(--border-light); padding:8px 20px; border-radius:40px; text-decoration:none; }
+        .btn-signup-modern { background:var(--primary-blue); color:white; padding:8px 20px; border-radius:40px; text-decoration:none; }
+        .avatar-dropdown { display:flex; align-items:center; gap:10px; padding:6px 12px; border-radius:40px; background:var(--bg-light); }
+        .avatar-small { width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg,var(--primary-blue),var(--accent-blue)); display:flex; align-items:center; justify-content:center; color:white; }
     </style>
 </head>
 <body>
-<!-- Google Tag Manager (noscript) -->
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-WQVTHK89" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-<!-- Navbar (kept from original) -->
 <nav class="navbar navbar-expand-lg navbar-modern sticky-top">
     <div class="container">
         <a class="navbar-brand navbar-brand-modern" href="/ar"><i class="fas fa-paint-roller"></i><span>Paintello Pro</span></a>
@@ -112,29 +101,29 @@
             </ul>
             <ul class="navbar-nav">
                 <% if (typeof sessionPainter !== 'undefined' && sessionPainter) { %>
-                    <li class="nav-item dropdown dropdown-modern">
+                    <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
                             <div class="avatar-dropdown">
                                 <div class="avatar-small">
                                     <% if (sessionPainter.profilePicture && sessionPainter.profilePicture.url) { %>
-                                        <img src="<%= sessionPainter.profilePicture.url %>" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+                                        <img src="<%= sessionPainter.profilePicture.url %>" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">
                                     <% } else { %>
                                         <i class="fas fa-brush"></i>
                                     <% } %>
                                 </div>
-                                <span class="painter-name-nav"><%= sessionPainter.name %></span>
+                                <span><%= sessionPainter.name %></span>
                             </div>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="/painter/dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
-                            <li><a class="dropdown-item" href="/painter/profile"><i class="fas fa-user-circle"></i> My Profile</a></li>
+                            <li><a class="dropdown-item" href="/painter/dashboard">Dashboard</a></li>
+                            <li><a class="dropdown-item" href="/painter/profile">My Profile</a></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item text-danger" href="/index/logout"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+                            <li><a class="dropdown-item text-danger" href="/index/logout">Logout</a></li>
                         </ul>
                     </li>
                 <% } else { %>
-                    <li class="nav-item me-2"><a class="btn-login-modern" href="/auth/login-painter"><i class="fas fa-sign-in-alt me-1"></i> Login</a></li>
-                    <li class="nav-item"><a class="btn-signup-modern" href="/auth/register-painter"><i class="fas fa-user-plus me-1"></i> Sign Up</a></li>
+                    <li class="nav-item me-2"><a class="btn-login-modern" href="/auth/login-painter">Login</a></li>
+                    <li class="nav-item"><a class="btn-signup-modern" href="/auth/register-painter">Sign Up</a></li>
                 <% } %>
             </ul>
         </div>
