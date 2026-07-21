@@ -106,6 +106,54 @@
   </div>
 </section>
 
+
+<!-- ===== FULL-WIDTH CLOUDINARY VIDEO (kept) ===== -->
+<% if (product.videoFile) { %>
+<section class="product-video-fullbleed" dir="rtl" style="margin:40px 0;">
+  <div style="width:100vw;position:relative;left:50%;right:50%;margin-left:-50vw;margin-right:-50vw;">
+    <div style="max-width:1200px;margin:0 auto;padding:0 16px;text-align:center;margin-bottom:20px;">
+      <p style="font-size:0.75rem;letter-spacing:2px;color:#4A5568;">المنتج في حركة</p>
+      <h2 style="font-size:1.8rem;font-weight:300;">الحركة تكشف التفاصيل</h2>
+    </div>
+    <div style="position:relative;width:100%;background:#000;aspect-ratio:16/9;">
+      <iframe src="<%= product.videoFile %>" frameborder="0" allow="autoplay; fullscreen; encrypted-media; picture-in-picture" allowfullscreen style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;"></iframe>
+    </div>
+  </div>
+</section>
+<% } %>
+
+<!-- ===== FULL-WIDTH YOUTUBE VIDEO (kept) ===== -->
+<% if (product.videoId) { %>
+<section class="product-video-fullbleed" dir="rtl" style="margin:40px 0;">
+  <div style="width:100vw;position:relative;left:50%;right:50%;margin-left:-50vw;margin-right:-50vw;">
+    <div style="max-width:1200px;margin:0 auto;padding:0 16px;text-align:center;margin-bottom:20px;">
+      <p style="font-size:0.75rem;letter-spacing:2px;color:#4A5568;">فيديو توضيحي</p>
+      <h2 style="font-size:1.8rem;font-weight:300;">شاهد المنتج عن قرب</h2>
+      <p style="font-size:0.95rem;color:#4A5568;max-width:500px;margin:8px auto 0;">فيديو يوضح مميزات المنتج وطريقة استخدامه.</p>
+    </div>
+    <div style="position:relative;width:100%;background:#000;aspect-ratio:16/9;">
+      <iframe src="https://www.youtube.com/embed/<%= product.videoId %>?rel=0&playsinline=1" frameborder="0" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;"></iframe>
+    </div>
+  </div>
+</section>
+<% } %>
+
+<% if (typeof relatedProducts !== 'undefined' && relatedProducts.length > 0) { %>
+<section class="related-products-section" dir="rtl" style="padding:40px 0;background:#fff;border-top:1px solid #D1DCE6;">
+  <div class="container" style="max-width:1200px;margin:0 auto;padding:0 16px;">
+    <h2 style="font-size:1.6rem;font-weight:700;margin-bottom:20px;">منتجات قد تعجبك</h2>
+    <div style="display:flex;gap:16px;overflow-x:auto;scroll-behavior:smooth;padding:10px 0;">
+      <% relatedProducts.forEach(rp => { %>
+        <a href="/products/<%= rp._id %>" style="flex:0 0 200px;background:#fff;border-radius:16px;border:1px solid #D1DCE6;overflow:hidden;text-decoration:none;color:inherit;">
+          <div style="height:160px;background:#E8EEF6;display:flex;align-items:center;justify-content:center;"><img src="<%= (rp.images && rp.images[0]) ? rp.images[0] : rp.image %>" alt="<%= rp.name %>" style="max-height:100%;max-width:100%;object-fit:contain;"></div>
+          <div style="padding:12px;text-align:center;"><div style="font-weight:600;font-size:0.9rem;margin-bottom:4px;"><%= rp.name %></div><span style="color:#295797;font-weight:700;"><%= rp.price.toLocaleString('ar-DZ') %> دج</span></div>
+        </a>
+      <% }); %>
+    </div>
+  </div>
+</section>
+<% } %>
+
 <!-- Sticky buy for social ghosting -->
 <div class="sticky-buy" id="stickyBuy" dir="rtl">
   <div style="display:flex;align-items:center;gap:10px;"><img id="stickyImg" src="<%= images[0] %>" alt=""><div><div style="font-weight:700;font-size:0.9rem;"><%= product.name.length>30? product.name.slice(0,30)+'...':product.name %></div><div style="color:var(--primary-blue);font-weight:800;"><%= product.price.toLocaleString('ar-DZ') %> دج</div></div></div>
