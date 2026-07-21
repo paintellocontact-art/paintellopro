@@ -344,6 +344,7 @@ router.get('/products', async (req, res) => {
 });
 
 
+
 router.get('/products/:id', async (req, res) => {
   if (isBotRequest(req, { blockCloudIPs: true })) {
     return res.status(200).send('ok');
@@ -355,17 +356,24 @@ router.get('/products/:id', async (req, res) => {
     const relatedProducts = await Product.find({
       category: product.category,
       _id: { $ne: product._id }
-    })
-      .sort({ createdAt: -1 })
-      .limit(8);
+    }).sort({ createdAt: -1 }).limit(8);
 
-    // FIXED FINAL: Only ViewContent CAPI (no PageView CAPI)
     const userData = getCleanUserData(req);
+    const pageViewId = generateEventId();
     const viewContentId = generateEventId();
     const addToCartId = generateEventId();
-    const pageViewId = generateEventId();
 
     if (userData) {
+      // 1. PageView CAPI dedup with header
+      sendMetaCAPIEvent({
+        eventName: 'PageView',
+        eventId: pageViewId,
+        userData,
+        eventSourceUrl: `${req.protocol}://${req.get('host')}${req.originalUrl}`,
+        testEventCode: req.query.test_event_code || process.env.FB_TEST_EVENT_CODE,
+      }).catch(()=>{});
+
+      // 2. ViewContent CAPI dedup with product.ejs
       sendMetaCAPIEvent({
         eventName: 'ViewContent',
         eventId: viewContentId,
@@ -390,22 +398,22 @@ router.get('/products/:id', async (req, res) => {
     res.render('ar/products/product', {
       title: product.name + ' - Paintello Pro',
       product,
-      relatedProducts,               // now correctly populated by category
+      relatedProducts,
       metaEventIdPageView: pageViewId,
       metaEventIdView: viewContentId,
       metaEventIdCart: addToCartId,
       user: req.session.user || null,
       sessionPainter: req.session.painter || null,
       whatsappPhone: process.env.WHATSAPP_PHONE || '213796530868',
+      fbPixelId: process.env.FB_PIXEL_ID
     });
   } catch (error) {
     console.error('Product detail error:', error);
-    if (error.name === 'CastError') {
-      return res.status(400).send('Invalid product ID');
-    }
+    if (error.name === 'CastError') return res.status(400).send('Invalid product ID');
     res.status(500).send('Server Error');
   }
 });
+
 
 // Use it in your routes
 router.get('/validate-profile-picture', async (req, res) => {
@@ -745,30 +753,43 @@ router.post('/logout', (req, res) => {
 });
 
 // -------------------- CHECKOUT GET (render page) --------------------
+
 router.get('/checkout', async (req, res) => {
   if (isBotRequest(req, { blockCloudIPs: true })) {
     return res.status(200).send('ok');
   }
   if (!req.session.cart || !req.session.cart.totalQty) {
-    return res.redirect('/products');
+    return res.redirect('/products/ar');
   }
   try {
     const cart = req.session.cart;
     const pageViewId = generateEventId();
+    const userData = getCleanUserData(req);
 
-    // Render the Arabic checkout page
-    res.render('checkout', {   // or 'ar/checkout' if you separate views
+    if (userData) {
+      sendMetaCAPIEvent({
+        eventName: 'PageView',
+        eventId: pageViewId,
+        userData,
+        eventSourceUrl: `${req.protocol}://${req.get('host')}${req.originalUrl}`,
+        testEventCode: req.query.test_event_code || process.env.FB_TEST_EVENT_CODE,
+      }).catch(()=>{});
+    }
+
+    res.render('checkout', {
       title: 'إتمام الطلب - Paintello Pro',
-      cart: cart,
+      cart,
       user: req.session.user || null,
       sessionPainter: req.session.painter || null,
-      metaEventIdPageView: pageViewId
+      metaEventIdPageView: pageViewId,
+      fbPixelId: process.env.FB_PIXEL_ID
     });
   } catch (error) {
     console.error('Checkout GET error:', error);
     res.redirect('/');
   }
 });
+
 
 // -------------------- CHECKOUT POST — FIXED FINAL (lock + non-blocking CAPI) --------------------
 router.post('/checkout', async (req, res) => {
