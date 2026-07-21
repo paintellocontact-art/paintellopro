@@ -273,45 +273,76 @@ router.get('/ar/painters/:id', async (req, res) => {
   }
 });
 
-// ==================== PRODUCT ROUTES (explicit before /:id) ====================
-// Product listing page (English)
-router.get('/products', async (req, res) => {
-  try {
-    const products = await Product.find({ featured: true }).sort({ createdAt: -1 });
-    res.render('products/index', { products });   // create this view if needed
-  } catch (err) {
-    res.status(500).send('Server Error');
-  }
-});
 
 
-// Product listing page (Arabic) – prevents /products/ar from hitting /:id
+// Product listing Arabic - FIXED: Browser + Server dedup
 router.get('/products/ar', async (req, res) => {
+  if (isBotRequest(req, { blockCloudIPs: true })) {
+    return res.status(200).send('ok');
+  }
   try {
     const products = await Product.find({ featured: true }).sort({ createdAt: -1 });
-
-    // FIXED: No CAPI PageView on listing
     const pageViewId = generateEventId();
-    if (false) {
-      await sendMetaCAPIEvent({
+    const userData = getCleanUserData(req);
+
+    if (userData) {
+      // Non-blocking CAPI PageView with same ID as browser
+      sendMetaCAPIEvent({
         eventName: 'PageView',
         eventId: pageViewId,
         userData,
         eventSourceUrl: `${req.protocol}://${req.get('host')}${req.originalUrl}`,
         testEventCode: req.query.test_event_code || process.env.FB_TEST_EVENT_CODE,
-      });
+      }).catch(()=>{});
     }
 
     res.render('ar/products/index', {
+      title: 'Paintello Pro - منتجات الدهان',
       products,
-      metaEventIdPageView: pageViewId,   // <-- pass it to the view
-      user: req.session.user || null, 
-      sessionPainter: req.session.painter || null
+      metaEventIdPageView: pageViewId,
+      user: req.session.user || null,
+      sessionPainter: req.session.painter || null,
+      fbPixelId: process.env.FB_PIXEL_ID
+    });
+  } catch (err) {
+    console.error('products/ar error', err);
+    res.status(500).send('Server Error');
+  }
+});
+
+// Product listing English - same fix
+router.get('/products', async (req, res) => {
+  if (isBotRequest(req, { blockCloudIPs: true })) {
+    return res.status(200).send('ok');
+  }
+  try {
+    const products = await Product.find({ featured: true }).sort({ createdAt: -1 });
+    const pageViewId = generateEventId();
+    const userData = getCleanUserData(req);
+
+    if (userData) {
+      sendMetaCAPIEvent({
+        eventName: 'PageView',
+        eventId: pageViewId,
+        userData,
+        eventSourceUrl: `${req.protocol}://${req.get('host')}${req.originalUrl}`,
+        testEventCode: req.query.test_event_code || process.env.FB_TEST_EVENT_CODE,
+      }).catch(()=>{});
+    }
+
+    res.render('products/index', {
+      title: 'Paintello Pro - Products',
+      products,
+      metaEventIdPageView: pageViewId,
+      user: req.session.user || null,
+      sessionPainter: req.session.painter || null,
+      fbPixelId: process.env.FB_PIXEL_ID
     });
   } catch (err) {
     res.status(500).send('Server Error');
   }
 });
+
 
 router.get('/products/:id', async (req, res) => {
   if (isBotRequest(req, { blockCloudIPs: true })) {
