@@ -305,7 +305,7 @@ router.get('/products/ar', async (req, res) => {
     res.render('ar/products/index', {
       products,
       metaEventIdPageView: pageViewId,   // <-- pass it to the view
-      user: req.session.user || null,
+      user: req.session.user || null, 
       sessionPainter: req.session.painter || null
     });
   } catch (err) {
@@ -332,7 +332,7 @@ router.get('/products/:id', async (req, res) => {
     const userData = getCleanUserData(req);
     const viewContentId = generateEventId();
     const addToCartId = generateEventId();
-    const pageViewId = viewContentId; // for header dedup
+    const pageViewId = generateEventId();
 
     if (userData) {
       sendMetaCAPIEvent({
