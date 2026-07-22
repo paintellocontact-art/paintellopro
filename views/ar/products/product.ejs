@@ -8,134 +8,105 @@
   whatsappPhone: typeof whatsappPhone !== 'undefined' ? whatsappPhone : '213796530868'
 }) %>
 
-<!-- ===== PAINTELLO PRO COVER V2 - Modern - Matches Your Picture ===== -->
-<style>
-.painter-cover-v2-wrap { max-width:1220px; margin:16px auto 0; padding:0 16px; }
-.painter-cover-v2 {
-  position:relative; border-radius:28px; overflow:hidden;
-  background: #3A5BDB; /* exact blue from your picture */
-  display:grid; grid-template-columns: 480px 1fr;
-  min-height: 300px; isolation:isolate;
-  box-shadow: 0 12px 40px rgba(58,91,219,0.25);
-}
-.cover-v2-img {
-  position:relative; height:100%; display:flex; align-items:flex-end; justify-content:center;
-  background: transparent;
-}
-.cover-v2-img img {
-  width:100%; height:100%; max-height: 320px; object-fit:contain; object-position: bottom center;
-  display:block;
-}
-.cover-v2-content {
-  position:relative; z-index:2; padding:36px 32px 32px 0; color:#fff; display:flex; flex-direction:column; justify-content:center;
-}
-.cover-v2-badge {
-  display:inline-flex; align-items:center; gap:8px; background: rgba(255,255,255,0.15); backdrop-filter: blur(8px);
-  border:1px solid rgba(255,255,255,0.2); padding:6px 14px; border-radius:100px; font-size:0.78rem; width:fit-content; margin-bottom:14px;
-}
-.cover-v2-title {
-  font-size:3.2rem; font-weight:900; line-height:0.9; letter-spacing:-1px; margin:0; color:#fff; font-family: 'Inter', sans-serif;
-}
-.cover-v2-title .pro-pill {
-  display:inline-flex; align-items:center; justify-content:center; background:#fff; color:#3A5BDB;
-  font-size:1.6rem; font-weight:800; padding:6px 18px; border-radius:16px; margin-left:8px; vertical-align:middle;
-  line-height:1; transform: translateY(-6px);
-}
-.cover-v2-sub {
-  font-size:1.15rem; font-weight:600; margin:14px 0 6px; line-height:1.4;
-}
-.cover-v2-underline {
-  width:140px; height:6px; background:#FFC93C; border-radius:10px; margin:8px 0 20px; transform: rotate(-2deg);
-}
-.cover-v2-features {
-  display:flex; gap:22px; margin-bottom:24px; font-size:0.88rem;
-}
-.cover-v2-features span { display:flex; align-items:center; gap:8px; opacity:0.95; }
-.cover-v2-features i { width:28px; height:28px; background: rgba(255,255,255,0.15); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.85rem; }
 
-.cover-v2-actions { display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
-.btn-v2-primary {
-  background:#fff; color:#2D4BC5; border:none; padding:13px 22px; border-radius:100px; font-weight:800; font-size:0.95rem;
+<!-- ===== PAINTELLO PRO COVER V3 - No Picture, No App - Modern ===== -->
+<style>
+.painter-cover-v3-wrap { max-width:1220px; margin:16px auto 0; padding:0 16px; }
+.painter-cover-v3 {
+  position:relative; border-radius:28px; overflow:hidden;
+  background: linear-gradient(100deg, #2E4BC5 0%, #3A5BDB 50%, #4A6CF0 100%);
+  min-height: 200px; isolation:isolate;
+  box-shadow: 0 12px 40px rgba(58,91,219,0.25);
+  display:flex; align-items:center; justify-content:space-between;
+  padding:28px 32px;
+}
+.painter-cover-v3::before{
+  content:""; position:absolute; inset:0;
+  background: radial-gradient(500px 250px at 80% 20%, rgba(255,255,255,0.12), transparent),
+              radial-gradient(400px 200px at 10% 80%, rgba(255,255,255,0.08), transparent);
+  z-index:0;
+}
+.cover-v3-content {
+  position:relative; z-index:2; color:#fff; display:flex; flex:1; align-items:center; justify-content:space-between; gap:20px;
+}
+.cover-v3-left { flex:1; }
+.cover-v3-badge {
+  display:inline-flex; align-items:center; gap:8px; background: rgba(255,255,255,0.15); backdrop-filter: blur(8px);
+  border:1px solid rgba(255,255,255,0.2); padding:6px 14px; border-radius:100px; font-size:0.78rem; width:fit-content; margin-bottom:12px;
+}
+.cover-v3-title {
+  font-size:2.6rem; font-weight:900; line-height:0.95; letter-spacing:-1px; margin:0; color:#fff;
+}
+.cover-v3-title .pro-pill {
+  display:inline-flex; align-items:center; justify-content:center; background:#fff; color:#3A5BDB;
+  font-size:1.4rem; font-weight:800; padding:5px 16px; border-radius:14px; margin-right:8px; vertical-align:middle; line-height:1; transform: translateY(-4px);
+}
+.cover-v3-sub { font-size:1.1rem; font-weight:600; margin:10px 0 0; line-height:1.4; }
+.cover-v3-underline { width:120px; height:5px; background:#FFC93C; border-radius:10px; margin:10px 0 18px; transform: rotate(-2deg); }
+.cover-v3-features { display:flex; gap:20px; font-size:0.86rem; }
+.cover-v3-features span { display:flex; align-items:center; gap:7px; opacity:0.95; }
+.cover-v3-features i { width:26px; height:26px; background: rgba(255,255,255,0.15); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.8rem; }
+
+.cover-v3-actions { display:flex; gap:12px; align-items:center; flex-shrink:0; }
+.btn-v3-primary {
+  background:#fff; color:#2D4BC5; border:none; padding:13px 24px; border-radius:100px; font-weight:800; font-size:0.95rem;
   display:inline-flex; align-items:center; gap:8px; text-decoration:none; transition:0.2s; box-shadow: 0 6px 18px rgba(0,0,0,0.12);
 }
-.btn-v2-primary:hover { transform:translateY(-2px); box-shadow:0 10px 28px rgba(0,0,0,0.18); }
-.btn-v2-secondary {
-  background: rgba(255,255,255,0.12); color:#fff; border:1px solid rgba(255,255,255,0.5); padding:13px 22px; border-radius:100px; font-weight:700; font-size:0.95rem;
+.btn-v3-primary:hover { transform:translateY(-2px); box-shadow:0 10px 28px rgba(0,0,0,0.18); }
+.btn-v3-secondary {
+  background: rgba(255,255,255,0.12); color:#fff; border:1px solid rgba(255,255,255,0.5); padding:13px 24px; border-radius:100px; font-weight:700; font-size:0.95rem;
   display:inline-flex; align-items:center; gap:8px; text-decoration:none; backdrop-filter: blur(6px); transition:0.2s;
 }
-.btn-v2-secondary:hover { background: rgba(255,255,255,0.22); }
-
-.cover-v2-close {
+.btn-v3-secondary:hover { background: rgba(255,255,255,0.22); }
+.cover-v3-close {
   position:absolute; top:14px; left:14px; z-index:5; width:32px; height:32px; border-radius:50%; border:none; background: rgba(0,0,0,0.2); color:#fff; cursor:pointer; display:flex; align-items:center; justify-content:center;
 }
-.cover-v2-wave {
-  position:absolute; bottom:-2px; left:0; right:0; height:34px; z-index:1;
+.cover-v3-wave {
+  position:absolute; bottom:-2px; left:0; right:0; height:28px; z-index:1;
   background: #E8EEF6; clip-path: ellipse(70% 100% at 50% 100%);
 }
 
-/* Google Play mini */
-.gplay-mini { margin-top:14px; display:flex; align-items:center; gap:10px; font-size:0.72rem; opacity:0.85; }
-.gplay-mini img { height:36px; }
-
-@media(max-width:980px){
-  .painter-cover-v2 { grid-template-columns:1fr; min-height:auto; }
-  .cover-v2-img { order:2; height:220px; }
-  .cover-v2-img img { max-height:240px; }
-  .cover-v2-content { order:1; padding:24px 20px 10px; text-align:center; align-items:center; }
-  .cover-v2-title { font-size:2.4rem; }
-  .cover-v2-sub { font-size:1rem; }
-  .cover-v2-features { justify-content:center; gap:14px; font-size:0.78rem; }
-  .cover-v2-actions { justify-content:center; width:100%; }
-  .btn-v2-primary, .btn-v2-secondary { flex:1; justify-content:center; }
+@media(max-width:900px){
+  .painter-cover-v3 { padding:22px 18px 28px; min-height:auto; }
+  .cover-v3-content { flex-direction:column; text-align:center; align-items:center; }
+  .cover-v3-title { font-size:2rem; }
+  .cover-v3-features { justify-content:center; gap:12px; flex-wrap:wrap; }
+  .cover-v3-actions { width:100%; justify-content:center; }
+  .btn-v3-primary, .btn-v3-secondary { flex:1; justify-content:center; }
 }
 </style>
 
-<div class="painter-cover-v2-wrap" id="painterCoverV2" dir="rtl">
-  <div class="painter-cover-v2">
-    <button class="cover-v2-close" id="closePainterCoverV2" aria-label="close">✕</button>
-    
-    <div class="cover-v2-img">
-      <!-- SAVE your picture as /public/img/paintello-pro-painter.png (crop to painter only, no bg if possible) -->
-      <!-- If you use full image with blue bg, it will blend perfectly because banner bg = same blue -->
-      <img src="/img/paintello-pro-painter.png" alt="Painter Pro" onerror="this.src='/img/paintello-pro-cover.png'">
-    </div>
-
-    <div class="cover-v2-content">
-      <div class="cover-v2-badge"><i class="fas fa-fire" style="color:#FFC93C;"></i> أكثر من 3200 دهان محترف</div>
-      <h2 class="cover-v2-title">Paintello <span class="pro-pill">Pro</span></h2>
-      <p class="cover-v2-sub">دهانين محترفين في كل ولايات الجزائر</p>
-      <div class="cover-v2-underline"></div>
-      
-      <div class="cover-v2-features">
-        <span><i class="fas fa-shield-alt"></i> جودة واحترافية</span>
-        <span><i class="fas fa-bolt"></i> خدمة سريعة</span>
-        <span><i class="fas fa-badge-check"></i> ثقة وراحة</span>
+<div class="painter-cover-v3-wrap" id="painterCoverV3" dir="rtl">
+  <div class="painter-cover-v3">
+    <button class="cover-v3-close" id="closePainterCoverV3" aria-label="close">✕</button>
+    <div class="cover-v3-content">
+      <div class="cover-v3-left">
+        <div class="cover-v3-badge"><i class="fas fa-fire" style="color:#FFC93C;"></i> أكثر من 3200 دهان محترف</div>
+        <h2 class="cover-v3-title">Paintello <span class="pro-pill">Pro</span></h2>
+        <p class="cover-v3-sub">دهانين محترفين في كل ولايات الجزائر</p>
+        <div class="cover-v3-underline"></div>
+        <div class="cover-v3-features">
+          <span><i class="fas fa-shield-alt"></i> جودة واحترافية</span>
+          <span><i class="fas fa-bolt"></i> خدمة سريعة</span>
+          <span><i class="fas fa-badge-check"></i> ثقة وراحة</span>
+        </div>
       </div>
-
-      <div class="cover-v2-actions">
-        <a href="/auth/register-painter" class="btn-v2-primary"><i class="fas fa-user-plus"></i> سجل كدهان الآن</a>
-        <a href="/painters" class="btn-v2-secondary"><i class="fas fa-search"></i> ابحث عن دهان</a>
-      </div>
-
-      <div class="gplay-mini">
-        <a href="https://play.google.com/store" target="_blank" style="text-decoration:none;color:#fff;display:flex;align-items:center;gap:8px;">
-          <img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" alt="Google Play" style="height:36px;filter:brightness(0) invert(1);">
-          <span>حمّل تطبيق Paintello Pro الآن</span>
-        </a>
+      <div class="cover-v3-actions">
+        <a href="/auth/register-painter" class="btn-v3-primary"><i class="fas fa-user-plus"></i> سجل كدهان الآن</a>
+        <a href="/painters" class="btn-v3-secondary"><i class="fas fa-search"></i> ابحث عن دهان</a>
       </div>
     </div>
-
-    <div class="cover-v2-wave"></div>
+    <div class="cover-v3-wave"></div>
   </div>
 </div>
 
 <script>
 (function(){
-  const wrap=document.getElementById('painterCoverV2');
-  const close=document.getElementById('closePainterCoverV2');
+  const wrap=document.getElementById('painterCoverV3');
+  const close=document.getElementById('closePainterCoverV3');
   if(!wrap) return;
-  if(sessionStorage.getItem('painterCoverV2Closed')){ wrap.style.display='none'; return; }
-  close?.addEventListener('click', ()=>{ wrap.style.display='none'; sessionStorage.setItem('painterCoverV2Closed','1'); });
+  if(sessionStorage.getItem('painterCoverV3Closed')){ wrap.style.display='none'; return; }
+  close?.addEventListener('click', ()=>{ wrap.style.display='none'; sessionStorage.setItem('painterCoverV3Closed','1'); });
 })();
 </script>
 
